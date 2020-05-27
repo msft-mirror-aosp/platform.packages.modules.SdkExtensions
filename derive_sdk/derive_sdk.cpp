@@ -26,7 +26,7 @@
 #include <android-base/logging.h>
 #include <android-base/properties.h>
 
-#include "frameworks/base/apex/sdkextensions/derive_sdk/sdk.pb.h"
+#include "packages/modules/SdkExtensions/derive_sdk/sdk.pb.h"
 
 using com::android::sdkext::proto::SdkVersion;
 
