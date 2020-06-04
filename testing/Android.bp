@@ -14,7 +14,7 @@
 
 apex_test {
     name: "test_com.android.sdkext",
-    visibility: [ "//system/apex/tests" ],
+    visibility: [ "//system/apex/tests/sdkextensions" ],
     defaults: ["com.android.sdkext-defaults"],
     manifest: "test_manifest.json",
     prebuilts: [ "sdkinfo_45" ],
