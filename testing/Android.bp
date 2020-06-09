@@ -61,6 +61,7 @@ dex_import {
     name: "test_framework-sdkextensions",
     jars: ["test_framework-sdkextensions.jar"],
     stem: "framework-sdkextensions",
+    apex_available: ["test_com.android.sdkext"],
 }
 
 // It isn't currently possible to build this from source because of limitations
