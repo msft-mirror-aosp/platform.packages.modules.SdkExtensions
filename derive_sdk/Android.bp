@@ -22,19 +22,18 @@ cc_defaults {
         type: "lite",
         static: true,
     },
-    sdk_version: "current",
+    min_sdk_version: "current",
+    shared_libs: ["liblog"],
+    // static c++/libbase for smaller size
     stl: "c++_static",
-    shared_libs: [ "liblog" ],
-    static_libs: [
-        "libbase_ndk",
-    ],
+    static_libs: ["libbase"],
 }
 
 cc_binary {
     name: "derive_sdk",
     defaults: [ "derive_sdk-defaults" ],
     apex_available: [ "com.android.sdkext" ],
-    visibility: [ "//frameworks/base/apex/sdkextensions" ]
+    visibility: [ "//packages/modules/SdkExtensions" ]
 }
 
 // Work around testing using a 64-bit test suite on 32-bit test device by
@@ -45,7 +44,7 @@ cc_binary {
     compile_multilib: "prefer32",
     stem: "derive_sdk",
     apex_available: [ "test_com.android.sdkext" ],
-    visibility: [ "//frameworks/base/apex/sdkextensions/testing" ],
+    visibility: [ "//packages/modules/SdkExtensions/testing" ],
     installable: false,
 }
 
