@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package {
-    default_visibility: [ ":__pkg__" ]
-}
-
 filegroup {
     name: "framework-sdkextensions-sources",
     srcs: [
@@ -24,7 +20,7 @@ filegroup {
     path: "java",
     visibility: [
         "//frameworks/base",  // For the "global" stubs.
-        "//packages/modules/SdkExtensions",
+        "//packages/modules/SdkExtensions:__subpackages__",
     ],
 }
 
@@ -35,10 +31,6 @@ java_sdk_library {
 
     permitted_packages: [ "android.os.ext" ],
     installable: true,
-    visibility: [
-        "//packages/modules/SdkExtensions",
-        "//packages/modules/SdkExtensions/testing",
-    ],
     hostdex: true, // for hiddenapi check
     apex_available: [
         "com.android.sdkext",
