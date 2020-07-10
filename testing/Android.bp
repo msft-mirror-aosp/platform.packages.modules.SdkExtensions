@@ -53,6 +53,10 @@ filegroup {
     name: "test_framework-sdkextensions-sources",
     srcs: ["impl-src/**/*.java"],
     path: "impl-src",
+    visibility: [
+        "//frameworks/base",
+        "//packages/modules/SdkExtensions:__subpackages__",
+    ],
 }
 
 
