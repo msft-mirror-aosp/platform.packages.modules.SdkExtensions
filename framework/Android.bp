@@ -23,9 +23,9 @@ filegroup {
     ],
     path: "java",
     visibility: [
-       "//frameworks/base",  // For the "global" stubs.
-       "//packages/modules/SdkExtensions",
-    ]
+        "//frameworks/base",  // For the "global" stubs.
+        "//packages/modules/SdkExtensions",
+    ],
 }
 
 java_sdk_library {
