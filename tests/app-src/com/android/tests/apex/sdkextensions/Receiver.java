@@ -57,35 +57,31 @@ public class Receiver extends BroadcastReceiver {
     }
 
     private static void makeCallsVersion0() {
-        try {
-            Test test = new Test();
-            throw new IllegalStateException("Instantiated test class, but shouldn't be able to");
-        } catch (NoClassDefFoundError t) {
-            // Expected
-        }
+        expectException(NoClassDefFoundError.class, "test class", () -> new Test() );
     }
 
     private static void makeCallsVersion45() {
         Test test = new Test();
+
         test.publicMethod();
         test.systemApiMethod();
+        expectException(NoSuchMethodError.class, "module method", () -> test.moduleLibsApiMethod());
+        expectException(NoSuchMethodError.class, "testapi method", () -> test.testApiMethod());
+        expectException(NoSuchMethodError.class, "hidden method", () -> test.hiddenMethod());
+    }
+
+    private static void expectException(Class exceptionClass, String type, Runnable runnable) {
+        boolean success = false;
         try {
-            test.moduleLibsApiMethod();
-            throw new IllegalStateException("Called module-libs method, but shouldn't be able to");
-        } catch (NoSuchMethodError t) {
-            // Expected
+            runnable.run();
+            success = true;
+        } catch (Throwable e) {
+            if (!e.getClass().equals(exceptionClass)) {
+                throw new IllegalStateException("Saw unexpected exception", e);
+            }
         }
-        try {
-            test.testApiMethod();
-            throw new IllegalStateException("Called testapi method, but shouldn't be able to");
-        } catch (NoSuchMethodError t) {
-            // Expected
-        }
-        try {
-            test.hiddenMethod();
-            throw new IllegalStateException("Called hidden method, but shouldn't be able to");
-        } catch (NoSuchMethodError t) {
-            // Expected
+        if (success) {
+            throw new IllegalStateException("Accessed " + type + ", but shouldn't be able to");
         }
     }
 }
