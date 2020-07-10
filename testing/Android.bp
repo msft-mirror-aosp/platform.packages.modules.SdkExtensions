@@ -14,7 +14,6 @@
 
 apex_test {
     name: "test_com.android.sdkext",
-    visibility: [ "//system/apex/tests/sdkextensions" ],
     defaults: ["com.android.sdkext-defaults"],
     java_libs: [ "test_framework-sdkextensions" ],
     manifest: "test_manifest.json",
@@ -81,5 +80,4 @@ java_library {
     name: "test_framework-sdkextensions-stubs",
     srcs: ["stub-src/**/*.java"],
     sdk_version: "current",
-    visibility: [ "//system/apex/tests/sdkextensions" ],
 }
