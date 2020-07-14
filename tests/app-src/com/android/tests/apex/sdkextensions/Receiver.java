@@ -58,6 +58,12 @@ public class Receiver extends BroadcastReceiver {
 
     private static void makeCallsVersion0() {
         expectException(NoClassDefFoundError.class, "test class", () -> new Test() );
+        expectException(NoClassDefFoundError.class, "test class", () -> Test.staticPublicMethod() );
+        expectException(NoClassDefFoundError.class, "test class",
+            () -> Test.staticSystemApiMethod() );
+        expectException(NoClassDefFoundError.class, "test class",
+            () -> Test.staticModuleLibsApiMethod() );
+        expectException(NoClassDefFoundError.class, "test class", () -> Test.staticHiddenMethod() );
     }
 
     private static void makeCallsVersion45() {
@@ -68,6 +74,15 @@ public class Receiver extends BroadcastReceiver {
         expectException(NoSuchMethodError.class, "module method", () -> test.moduleLibsApiMethod());
         expectException(NoSuchMethodError.class, "testapi method", () -> test.testApiMethod());
         expectException(NoSuchMethodError.class, "hidden method", () -> test.hiddenMethod());
+
+        Test.staticPublicMethod();
+        Test.staticSystemApiMethod();
+        expectException(NoSuchMethodError.class, "static module-libs method",
+            () -> Test.staticModuleLibsApiMethod());
+        expectException(NoSuchMethodError.class, "static testapi method",
+            () -> Test.staticTestApiMethod());
+        expectException(NoSuchMethodError.class, "static hidden method",
+            () -> Test.staticHiddenMethod());
     }
 
     private static void expectException(Class exceptionClass, String type, Runnable runnable) {
