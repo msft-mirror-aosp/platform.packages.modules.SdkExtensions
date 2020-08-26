@@ -20,6 +20,7 @@ apex {
     name: "com.android.sdkext",
     defaults: [ "com.android.sdkext-defaults" ],
     binaries: [ "derive_sdk" ],
+    java_libs: [ "framework-sdkextensions" ],
     prebuilts: [ "cur_sdkinfo" ],
     manifest: "manifest.json",
     min_sdk_version: "current",
@@ -29,17 +30,11 @@ apex_defaults {
     name: "com.android.sdkext-defaults",
     updatable: true,
     min_sdk_version: "R",
-    java_libs: [ "framework-sdkextensions" ],
     prebuilts: [
         "derive_sdk.rc",
     ],
     key: "com.android.sdkext.key",
     certificate: ":com.android.sdkext.certificate",
-}
-
-sdk {
-    name: "sdkextensions-sdk",
-    java_sdk_libs: [ "framework-sdkextensions" ],
 }
 
 apex_key {

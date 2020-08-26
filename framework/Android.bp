@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package {
-    default_visibility: [ ":__pkg__" ]
-}
-
 filegroup {
     name: "framework-sdkextensions-sources",
     srcs: [
@@ -23,9 +19,9 @@ filegroup {
     ],
     path: "java",
     visibility: [
-       "//frameworks/base",  // For the "global" stubs.
-       "//packages/modules/SdkExtensions",
-    ]
+        "//frameworks/base",  // For the "global" stubs.
+        "//packages/modules/SdkExtensions:__subpackages__",
+    ],
 }
 
 java_sdk_library {
@@ -33,17 +29,8 @@ java_sdk_library {
     srcs: [ ":framework-sdkextensions-sources" ],
     defaults: ["framework-module-defaults"],
 
-    // TODO(b/155480189) - Remove naming_scheme once references have been resolved.
-    // Temporary java_sdk_library component naming scheme to use to ease the transition from separate
-    // modules to java_sdk_library.
-    naming_scheme: "framework-modules",
-
     permitted_packages: [ "android.os.ext" ],
     installable: true,
-    visibility: [
-        "//packages/modules/SdkExtensions",
-        "//packages/modules/SdkExtensions/testing",
-    ],
     hostdex: true, // for hiddenapi check
     apex_available: [
         "com.android.sdkext",
