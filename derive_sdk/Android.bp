@@ -22,7 +22,7 @@ cc_defaults {
         type: "lite",
         static: true,
     },
-    min_sdk_version: "current",
+    min_sdk_version: "30",
     shared_libs: ["liblog"],
     // static c++/libbase for smaller size
     stl: "c++_static",
