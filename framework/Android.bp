@@ -36,4 +36,5 @@ java_sdk_library {
         "com.android.sdkext",
         "test_com.android.sdkext",
     ],
+    min_sdk_version: "30",
 }
