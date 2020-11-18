@@ -16,7 +16,10 @@ java_test_host {
     name: "sdkextensions_e2e_tests",
     srcs:  ["test-src/**/*.java"],
     libs: ["tradefed"],
-    static_libs: ["apex_e2e_base_test"],
+    static_libs: [
+        "cts-install-lib-host",
+        "frameworks-base-hostutils",
+    ],
     data: [
         ":sdkextensions_e2e_test_app",
         ":test_com.android.media",
