@@ -23,13 +23,13 @@ apex {
     java_libs: [ "framework-sdkextensions" ],
     prebuilts: [ "cur_sdkinfo" ],
     manifest: "manifest.json",
-    min_sdk_version: "current",
+    min_sdk_version: "30",
 }
 
 apex_defaults {
     name: "com.android.sdkext-defaults",
     updatable: true,
-    min_sdk_version: "R",
+    min_sdk_version: "30",
     prebuilts: [
         "derive_sdk.rc",
     ],
