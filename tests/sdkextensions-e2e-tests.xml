@@ -20,6 +20,5 @@
     <target_preparer class="com.android.tradefed.targetprep.RootTargetPreparer"/>
     <test class="com.android.tradefed.testtype.HostTest" >
         <option name="jar" value="sdkextensions_e2e_tests.jar" />
-        <option name="set-option" value="apex_file_name:test_com.android.sdkext.apex" />
     </test>
 </configuration>
