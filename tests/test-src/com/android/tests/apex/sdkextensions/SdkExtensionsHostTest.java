@@ -19,6 +19,7 @@ package com.android.tests.apex.sdkextensions;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -26,8 +27,7 @@ import static org.junit.Assume.assumeTrue;
 import android.cts.install.lib.host.InstallUtilsHost;
 
 import com.android.tests.rollback.host.AbandonSessionsRule;
-import com.android.tradefed.device.ITestDevice;
-import com.android.tradefed.log.LogUtil.CLog;
+import com.android.tradefed.device.ITestDevice.ApexInfo;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
 import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
 import com.android.tradefed.util.CommandResult;
@@ -61,14 +61,6 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     @Before
     public void setUp() throws Exception {
         assumeTrue("Updating APEX is not supported", mInstallUtils.isApexUpdateSupported());
-        uninstallApex(MEDIA_FILENAME);
-        uninstallApex(SDKEXTENSIONS_FILENAME);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        uninstallApex(MEDIA_FILENAME);
-        uninstallApex(SDKEXTENSIONS_FILENAME);
     }
 
     @Before
@@ -78,10 +70,11 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         assertNull(installResult);
     }
 
+    @Before // Generally not needed, but local test devices are sometimes in a "bad" start state.
     @After
-    public void uninstallTestApp() throws Exception {
-        String uninstallResult = getDevice().uninstallPackage(APP_PACKAGE);
-        assertNull(uninstallResult);
+    public void cleanup() throws Exception {
+        getDevice().uninstallPackage(APP_PACKAGE);
+        uninstallApexes(SDKEXTENSIONS_FILENAME, MEDIA_FILENAME);
     }
 
     @Test
@@ -94,7 +87,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         // On the system image, sdkextensions is the only apex with sdkinfo, and it's version 0.
         // Verify that installing a new version of it with sdk version 45 bumps the version.
         assertVersion0();
-        installApex(SDKEXTENSIONS_FILENAME);
+        mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
         reboot();
         assertVersion45();
     }
@@ -104,7 +97,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         // On the system image, sdkextensions is the only apex with sdkinfo, and it's version 0.
         // This test verifies that installing media with sdk version 45 doesn't bump the version.
         assertVersion0();
-        installApex(MEDIA_FILENAME);
+        mInstallUtils.installApexes(MEDIA_FILENAME);
         reboot();
         assertVersion0();
     }
@@ -160,20 +153,19 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         return cmd;
     }
 
-    private void installApex(String filename) throws Exception {
-        String res = mInstallUtils.installStagedPackage(mInstallUtils.getTestFile(filename));
-        assertWithMessage("Failed to install %s. Reason: %s", filename, res).that(res).isNull();
-    }
-
-    private void uninstallApex(String filename) throws Exception {
-        ITestDevice.ApexInfo apex = mInstallUtils.getApexInfo(mInstallUtils.getTestFile(filename));
-        String res = getDevice().uninstallPackage(apex.name);
-        if (res != null) {
-            CLog.i("Uninstall of %s failed: %s, likely already on factory version", apex.name, res);
-        } else {
-            // Uninstall succeeded. Need to reboot for the uninstall to take affect.
-            reboot();
+    private boolean uninstallApexes(String... filenames) throws Exception {
+        boolean reboot = false;
+        for (String filename : filenames) {
+            ApexInfo apex = mInstallUtils.getApexInfo(mInstallUtils.getTestFile(filename));
+            String res = getDevice().uninstallPackage(apex.name);
+            // res is null for successful uninstalls (non-null likely implesfactory version).
+            reboot |= res == null;
         }
+        if (reboot) {
+            reboot();
+            return true;
+        }
+        return false;
     }
 
     private void reboot() throws Exception {
