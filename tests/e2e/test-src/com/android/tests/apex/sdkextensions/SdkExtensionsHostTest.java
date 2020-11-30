@@ -16,48 +16,65 @@
 
 package com.android.tests.apex.sdkextensions;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
-import com.android.tests.apex.ApexE2EBaseHostTest;
+import android.cts.install.lib.host.InstallUtilsHost;
+
+import com.android.tests.rollback.host.AbandonSessionsRule;
+import com.android.tradefed.device.ITestDevice.ApexInfo;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
+import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
 import com.android.tradefed.util.CommandResult;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
-import java.util.List;
+import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RunWith(DeviceJUnit4ClassRunner.class)
-public class SdkExtensionsHostTest extends ApexE2EBaseHostTest {
+public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private static final String APP_FILENAME = "sdkextensions_e2e_test_app.apk";
     private static final String APP_PACKAGE = "com.android.tests.apex.sdkextensions";
     private static final String MEDIA_FILENAME = "test_com.android.media.apex";
     private static final String SDKEXTENSIONS_FILENAME = "test_com.android.sdkext.apex";
 
+    private static final Duration BOOT_COMPLETE_TIMEOUT = Duration.ofMinutes(2);
+
+    private final InstallUtilsHost mInstallUtils = new InstallUtilsHost(this);
+
+    @Rule
+    public AbandonSessionsRule mHostTestRule = new AbandonSessionsRule(this);
+
+    @Before
+    public void setUp() throws Exception {
+        assumeTrue("Updating APEX is not supported", mInstallUtils.isApexUpdateSupported());
+    }
+
     @Before
     public void installTestApp() throws Exception {
-        File testAppFile = mUtils.getTestFile(APP_FILENAME);
+        File testAppFile = mInstallUtils.getTestFile(APP_FILENAME);
         String installResult = getDevice().installPackage(testAppFile, true);
         assertNull(installResult);
     }
 
+    @Before // Generally not needed, but local test devices are sometimes in a "bad" start state.
     @After
-    public void uninstallTestApp() throws Exception {
-        String uninstallResult = getDevice().uninstallPackage(APP_PACKAGE);
-        assertNull(uninstallResult);
-    }
-
-    @Override
-    protected List<String> getAllApexFilenames() {
-        return List.of(SDKEXTENSIONS_FILENAME, MEDIA_FILENAME);
+    public void cleanup() throws Exception {
+        getDevice().uninstallPackage(APP_PACKAGE);
+        uninstallApexes(SDKEXTENSIONS_FILENAME, MEDIA_FILENAME);
     }
 
     @Test
@@ -66,12 +83,22 @@ public class SdkExtensionsHostTest extends ApexE2EBaseHostTest {
     }
 
     @Test
+    public void upgradeOneApexWithBump()  throws Exception {
+        // On the system image, sdkextensions is the only apex with sdkinfo, and it's version 0.
+        // Verify that installing a new version of it with sdk version 45 bumps the version.
+        assertVersion0();
+        mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
+        reboot();
+        assertVersion45();
+    }
+
+    @Test
     public void upgradeOneApex() throws Exception {
         // On the system image, sdkextensions is the only apex with sdkinfo, and it's version 0.
         // This test verifies that installing media with sdk version 45 doesn't bump the version.
         assertVersion0();
-        installApex(MEDIA_FILENAME);
-        reboot(false);
+        mInstallUtils.installApexes(MEDIA_FILENAME);
+        reboot();
         assertVersion0();
     }
 
@@ -81,14 +108,8 @@ public class SdkExtensionsHostTest extends ApexE2EBaseHostTest {
         // This test verifies that installing media with sdk version 45 *and* a new sdkext does bump
         // the version.
         assertVersion0();
-        installApexes(MEDIA_FILENAME, SDKEXTENSIONS_FILENAME);
-        reboot(false);
-        assertVersion45();
-    }
-
-    @Override
-    public void additionalCheck() throws Exception {
-        // This method is run after the default test in the base class, which just installs sdkext.
+        mInstallUtils.installApexes(MEDIA_FILENAME, SDKEXTENSIONS_FILENAME);
+        reboot();
         assertVersion45();
     }
 
@@ -130,5 +151,26 @@ public class SdkExtensionsHostTest extends ApexE2EBaseHostTest {
         cmd += " -a com.android.tests.apex.sdkextensions." + action;
         cmd += " -n com.android.tests.apex.sdkextensions/.Receiver";
         return cmd;
+    }
+
+    private boolean uninstallApexes(String... filenames) throws Exception {
+        boolean reboot = false;
+        for (String filename : filenames) {
+            ApexInfo apex = mInstallUtils.getApexInfo(mInstallUtils.getTestFile(filename));
+            String res = getDevice().uninstallPackage(apex.name);
+            // res is null for successful uninstalls (non-null likely implesfactory version).
+            reboot |= res == null;
+        }
+        if (reboot) {
+            reboot();
+            return true;
+        }
+        return false;
+    }
+
+    private void reboot() throws Exception {
+        getDevice().reboot();
+        boolean success = getDevice().waitForBootComplete(BOOT_COMPLETE_TIMEOUT.toMillis());
+        assertWithMessage("Device didn't boot in %s", BOOT_COMPLETE_TIMEOUT).that(success).isTrue();
     }
 }
