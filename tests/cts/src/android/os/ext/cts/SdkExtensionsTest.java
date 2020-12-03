@@ -17,6 +17,7 @@
 package android.os.ext.cts;
 
 import android.os.Build;
+import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
 import junit.framework.TestCase;
 
@@ -39,5 +40,10 @@ public class SdkExtensionsTest extends TestCase {
             // No extension SDKs versions yet.
             assertEquals(0, SdkExtensions.getExtensionVersion(sdk));
         }
+    }
+
+    /** Verifies that the public sysprops are set as expected */
+    public void testSystemProperties() throws Exception {
+        assertEquals("0", SystemProperties.get("build.version.extensions.r"));
     }
 }
