@@ -25,6 +25,7 @@
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/properties.h>
+#include <android-modules-utils/sdk_level.h>
 
 #include "packages/modules/SdkExtensions/derive_sdk/sdk.pb.h"
 
@@ -70,10 +71,16 @@ int main(int, char**) {
     std::string prop_value = itr == versions.end() ? "0" : std::to_string(*itr);
 
     if (!android::base::SetProperty("build.version.extensions.r", prop_value)) {
-        LOG(ERROR) << "failed to set sdk_info prop";
+        LOG(ERROR) << "failed to set r sdk_info prop";
         return EXIT_FAILURE;
     }
+    if (android::modules::sdklevel::IsAtLeastS()) {
+        if (!android::base::SetProperty("build.version.extensions.s", prop_value)) {
+            LOG(ERROR) << "failed to set s sdk_info prop";
+            return EXIT_FAILURE;
+        }
+    }
 
-    LOG(INFO) << "R extension version is " << prop_value;
+    LOG(INFO) << "Extension version is " << prop_value;
     return EXIT_SUCCESS;
 }
