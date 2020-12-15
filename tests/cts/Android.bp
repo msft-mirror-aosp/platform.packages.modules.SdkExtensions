@@ -18,6 +18,7 @@ android_test {
     static_libs: [
         "androidx.test.rules",
         "ctstestrunner-axt",
+        "modules-utils-build",
     ],
     srcs: [ "src/**/*.java" ],
     test_config: "CtsSdkExtensionsTestCases.xml",
