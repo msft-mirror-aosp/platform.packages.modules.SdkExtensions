@@ -77,3 +77,8 @@ prebuilt_etc {
     filename: "sdkinfo.binarypb",
     installable: false,
 }
+
+sdk {
+    name: "sdkextensions-sdk",
+    java_sdk_libs: ["framework-sdkextensions"],
+}
