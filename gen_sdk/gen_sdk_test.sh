@@ -42,3 +42,41 @@ function test_new_sdk() {
   diff -u0 testdata/test_extensions_db.textpb extensions_db.textpb
 }
 test_new_sdk
+
+# Verifies the tool won't allow bogus SDK updates
+function test_validate() {
+  set +e
+
+  rm -f extensions_db.textpb && echo bogus > extensions_db.textpb
+  if gen_sdk --action validate; then
+    echo "expected validate to fail on bogus db"
+    exit 1
+  fi
+
+  rm -f extensions_db.textpb && touch extensions_db.textpb
+  gen_sdk --action new_sdk --sdk 1 --modules MEDIA_PROVIDER
+  if gen_sdk --action new_sdk --sdk 1 --modules SDK_EXTENSIONS; then
+    echo "FAILED: expected duplicate sdk numbers to fail"
+    echo "DB:"
+    cat extensions_db.textpb
+    exit 1
+  fi
+
+  if gen_sdk --action validate --database testdata/dupe_req.textpb; then
+    echo "FAILED: expected duplicate module in one sdk level to fail"
+    exit 1
+  fi
+
+  if gen_sdk --action validate --database testdata/backward_req.textpb; then
+    echo "FAILED: expect version requirement going backward to fail"
+    exit 1
+  fi
+
+  set -e
+}
+test_validate
+
+function test_checked_in_db() {
+  gen_sdk --action validate --database extensions_db.textpb
+}
+test_checked_in_db

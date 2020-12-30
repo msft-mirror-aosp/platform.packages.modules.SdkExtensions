@@ -19,6 +19,9 @@ Example usages:
 # Print a binary representation of the proto database.
 $ gen_sdk --action print_binary
 
+# Validate the database
+$ gen_sdk --action validate
+
 # Create a new SDK
 $ gen_sdk --action new_sdk --sdk 1 --modules=IPSEC,SDK_EXTENSIONS
 """
@@ -45,10 +48,10 @@ def ParseArgs(argv):
   )
   parser.add_argument(
     '--action',
-    choices=['print_binary', 'new_sdk'],
+    choices=['print_binary', 'new_sdk', 'validate'],
     metavar='ACTION',
     required=True,
-    help='Which action to take (print_binary|new_sdk).'
+    help='Which action to take (print_binary|new_sdk|validate).'
   )
   parser.add_argument(
     '--sdk',
@@ -67,6 +70,41 @@ def ParseArgs(argv):
 """Print the binary representation of the db proto to stdout."""
 def PrintBinary(database):
   sys.stdout.buffer.write(database.SerializeToString())
+
+
+def ValidateDatabase(database, dbname):
+  def find_duplicate(l):
+    s = set()
+    for i in l:
+      if i in s:
+        return i
+      s.add(i)
+    return None
+
+  def find_bug():
+    dupe = find_duplicate([v.version for v in database.versions])
+    if dupe:
+      return 'Found duplicate extension version: %d' % dupe
+
+    for version in database.versions:
+      dupe = find_duplicate([r.module for r in version.requirements])
+      if dupe:
+        return 'Found duplicate module requirement for %s in single version %s' % (dupe, version)
+
+    prev_requirements = {}
+    for version in sorted(database.versions, key=lambda v: v.version):
+      for requirement in version.requirements:
+        if requirement.module in prev_requirements:
+          prev = prev_requirements[requirement.module]
+          if prev.version > requirement.version.version:
+            return 'Found module requirement moving backwards: %s in %s' % (requirement, version)
+        prev_requirements[requirement.module] = requirement.version
+    return None
+
+  err = find_bug()
+  if err is not None:
+    print('%s not valid, aborting:\n  %s' % (dbname, err))
+    sys.exit(1)
 
 
 def NewSdk(database, new_version, modules):
@@ -98,12 +136,16 @@ def main(argv):
   if args.modules:
     modules = [SdkModule.Value(m) for m in args.modules.split(',')]
 
+  ValidateDatabase(database, 'Input database')
+
   {
+    'validate': lambda : print('Validated database'),
     'print_binary': lambda : PrintBinary(database),
     'new_sdk': lambda : NewSdk(database, args.sdk, modules)
   }[args.action]()
 
   if args.action in ['new_sdk']:
+    ValidateDatabase(database, 'Post-modification database')
     with args.database.open('w') as f:
       f.write(google.protobuf.text_format.MessageToString(database))
 
