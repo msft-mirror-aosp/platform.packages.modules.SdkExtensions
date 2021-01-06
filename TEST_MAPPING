@@ -4,6 +4,9 @@
       "name": "CtsSdkExtensionsTestCases"
     },
     {
+      "name": "derive_sdk_test"
+    },
+    {
       "name": "sdkextensions_e2e_tests"
     }
   ]
