@@ -29,9 +29,7 @@
 #include <iostream>
 #include <vector>
 
-#include "packages/modules/SdkExtensions/derive_sdk/sdk.pb.h"
-
-using com::android::sdkext::proto::SdkVersion;
+#include "packages/modules/SdkExtensions/proto/sdk.pb.h"
 
 namespace android {
 namespace derivesdk {
