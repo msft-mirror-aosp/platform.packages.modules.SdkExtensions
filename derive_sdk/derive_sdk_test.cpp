@@ -14,16 +14,42 @@
  * limitations under the License.
  */
 
+#define LOG_TAG "derive_sdk_test"
+
 #include "derive_sdk.h"
 
+#include <android-base/file.h>
+#include <android-base/logging.h>
 #include <android-base/properties.h>
 #include <gtest/gtest.h>
+#include <sys/stat.h>
 
 #include <cstdlib>
+
+#include "packages/modules/SdkExtensions/derive_sdk/sdk.pb.h"
+
+using com::android::sdkext::proto::SdkVersion;
 
 class DeriveSdkTest : public ::testing::Test {
  protected:
   void TearDown() override { android::derivesdk::SetSdkLevels("/apex"); }
+
+  std::string dir() { return std::string(dir_.path); }
+
+  void MakeSdkVersion(std::string apex, int version) {
+    SdkVersion sdk_version;
+    sdk_version.set_version(version);
+    std::string buf;
+    ASSERT_TRUE(sdk_version.SerializeToString(&buf));
+    std::string path = dir() + "/" + apex;
+    ASSERT_EQ(0, mkdir(path.c_str(), 0755));
+    path += "/etc";
+    ASSERT_EQ(0, mkdir(path.c_str(), 0755));
+    path += "/sdkinfo.binarypb";
+    ASSERT_TRUE(android::base::WriteStringToFile(buf, path, true));
+  }
+
+  TemporaryDir dir_;
 };
 
 int R() {
@@ -31,6 +57,23 @@ int R() {
 }
 
 TEST_F(DeriveSdkTest, CurrentSystemImageValue) { EXPECT_EQ(R(), 0); }
+
+TEST_F(DeriveSdkTest, OneApex) {
+  MakeSdkVersion("a", 3);
+
+  android::derivesdk::SetSdkLevels(dir());
+
+  EXPECT_EQ(R(), 3);
+}
+
+TEST_F(DeriveSdkTest, TwoApexes) {
+  MakeSdkVersion("a", 3);
+  MakeSdkVersion("b", 5);
+
+  android::derivesdk::SetSdkLevels(dir());
+
+  EXPECT_EQ(R(), 3);
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
