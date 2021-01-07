@@ -16,6 +16,8 @@
 
 #define LOG_TAG "derive_sdk"
 
+#include "derive_sdk.h"
+
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/properties.h>
@@ -31,11 +33,15 @@
 
 using com::android::sdkext::proto::SdkVersion;
 
-int main(int, char**) {
-  std::unique_ptr<DIR, decltype(&closedir)> apex(opendir("/apex"), closedir);
+namespace android {
+namespace derivesdk {
+
+bool SetSdkLevels(const std::string& mountpath) {
+  std::unique_ptr<DIR, decltype(&closedir)> apex(opendir(mountpath.c_str()),
+                                                 closedir);
   if (!apex) {
-    LOG(ERROR) << "Could not read /apex";
-    return EXIT_FAILURE;
+    LOG(ERROR) << "Could not read " + mountpath;
+    return false;
   }
   struct dirent* de;
   std::vector<std::string> paths;
@@ -45,7 +51,7 @@ int main(int, char**) {
       // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
       continue;
     }
-    std::string path = "/apex/" + name + "/etc/sdkinfo.binarypb";
+    std::string path = mountpath + "/" + name + "/etc/sdkinfo.binarypb";
     struct stat statbuf;
     if (stat(path.c_str(), &statbuf) == 0) {
       paths.push_back(path);
@@ -72,15 +78,18 @@ int main(int, char**) {
 
   if (!android::base::SetProperty("build.version.extensions.r", prop_value)) {
     LOG(ERROR) << "failed to set r sdk_info prop";
-    return EXIT_FAILURE;
+    return false;
   }
   if (android::modules::sdklevel::IsAtLeastS()) {
     if (!android::base::SetProperty("build.version.extensions.s", prop_value)) {
       LOG(ERROR) << "failed to set s sdk_info prop";
-      return EXIT_FAILURE;
+      return false;
     }
   }
 
   LOG(INFO) << "Extension version is " << prop_value;
-  return EXIT_SUCCESS;
+  return true;
 }
+
+}  // namespace derivesdk
+}  // namespace android
