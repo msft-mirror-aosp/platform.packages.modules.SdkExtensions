@@ -16,71 +16,80 @@
 
 #define LOG_TAG "derive_sdk"
 
-#include <algorithm>
-#include <dirent.h>
-#include <iostream>
-#include <sys/stat.h>
-#include <vector>
+#include "derive_sdk.h"
 
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/properties.h>
 #include <android-modules-utils/sdk_level.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 #include "packages/modules/SdkExtensions/derive_sdk/sdk.pb.h"
 
 using com::android::sdkext::proto::SdkVersion;
 
-int main(int, char**) {
-    std::unique_ptr<DIR, decltype(&closedir)> apex(opendir("/apex"), closedir);
-    if (!apex) {
-        LOG(ERROR) << "Could not read /apex";
-        return EXIT_FAILURE;
-    }
-    struct dirent* de;
-    std::vector<std::string> paths;
-    while ((de = readdir(apex.get()))) {
-        std::string name = de->d_name;
-        if (name[0] == '.' || name.find('@') != std::string::npos) {
-            // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
-            continue;
-        }
-        std::string path = "/apex/" + name + "/etc/sdkinfo.binarypb";
-        struct stat statbuf;
-        if (stat(path.c_str(), &statbuf) == 0) {
-            paths.push_back(path);
-        }
-    }
+namespace android {
+namespace derivesdk {
 
-    std::vector<int> versions;
-    for (const auto& path : paths) {
-        std::string contents;
-        if (!android::base::ReadFileToString(path, &contents, true)) {
-            LOG(ERROR) << "failed to read " << path;
-            continue;
-        }
-        SdkVersion sdk_version;
-        if (!sdk_version.ParseFromString(contents)) {
-            LOG(ERROR) << "failed to parse " << path;
-            continue;
-        }
-        LOG(INFO) << "Read version " << sdk_version.version() << " from " << path;
-        versions.push_back(sdk_version.version());
+bool SetSdkLevels(const std::string& mountpath) {
+  std::unique_ptr<DIR, decltype(&closedir)> apex(opendir(mountpath.c_str()),
+                                                 closedir);
+  if (!apex) {
+    LOG(ERROR) << "Could not read " + mountpath;
+    return false;
+  }
+  struct dirent* de;
+  std::vector<std::string> paths;
+  while ((de = readdir(apex.get()))) {
+    std::string name = de->d_name;
+    if (name[0] == '.' || name.find('@') != std::string::npos) {
+      // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
+      continue;
     }
-    auto itr = std::min_element(versions.begin(), versions.end());
-    std::string prop_value = itr == versions.end() ? "0" : std::to_string(*itr);
+    std::string path = mountpath + "/" + name + "/etc/sdkinfo.binarypb";
+    struct stat statbuf;
+    if (stat(path.c_str(), &statbuf) == 0) {
+      paths.push_back(path);
+    }
+  }
 
-    if (!android::base::SetProperty("build.version.extensions.r", prop_value)) {
-        LOG(ERROR) << "failed to set r sdk_info prop";
-        return EXIT_FAILURE;
+  std::vector<int> versions;
+  for (const auto& path : paths) {
+    std::string contents;
+    if (!android::base::ReadFileToString(path, &contents, true)) {
+      LOG(ERROR) << "failed to read " << path;
+      continue;
     }
-    if (android::modules::sdklevel::IsAtLeastS()) {
-        if (!android::base::SetProperty("build.version.extensions.s", prop_value)) {
-            LOG(ERROR) << "failed to set s sdk_info prop";
-            return EXIT_FAILURE;
-        }
+    SdkVersion sdk_version;
+    if (!sdk_version.ParseFromString(contents)) {
+      LOG(ERROR) << "failed to parse " << path;
+      continue;
     }
+    LOG(INFO) << "Read version " << sdk_version.version() << " from " << path;
+    versions.push_back(sdk_version.version());
+  }
+  auto itr = std::min_element(versions.begin(), versions.end());
+  std::string prop_value = itr == versions.end() ? "0" : std::to_string(*itr);
 
-    LOG(INFO) << "Extension version is " << prop_value;
-    return EXIT_SUCCESS;
+  if (!android::base::SetProperty("build.version.extensions.r", prop_value)) {
+    LOG(ERROR) << "failed to set r sdk_info prop";
+    return false;
+  }
+  if (android::modules::sdklevel::IsAtLeastS()) {
+    if (!android::base::SetProperty("build.version.extensions.s", prop_value)) {
+      LOG(ERROR) << "failed to set s sdk_info prop";
+      return false;
+    }
+  }
+
+  LOG(INFO) << "Extension version is " << prop_value;
+  return true;
 }
+
+}  // namespace derivesdk
+}  // namespace android
