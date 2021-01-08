@@ -30,3 +30,15 @@ EOF
   diff golden_binary <(gen_sdk --action print_binary --database testdata/test_extensions_db.textpb | xxd -p)
 }
 test_print_binary
+
+# Verifies the tool is able to re-create the test DB correctly.
+function test_new_sdk() {
+  rm -f extensions_db.textpb && touch extensions_db.textpb
+  gen_sdk --action new_sdk --sdk 1 --modules MEDIA_PROVIDER
+  gen_sdk --action new_sdk --sdk 2 --modules MEDIA,IPSEC
+  gen_sdk --action new_sdk --sdk 3 --modules MEDIA_PROVIDER
+  gen_sdk --action new_sdk --sdk 4 --modules SDK_EXTENSIONS,IPSEC
+
+  diff -u0 testdata/test_extensions_db.textpb extensions_db.textpb
+}
+test_new_sdk
