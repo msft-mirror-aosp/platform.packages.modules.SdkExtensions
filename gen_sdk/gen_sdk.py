@@ -18,6 +18,9 @@
 Example usages:
 # Print a binary representation of the proto database.
 $ gen_sdk --action print_binary
+
+# Create a new SDK
+$ gen_sdk --action new_sdk --sdk 1 --modules=IPSEC,SDK_EXTENSIONS
 """
 
 import argparse
@@ -42,10 +45,21 @@ def ParseArgs(argv):
   )
   parser.add_argument(
     '--action',
-    choices=['print_binary'],
+    choices=['print_binary', 'new_sdk'],
     metavar='ACTION',
     required=True,
-    help='Which action to take (print_binary).'
+    help='Which action to take (print_binary|new_sdk).'
+  )
+  parser.add_argument(
+    '--sdk',
+    type=int,
+    metavar='SDK',
+    help='The extension SDK level to deal with (int)'
+  )
+  parser.add_argument(
+    '--modules',
+    metavar='MODULES',
+    help='Comma-separated list of modules providing new APIs. Required for action=new_sdk.'
   )
   return parser.parse_args(argv)
 
@@ -55,15 +69,43 @@ def PrintBinary(database):
   sys.stdout.buffer.write(database.SerializeToString())
 
 
+def NewSdk(database, new_version, modules):
+  new_requirements = {}
+
+  # Gather the previous highest requirement of each module
+  for prev_version in sorted(database.versions, key=lambda v: v.version):
+    for prev_requirement in prev_version.requirements:
+      new_requirements[prev_requirement.module] = prev_requirement.version
+
+  # Add new requirements of this version
+  for module in modules:
+    new_requirements[module] = SdkVersion(version=new_version)
+
+  to_proto = lambda m : ExtensionVersion.ModuleRequirement(module=m, version=new_requirements[m])
+  module_requirements = [to_proto(m) for m in new_requirements]
+  extension_version = ExtensionVersion(version=new_version, requirements=module_requirements)
+  database.versions.append(extension_version)
+
+  module_names = ','.join([SdkModule.Name(m) for m in modules])
+  print('Created a new extension SDK level %d with modules %s' % (new_version, module_names))
+
+
 def main(argv):
   args = ParseArgs(argv)
   with args.database.open('r') as f:
     database = google.protobuf.text_format.Parse(f.read(), ExtensionDatabase())
 
+  if args.modules:
+    modules = [SdkModule.Value(m) for m in args.modules.split(',')]
+
   {
     'print_binary': lambda : PrintBinary(database),
+    'new_sdk': lambda : NewSdk(database, args.sdk, modules)
   }[args.action]()
 
+  if args.action in ['new_sdk']:
+    with args.database.open('w') as f:
+      f.write(google.protobuf.text_format.MessageToString(database))
 
 if __name__ == '__main__':
   main(sys.argv[1:])
