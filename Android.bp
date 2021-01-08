@@ -50,13 +50,8 @@ android_app_certificate {
 
 python_binary_host {
     name: "gen_sdkinfo",
-    srcs: [
-        "sdk.proto",
-        "gen_sdkinfo.py",
-    ],
-    proto: {
-        canonical_path_from_root: false,
-    },
+    srcs: ["gen_sdkinfo.py"],
+    libs: ["sdk_proto_python"],
     version: {
         py3: {
             embedded_launcher: true,
