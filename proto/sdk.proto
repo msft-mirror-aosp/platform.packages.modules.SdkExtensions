@@ -15,10 +15,6 @@
  */
 
 syntax = "proto3";
-package com.android.sdkext.proto;
-
-option java_outer_classname = "SdkProto";
-option optimize_for = LITE_RUNTIME;
 
 message SdkVersion {
   int32 version = 1;
