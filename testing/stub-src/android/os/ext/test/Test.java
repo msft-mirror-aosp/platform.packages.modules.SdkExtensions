@@ -42,4 +42,24 @@ public class Test {
         throw new RuntimeException("Stub!");
     }
 
+    public static void staticPublicMethod() {
+        throw new RuntimeException("Stub!");
+    }
+
+    public static void staticSystemApiMethod() {
+        throw new RuntimeException("Stub!");
+    }
+
+    public static void staticModuleLibsApiMethod() {
+        throw new RuntimeException("Stub!");
+    }
+
+    public static void staticTestApiMethod() {
+        throw new RuntimeException("Stub!");
+    }
+
+    public static void staticHiddenMethod() {
+        throw new RuntimeException("Stub!");
+    }
+
 }
