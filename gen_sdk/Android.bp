@@ -28,7 +28,10 @@ python_binary_host {
 sh_test_host {
     name: "gen_sdk_test",
     src: "gen_sdk_test.sh",
-    data: ["testdata/**/*"],
+    data: [
+        "extensions_db.textpb",
+        "testdata/**/*"
+    ],
     required: ["gen_sdk"],
     test_suites: ["general-tests"],
 }
