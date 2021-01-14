@@ -15,11 +15,41 @@
  */
 
 syntax = "proto3";
-package com.android.sdkext.proto;
 
-option java_outer_classname = "SdkProto";
-option optimize_for = LITE_RUNTIME;
-
+// The version of a single module.
 message SdkVersion {
   int32 version = 1;
+}
+
+// All the modules that can be used for version requirements.
+enum SdkModule {
+  UNKNOWN = 0;
+
+  // R modules
+  IPSEC = 1;
+  MEDIA = 2;
+  MEDIA_PROVIDER = 3;
+  PERMISSIONS = 4;
+  SDK_EXTENSIONS = 5;
+  STATSD = 6;
+  TETHERING = 7;
+}
+
+// A single extension version.
+message ExtensionVersion {
+  message ModuleRequirement {
+    SdkModule module = 1;
+    SdkVersion version = 2;
+  }
+
+  // The extension version.
+  int32 version = 1;
+
+  // The modules required for this extension version.
+  repeated ModuleRequirement requirements = 2;
+}
+
+// All the defined extension versions.
+message ExtensionDatabase {
+  repeated ExtensionVersion versions = 1;
 }
