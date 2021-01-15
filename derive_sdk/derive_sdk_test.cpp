@@ -147,6 +147,38 @@ TEST_F(DeriveSdkTest, OneDessert_ManyVersions) {
   EXPECT_R(3);
 }
 
+TEST_F(DeriveSdkTest, TwoDesserts_ManyVersions) {
+  AddExtensionVersion(1, {
+                             {SdkModule::TETHERING, 1},
+                         });
+  AddExtensionVersion(2, {
+                             {SdkModule::ART, 2},
+                             {SdkModule::TETHERING, 1},
+                         });
+  AddExtensionVersion(3, {
+                             {SdkModule::ART, 3},
+                             {SdkModule::MEDIA, 3},
+                             {SdkModule::TETHERING, 1},
+                         });
+  EXPECT_R(0);
+  EXPECT_S(1);
+
+  SetApexVersion("com.android.tethering", 1);
+  EXPECT_R(2);
+  EXPECT_S(1);
+
+  SetApexVersion("com.android.art", 2);
+  EXPECT_R(2);
+  EXPECT_S(2);
+
+  SetApexVersion("com.android.media", 3);
+  EXPECT_R(3);
+  EXPECT_S(2);
+  SetApexVersion("com.android.art", 3);
+  EXPECT_R(3);
+  EXPECT_S(3);
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
