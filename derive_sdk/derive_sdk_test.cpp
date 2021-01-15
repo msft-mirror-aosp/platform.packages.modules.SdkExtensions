@@ -21,6 +21,7 @@
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/properties.h>
+#include <android-modules-utils/sdk_level.h>
 #include <gtest/gtest.h>
 #include <sys/stat.h>
 
@@ -47,21 +48,32 @@ class DeriveSdkTest : public ::testing::Test {
     ASSERT_TRUE(android::base::WriteStringToFile(buf, path, true));
   }
 
+  void EXPECT_R(int n) {
+    int R = android::base::GetIntProperty("build.version.extensions.r", -1);
+    EXPECT_EQ(R, n);
+  }
+
+  void EXPECT_S(int n) {
+    int S = android::base::GetIntProperty("build.version.extensions.s", -1);
+    // Only expect the S extension level to be set on S+ devices.
+    EXPECT_EQ(S, android::modules::sdklevel::IsAtLeastS() ? n : -1);
+  }
+
   TemporaryDir dir_;
 };
 
-int R() {
-  return android::base::GetIntProperty("build.version.extensions.r", -1);
+TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
+  EXPECT_R(0);
+  EXPECT_S(0);
 }
-
-TEST_F(DeriveSdkTest, CurrentSystemImageValue) { EXPECT_EQ(R(), 0); }
 
 TEST_F(DeriveSdkTest, OneApex) {
   MakeSdkVersion("a", 3);
 
   android::derivesdk::SetSdkLevels(dir());
 
-  EXPECT_EQ(R(), 3);
+  EXPECT_R(3);
+  EXPECT_S(3);
 }
 
 TEST_F(DeriveSdkTest, TwoApexes) {
@@ -70,7 +82,8 @@ TEST_F(DeriveSdkTest, TwoApexes) {
 
   android::derivesdk::SetSdkLevels(dir());
 
-  EXPECT_EQ(R(), 3);
+  EXPECT_R(3);
+  EXPECT_S(3);
 }
 
 int main(int argc, char **argv) {
