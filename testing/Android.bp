@@ -17,7 +17,10 @@ apex_test {
     defaults: ["com.android.sdkext-defaults"],
     java_libs: [ "test_framework-sdkextensions" ],
     manifest: "test_manifest.json",
-    prebuilts: [ "sdkinfo_45" ],
+    prebuilts: [
+        "sdkinfo_45",
+        "test_extensions_db",
+    ],
     file_contexts: ":com.android.sdkext-file_contexts",
     installable: false, // Should never be installed on the systemimage
     multilib: {
@@ -47,6 +50,23 @@ prebuilt_etc {
         ":__pkg__",
         "//frameworks/av/apex/testing"
     ],
+}
+
+genrule {
+    name: "test_extensions_db.binarypb",
+    srcs: ["test_extensions_db.textpb"],
+    out: ["test_extensions_db.binarypb"],
+    tools: ["gen_sdk"],
+    cmd: "$(location gen_sdk) --action print_binary --database $(location test_extensions_db.textpb) > $(out)",
+    visibility: ["//visibility:private"],
+}
+
+prebuilt_etc {
+    name: "test_extensions_db",
+    src: ":test_extensions_db.binarypb",
+    filename: "extensions_db.binarypb",
+    installable: false,
+    visibility: ["//visibility:private"],
 }
 
 filegroup {
