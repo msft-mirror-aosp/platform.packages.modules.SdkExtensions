@@ -43,3 +43,10 @@ genrule {
     tools: ["gen_sdk"],
     cmd: "$(location gen_sdk) --action print_binary --database $(location extensions_db.textpb) > $(out)",
 }
+
+prebuilt_etc {
+    name: "extensions_db",
+    src: ":extensions_db.binarypb",
+    filename: "extensions_db.binarypb",
+    installable: false,
+}
