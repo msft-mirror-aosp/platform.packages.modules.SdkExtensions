@@ -35,11 +35,14 @@ read the version of a particular sdk extension, e.g.
 ### Adding a new extension version
 For every new Android SDK level a new extension version should be defined. These
 are the steps necessary to do that:
-- Make derive_sdk correctly set the relevant system property for the new
-  extensions.
+- Add the new modules in this extension version to the SdkModule enum in
+  sdk.proto.
+- Update `derive_sdk.cpp` by:
+ * mapping the modules' package names to the new enum values
+ * creating a new set with the new enum values
+ * set a new sysprop to the value of `GetSdkLevel` with the new enum set
+ * add a unit test to `derive_sdk_test.cpp` verifying the new extensions works
 - Make the `SdkExtensions.getExtensionVersion` API support the new extensions.
 - Extend the CTS test to verify the above two behaviors.
 - Update `RollbackManagerServiceImpl#getExtensionVersions` to account for the
   new extension version.
-
-TODO(b/173188089): expand this section when derive_sdk is reimplemented
