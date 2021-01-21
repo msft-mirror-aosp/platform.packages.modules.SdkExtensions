@@ -21,7 +21,10 @@ apex {
     defaults: [ "com.android.sdkext-defaults" ],
     binaries: [ "derive_sdk" ],
     java_libs: [ "framework-sdkextensions" ],
-    prebuilts: [ "cur_sdkinfo" ],
+    prebuilts: [
+        "cur_sdkinfo",
+        "extensions_db",
+    ],
     manifest: "manifest.json",
     min_sdk_version: "30",
 }
