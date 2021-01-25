@@ -28,7 +28,10 @@ python_binary_host {
 sh_test_host {
     name: "gen_sdk_test",
     src: "gen_sdk_test.sh",
-    data: ["testdata/**/*"],
+    data: [
+        "extensions_db.textpb",
+        "testdata/**/*"
+    ],
     required: ["gen_sdk"],
     test_suites: ["general-tests"],
 }
@@ -39,4 +42,11 @@ genrule {
     out: ["extensions_db.binarypb"],
     tools: ["gen_sdk"],
     cmd: "$(location gen_sdk) --action print_binary --database $(location extensions_db.textpb) > $(out)",
+}
+
+prebuilt_etc {
+    name: "extensions_db",
+    src: ":extensions_db.binarypb",
+    filename: "extensions_db.binarypb",
+    installable: false,
 }
