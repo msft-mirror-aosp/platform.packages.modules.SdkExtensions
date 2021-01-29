@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-syntax = "proto3";
-package com.android.sdkext.proto;
+#include <cstdlib>
 
-option java_outer_classname = "SdkProto";
-option optimize_for = LITE_RUNTIME;
+#include "derive_sdk.h"
 
-message SdkVersion {
-  int32 version = 1;
+int main(int, char**) {
+  if (!android::derivesdk::SetSdkLevels("/apex")) {
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
 }

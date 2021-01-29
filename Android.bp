@@ -21,15 +21,18 @@ apex {
     defaults: [ "com.android.sdkext-defaults" ],
     binaries: [ "derive_sdk" ],
     java_libs: [ "framework-sdkextensions" ],
-    prebuilts: [ "cur_sdkinfo" ],
+    prebuilts: [
+        "cur_sdkinfo",
+        "extensions_db",
+    ],
     manifest: "manifest.json",
-    min_sdk_version: "current",
+    min_sdk_version: "30",
 }
 
 apex_defaults {
     name: "com.android.sdkext-defaults",
     updatable: true,
-    min_sdk_version: "R",
+    min_sdk_version: "30",
     prebuilts: [
         "derive_sdk.rc",
     ],
@@ -50,13 +53,8 @@ android_app_certificate {
 
 python_binary_host {
     name: "gen_sdkinfo",
-    srcs: [
-        "sdk.proto",
-        "gen_sdkinfo.py",
-    ],
-    proto: {
-        canonical_path_from_root: false,
-    },
+    srcs: ["gen_sdkinfo.py"],
+    libs: ["sdk_proto_python"],
     version: {
         py3: {
             embedded_launcher: true,
@@ -76,4 +74,9 @@ prebuilt_etc {
     src: ":cur_sdkinfo_src",
     filename: "sdkinfo.binarypb",
     installable: false,
+}
+
+sdk {
+    name: "sdkextensions-sdk",
+    java_sdk_libs: ["framework-sdkextensions"],
 }

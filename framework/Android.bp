@@ -28,12 +28,10 @@ java_sdk_library {
     name: "framework-sdkextensions",
     srcs: [ ":framework-sdkextensions-sources" ],
     defaults: ["framework-module-defaults"],
-
     permitted_packages: [ "android.os.ext" ],
-    installable: true,
-    hostdex: true, // for hiddenapi check
     apex_available: [
         "com.android.sdkext",
         "test_com.android.sdkext",
     ],
+    min_sdk_version: "30",
 }
