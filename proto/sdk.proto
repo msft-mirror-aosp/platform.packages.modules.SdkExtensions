@@ -33,6 +33,9 @@ enum SdkModule {
   SDK_EXTENSIONS = 5;
   STATSD = 6;
   TETHERING = 7;
+
+  // S modules
+  ART = 8;
 }
 
 // A single extension version.
