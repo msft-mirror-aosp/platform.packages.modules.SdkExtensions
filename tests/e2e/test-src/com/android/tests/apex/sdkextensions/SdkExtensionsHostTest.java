@@ -84,18 +84,16 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     @Test
     public void upgradeOneApexWithBump()  throws Exception {
-        // On the system image, sdkextensions is the only apex with sdkinfo, and it's version 0.
-        // Verify that installing a new version of it with sdk version 45 bumps the version.
+        // Version 12 requires test_com.android.sdkext.
         assertVersion0();
         mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
         reboot();
-        assertVersion45();
+        assertVersion12();
     }
 
     @Test
     public void upgradeOneApex() throws Exception {
-        // On the system image, sdkextensions is the only apex with sdkinfo, and it's version 0.
-        // This test verifies that installing media with sdk version 45 doesn't bump the version.
+        // Version 45 requires updated sdkext and media, so updating just media changes nothing.
         assertVersion0();
         mInstallUtils.installApexes(MEDIA_FILENAME);
         reboot();
@@ -104,9 +102,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     @Test
     public void upgradeTwoApexes() throws Exception {
-        // On the system image, sdkextensions is the only apex with sdkinfo, and it's version 0.
-        // This test verifies that installing media with sdk version 45 *and* a new sdkext does bump
-        // the version.
+        // Updating sdkext and media bumps the version to 45.
         assertVersion0();
         mInstallUtils.installApexes(MEDIA_FILENAME, SDKEXTENSIONS_FILENAME);
         reboot();
@@ -139,6 +135,11 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     private void assertVersion0() throws Exception {
         assertEquals(0, getExtensionVersionR());
         assertEquals("true", broadcast("MAKE_CALLS_0"));
+    }
+
+    private void assertVersion12() throws Exception {
+        assertEquals(12, getExtensionVersionR());
+        assertEquals("true", broadcast("MAKE_CALLS_45")); // sdkext 45 APIs are available in 12 too.
     }
 
     private void assertVersion45() throws Exception {
