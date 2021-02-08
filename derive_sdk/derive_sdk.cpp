@@ -34,7 +34,86 @@
 namespace android {
 namespace derivesdk {
 
+static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
+    {"com.android.art", SdkModule::ART},
+    {"com.android.ipsec", SdkModule::IPSEC},
+    {"com.android.media", SdkModule::MEDIA},
+    {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
+    {"com.android.permission", SdkModule::PERMISSIONS},
+    {"com.android.sdkext", SdkModule::SDK_EXTENSIONS},
+    {"com.android.os.statsd", SdkModule::STATSD},
+    {"com.android.tethering", SdkModule::TETHERING},
+};
+
+static const std::unordered_set<SdkModule> kRModules = {
+    SdkModule::IPSEC,          SdkModule::MEDIA,
+    SdkModule::MEDIA_PROVIDER, SdkModule::PERMISSIONS,
+    SdkModule::SDK_EXTENSIONS, SdkModule::STATSD,
+    SdkModule::TETHERING,
+};
+
+static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART};
+
+bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
+  std::string contents;
+  if (!android::base::ReadFileToString(db_path, &contents, true)) {
+    PLOG(ERROR) << "failed to read " << db_path << ": ";
+    return false;
+  }
+  if (!db.ParseFromString(contents)) {
+    LOG(ERROR) << "failed to parse " << db_path;
+    return false;
+  }
+  return true;
+}
+
+bool VersionRequirementsMet(
+    const ExtensionVersion& ext_version,
+    const std::unordered_set<SdkModule>& relevant_modules,
+    const std::unordered_map<SdkModule, int>& module_versions) {
+  for (const auto& requirement : ext_version.requirements()) {
+    // Only requirements on modules relevant for this extension matter.
+    if (relevant_modules.find(requirement.module()) == relevant_modules.end())
+      continue;
+
+    auto version = module_versions.find(requirement.module());
+    if (version == module_versions.end()) {
+      LOG(DEBUG) << "Not version " << ext_version.version() << ": Module "
+                 << requirement.module() << " is missing";
+      return false;
+    }
+    if (version->second < requirement.version().version()) {
+      LOG(DEBUG) << "Not version " << ext_version.version() << ": Module "
+                 << requirement.module() << " version (" << version->second
+                 << ") too low. Needed " << requirement.version().version();
+      return false;
+    }
+  }
+  return true;
+}
+
+int GetSdkLevel(const ExtensionDatabase& db,
+                const std::unordered_set<SdkModule>& relevant_modules,
+                const std::unordered_map<SdkModule, int>& module_versions) {
+  int max = 0;
+
+  for (const auto& ext_version : db.versions()) {
+    if (ext_version.version() > max &&
+        VersionRequirementsMet(ext_version, relevant_modules,
+                               module_versions)) {
+      max = ext_version.version();
+    }
+  }
+  return max;
+}
+
 bool SetSdkLevels(const std::string& mountpath) {
+  ExtensionDatabase db;
+  if (!ReadDatabase(
+          mountpath + "/com.android.sdkext/etc/extensions_db.binarypb", db)) {
+    LOG(ERROR) << "Failed to read database";
+    return false;
+  }
   std::unique_ptr<DIR, decltype(&closedir)> apex(opendir(mountpath.c_str()),
                                                  closedir);
   if (!apex) {
@@ -42,7 +121,7 @@ bool SetSdkLevels(const std::string& mountpath) {
     return false;
   }
   struct dirent* de;
-  std::vector<std::string> paths;
+  std::unordered_map<SdkModule, int> versions;
   while ((de = readdir(apex.get()))) {
     std::string name = de->d_name;
     if (name[0] == '.' || name.find('@') != std::string::npos) {
@@ -51,13 +130,14 @@ bool SetSdkLevels(const std::string& mountpath) {
     }
     std::string path = mountpath + "/" + name + "/etc/sdkinfo.binarypb";
     struct stat statbuf;
-    if (stat(path.c_str(), &statbuf) == 0) {
-      paths.push_back(path);
+    if (stat(path.c_str(), &statbuf) != 0) {
+      continue;
     }
-  }
-
-  std::vector<int> versions;
-  for (const auto& path : paths) {
+    auto module_itr = kApexNameToModule.find(name);
+    if (module_itr == kApexNameToModule.end()) {
+      LOG(WARNING) << "Found sdkinfo in unexpected apex " << name;
+      continue;
+    }
     std::string contents;
     if (!android::base::ReadFileToString(path, &contents, true)) {
       LOG(ERROR) << "failed to read " << path;
@@ -68,24 +148,29 @@ bool SetSdkLevels(const std::string& mountpath) {
       LOG(ERROR) << "failed to parse " << path;
       continue;
     }
-    LOG(INFO) << "Read version " << sdk_version.version() << " from " << path;
-    versions.push_back(sdk_version.version());
+    SdkModule module = module_itr->second;
+    LOG(INFO) << "Read version " << sdk_version.version() << " from " << module;
+    versions[module] = sdk_version.version();
   }
-  auto itr = std::min_element(versions.begin(), versions.end());
-  std::string prop_value = itr == versions.end() ? "0" : std::to_string(*itr);
 
-  if (!android::base::SetProperty("build.version.extensions.r", prop_value)) {
+  int version_R = GetSdkLevel(db, kRModules, versions);
+  LOG(INFO) << "R extension version is " << version_R;
+
+  if (!android::base::SetProperty("build.version.extensions.r",
+                                  std::to_string(version_R))) {
     LOG(ERROR) << "failed to set r sdk_info prop";
     return false;
   }
   if (android::modules::sdklevel::IsAtLeastS()) {
-    if (!android::base::SetProperty("build.version.extensions.s", prop_value)) {
+    int version_S = GetSdkLevel(db, kSModules, versions);
+    LOG(INFO) << "S extension version is " << version_S;
+    if (!android::base::SetProperty("build.version.extensions.s",
+                                    std::to_string(version_S))) {
       LOG(ERROR) << "failed to set s sdk_info prop";
       return false;
     }
   }
 
-  LOG(INFO) << "Extension version is " << prop_value;
   return true;
 }
 
