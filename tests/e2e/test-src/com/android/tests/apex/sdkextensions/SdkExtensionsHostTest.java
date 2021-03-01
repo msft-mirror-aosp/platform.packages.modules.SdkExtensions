@@ -88,11 +88,18 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     @Test
     public void upgradeOneApexWithBump()  throws Exception {
-        // Version 12 requires test_com.android.sdkext.
         assertVersion0();
         mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
         reboot();
-        assertVersion12();
+
+        // R-Version 12 requires sdkext, which is fulfilled
+        // R-Version 45 requires sdkext + media, which isn't fulfilled
+        // S-Version 45 does not have any particular requirements.
+        assertEquals(12, getExtensionVersionR());
+        assertEquals(45, getExtensionVersionS());
+        assertEquals("true", broadcast("MAKE_CALLS_45")); // sdkext 45 APIs are available in 12 too.
+        assertTrue(canInstallApp(APP_R12_FILENAME, APP_R12_PACKAGE));
+        assertFalse(canInstallApp(APP_R45_FILENAME, APP_R45_PACKAGE));
     }
 
     @Test
@@ -123,21 +130,33 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private int getExtensionVersionR() throws Exception {
-        int appValue = Integer.parseInt(broadcast("GET_SDK_VERSION"));
-        int syspropValue = getExtensionVersionRFromSysprop();
+        int appValue = Integer.parseInt(broadcast("GET_SDK_VERSION", "r"));
+        int syspropValue = getExtensionVersionFromSysprop("r");
         assertEquals(appValue, syspropValue);
         return appValue;
     }
 
-    private int getExtensionVersionRFromSysprop() throws Exception {
-        CommandResult res = getDevice().executeShellV2Command("getprop build.version.extensions.r");
+    private int getExtensionVersionS() throws Exception {
+        int appValue = Integer.parseInt(broadcast("GET_SDK_VERSION", "s"));
+        int syspropValue = getExtensionVersionFromSysprop("s");
+        assertEquals(appValue, syspropValue);
+        return appValue;
+    }
+
+    private int getExtensionVersionFromSysprop(String v) throws Exception {
+        String command = "getprop build.version.extensions." + v;
+        CommandResult res = getDevice().executeShellV2Command(command);
         assertEquals(0, (int) res.getExitCode());
         String syspropString = res.getStdout().replace("\n", "");
         return Integer.parseInt(syspropString);
     }
 
     private String broadcast(String action) throws Exception {
-        String command = getBroadcastCommand(action);
+        return broadcast(action, null);
+    }
+
+    private String broadcast(String action, String extra) throws Exception {
+        String command = getBroadcastCommand(action, extra);
         CommandResult res = getDevice().executeShellV2Command(command);
         assertEquals(0, (int) res.getExitCode());
         Matcher matcher = Pattern.compile("data=\"([^\"]+)\"").matcher(res.getStdout());
@@ -147,30 +166,26 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private void assertVersion0() throws Exception {
         assertEquals(0, getExtensionVersionR());
+        assertEquals(0, getExtensionVersionS());
         assertEquals("true", broadcast("MAKE_CALLS_0"));
-        File testAppFile = mInstallUtils.getTestFile(APP_FILENAME);
-        String installResult = getDevice().installPackage(testAppFile, true);
         assertFalse(canInstallApp(APP_R12_FILENAME, APP_R12_PACKAGE));
-        assertFalse(canInstallApp(APP_R45_FILENAME, APP_R45_PACKAGE));
-    }
-
-    private void assertVersion12() throws Exception {
-        assertEquals(12, getExtensionVersionR());
-        assertEquals("true", broadcast("MAKE_CALLS_45")); // sdkext 45 APIs are available in 12 too.
-        assertTrue(canInstallApp(APP_R12_FILENAME, APP_R12_PACKAGE));
         assertFalse(canInstallApp(APP_R45_FILENAME, APP_R45_PACKAGE));
     }
 
     private void assertVersion45() throws Exception {
         assertEquals(45, getExtensionVersionR());
+        assertEquals(45, getExtensionVersionS());
         assertEquals("true", broadcast("MAKE_CALLS_45"));
         assertTrue(canInstallApp(APP_R12_FILENAME, APP_R12_PACKAGE));
         assertTrue(canInstallApp(APP_R45_FILENAME, APP_R45_PACKAGE));
     }
 
-    private static String getBroadcastCommand(String action) {
+    private static String getBroadcastCommand(String action, String extra) {
         String cmd = "am broadcast";
         cmd += " -a com.android.tests.apex.sdkextensions." + action;
+        if (extra != null) {
+            cmd += " -e extra " + extra;
+        }
         cmd += " -n com.android.tests.apex.sdkextensions/.Receiver";
         return cmd;
     }
