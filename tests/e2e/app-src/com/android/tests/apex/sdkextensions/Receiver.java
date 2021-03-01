@@ -33,12 +33,21 @@ public class Receiver extends BroadcastReceiver {
     private static final String ACTION_MAKE_CALLS_45 =
             "com.android.tests.apex.sdkextensions.MAKE_CALLS_45";
 
+    private static int dessertLetterToInt(char letter) {
+        switch (letter) {
+            case 'r': return Build.VERSION_CODES.R;
+            case 's': return Build.VERSION_CODES.CUR_DEVELOPMENT;
+        }
+        throw new IllegalArgumentException(String.valueOf(letter));
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
             switch (intent.getAction()) {
                 case ACTION_GET_SDK_VERSION:
-                    int sdkVersion = SdkExtensions.getExtensionVersion(Build.VERSION_CODES.R);
+                    int extension = dessertLetterToInt(intent.getStringExtra("extra").charAt(0));
+                    int sdkVersion = SdkExtensions.getExtensionVersion(extension);
                     setResultData(String.valueOf(sdkVersion));
                     break;
                 case ACTION_MAKE_CALLS_0:
