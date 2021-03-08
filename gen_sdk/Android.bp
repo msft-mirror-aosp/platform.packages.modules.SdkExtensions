@@ -36,7 +36,7 @@ sh_test_host {
         "extensions_db.textpb",
         "testdata/**/*"
     ],
-    required: ["gen_sdk"],
+    data_bins: ["gen_sdk"],
     test_suites: ["general-tests"],
 }
 
