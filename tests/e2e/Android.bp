@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
 java_test_host {
     name: "sdkextensions_e2e_tests",
     srcs:  ["test-src/**/*.java"],
@@ -22,6 +26,8 @@ java_test_host {
     ],
     data: [
         ":sdkextensions_e2e_test_app",
+        ":sdkextensions_e2e_test_app_req_r12",
+        ":sdkextensions_e2e_test_app_req_r45",
         ":test_com.android.media",
         ":test_com.android.sdkext",
     ],
@@ -34,4 +40,5 @@ android_app {
     srcs: ["app-src/**/*.java"],
     libs: ["test_framework-sdkextensions-stubs"],
     sdk_version: "system_current",
+    min_sdk_version: "30",
 }
