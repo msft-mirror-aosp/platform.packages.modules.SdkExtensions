@@ -18,6 +18,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="android.os.ext.cts">
 
+    <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="30" />
+
     <instrumentation android:name="androidx.test.runner.AndroidJUnitRunner"
                      android:targetPackage="android.os.ext.cts"
                      android:label="CTS tests of android.os.ext">
