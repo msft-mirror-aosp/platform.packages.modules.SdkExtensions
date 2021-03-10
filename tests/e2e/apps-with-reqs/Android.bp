@@ -16,29 +16,30 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
-python_library_host {
-    name: "sdk_proto_python",
-    version: {
-        py2: {
-            enabled: true,
-        },
-        py3: {
-            enabled: true,
-        },
-    },
-    srcs: ["sdk.proto"],
-    proto: {
-        canonical_path_from_root: false,
-    },
+android_app {
+    name: "sdkextensions_e2e_test_app_req_r12",
+    sdk_version: "current",
+    manifest: "AndroidManifest-r12.xml",
+    min_sdk_version: "30",
 }
 
-cc_library_static {
-    name: "libsdk_proto",
-    proto: {
-        export_proto_headers: true,
-        type: "lite",
-    },
-    srcs: ["sdk.proto"],
+android_app {
+    name: "sdkextensions_e2e_test_app_req_s12",
+    sdk_version: "current",
+    manifest: "AndroidManifest-s12.xml",
     min_sdk_version: "30",
-    apex_available: ["com.android.sdkext"],
+}
+
+android_app {
+    name: "sdkextensions_e2e_test_app_req_r45",
+    sdk_version: "current",
+    manifest: "AndroidManifest-r45.xml",
+    min_sdk_version: "30",
+}
+
+android_app {
+    name: "sdkextensions_e2e_test_app_req_s45",
+    sdk_version: "current",
+    manifest: "AndroidManifest-s45.xml",
+    min_sdk_version: "30",
 }
