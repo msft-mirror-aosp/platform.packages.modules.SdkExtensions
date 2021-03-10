@@ -1,4 +1,4 @@
-// Copyright (C) 2019 The Android Open Source Project
+// Copyright (C) 2021 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,26 +16,16 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
-filegroup {
-    name: "framework-sdkextensions-sources",
-    srcs: [
-        "java/**/*.java",
-    ],
-    path: "java",
-    visibility: [
-        "//frameworks/base",  // For the "global" stubs.
-        "//packages/modules/SdkExtensions:__subpackages__",
-    ],
+android_app {
+    name: "sdkextensions_e2e_test_app_req_r12",
+    sdk_version: "current",
+    manifest: "AndroidManifest-r12.xml",
+    min_sdk_version: "30",
 }
 
-java_sdk_library {
-    name: "framework-sdkextensions",
-    srcs: [ ":framework-sdkextensions-sources" ],
-    defaults: ["framework-module-defaults"],
-    permitted_packages: [ "android.os.ext" ],
-    apex_available: [
-        "com.android.sdkext",
-        "test_com.android.sdkext",
-    ],
+android_app {
+    name: "sdkextensions_e2e_test_app_req_r45",
+    sdk_version: "current",
+    manifest: "AndroidManifest-r45.xml",
     min_sdk_version: "30",
 }
