@@ -26,6 +26,10 @@ java_test_host {
     ],
     data: [
         ":sdkextensions_e2e_test_app",
+        ":sdkextensions_e2e_test_app_req_r12",
+        ":sdkextensions_e2e_test_app_req_s12",
+        ":sdkextensions_e2e_test_app_req_r45",
+        ":sdkextensions_e2e_test_app_req_s45",
         ":test_com.android.media",
         ":test_com.android.sdkext",
     ],
@@ -37,5 +41,7 @@ android_app {
     name: "sdkextensions_e2e_test_app",
     srcs: ["app-src/**/*.java"],
     libs: ["test_framework-sdkextensions-stubs"],
+    static_libs: ["modules-utils-build_system"],
     sdk_version: "system_current",
+    min_sdk_version: "30",
 }
