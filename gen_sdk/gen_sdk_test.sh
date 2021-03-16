@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# To access gen_sdk
+PATH=.:$PATH
+
 # Verifies the tool correctly prints the binary representation of a db.
 function test_print_binary() {
   # Golden binary rep generated with:
