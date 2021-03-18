@@ -29,10 +29,7 @@ apex_test {
     installable: false, // Should never be installed on the systemimage
     multilib: {
         prefer32: {
-            binaries: [
-                "derive_classpath_prefer32",
-                "derive_sdk_prefer32",
-            ],
+            binaries: ["derive_sdk_prefer32"],
         },
     },
     // The automated test infra ends up building this apex for 64+32-bit and
