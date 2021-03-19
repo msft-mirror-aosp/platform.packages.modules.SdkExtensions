@@ -1,4 +1,3 @@
-<<<<<<< HEAD   (1058a6 Snap for 7216685 from 4e2c0e793665d25712c4fa73c07adb0e83e45a)
 // Copyright (C) 2019 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
 
 cc_defaults {
     name: "derive_classpath-defaults",
@@ -62,5 +65,3 @@ prebuilt_etc {
     src: "derive_classpath.rc",
     installable: false,
 }
-=======
->>>>>>> CHANGE (c0e469 Revert "Introduce derive_classpath service.")
