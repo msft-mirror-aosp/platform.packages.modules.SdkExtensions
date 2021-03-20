@@ -20,10 +20,7 @@ package {
 apex {
     name: "com.android.sdkext",
     defaults: [ "com.android.sdkext-defaults" ],
-    binaries: [
-        "derive_classpath",
-        "derive_sdk",
-    ],
+    binaries: [ "derive_sdk" ],
     java_libs: [ "framework-sdkextensions" ],
     prebuilts: [
         "cur_sdkinfo",
@@ -38,7 +35,6 @@ apex_defaults {
     updatable: true,
     min_sdk_version: "30",
     prebuilts: [
-        "derive_classpath.rc",
         "derive_sdk.rc",
     ],
     key: "com.android.sdkext.key",
