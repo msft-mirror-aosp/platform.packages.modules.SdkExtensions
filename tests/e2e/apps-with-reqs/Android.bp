@@ -19,11 +19,27 @@ package {
 android_app {
     name: "sdkextensions_e2e_test_app_req_r12",
     sdk_version: "current",
-    manifest: "AndroidManifest-r12.xml"
+    manifest: "AndroidManifest-r12.xml",
+    min_sdk_version: "30",
+}
+
+android_app {
+    name: "sdkextensions_e2e_test_app_req_s12",
+    sdk_version: "current",
+    manifest: "AndroidManifest-s12.xml",
+    min_sdk_version: "30",
 }
 
 android_app {
     name: "sdkextensions_e2e_test_app_req_r45",
     sdk_version: "current",
-    manifest: "AndroidManifest-r45.xml"
+    manifest: "AndroidManifest-r45.xml",
+    min_sdk_version: "30",
+}
+
+android_app {
+    name: "sdkextensions_e2e_test_app_req_s45",
+    sdk_version: "current",
+    manifest: "AndroidManifest-s45.xml",
+    min_sdk_version: "30",
 }
