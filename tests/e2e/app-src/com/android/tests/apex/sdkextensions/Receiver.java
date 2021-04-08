@@ -24,10 +24,14 @@ import android.os.ext.SdkExtensions;
 import android.os.ext.test.Test;
 import android.util.Log;
 
+import com.android.modules.utils.build.SdkLevel;
+
 public class Receiver extends BroadcastReceiver {
 
     private static final String ACTION_GET_SDK_VERSION =
             "com.android.tests.apex.sdkextensions.GET_SDK_VERSION";
+    private static final String ACTION_IS_AT_LEAST =
+            "com.android.tests.apex.sdkextensions.IS_AT_LEAST";
     private static final String ACTION_MAKE_CALLS_0 =
             "com.android.tests.apex.sdkextensions.MAKE_CALLS_0";
     private static final String ACTION_MAKE_CALLS_45 =
@@ -41,6 +45,14 @@ public class Receiver extends BroadcastReceiver {
         throw new IllegalArgumentException(String.valueOf(letter));
     }
 
+    private static boolean isAtLeast(char letter) {
+        switch (letter) {
+            case 'r': return true; // our min sdk version is 30
+            case 's': return SdkLevel.isAtLeastS();
+        }
+        return false;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
@@ -49,6 +61,10 @@ public class Receiver extends BroadcastReceiver {
                     int extension = dessertLetterToInt(intent.getStringExtra("extra").charAt(0));
                     int sdkVersion = SdkExtensions.getExtensionVersion(extension);
                     setResultData(String.valueOf(sdkVersion));
+                    break;
+                case ACTION_IS_AT_LEAST:
+                    boolean value = isAtLeast(intent.getStringExtra("extra").charAt(0));
+                    setResultData(String.valueOf(value));
                     break;
                 case ACTION_MAKE_CALLS_0:
                     makeCallsVersion0();
