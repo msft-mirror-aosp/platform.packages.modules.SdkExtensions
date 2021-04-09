@@ -16,8 +16,8 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
-python_library_host {
-    name: "sdk_proto_python",
+python_defaults {
+    name: "sdkextensions-proto-python-defaults",
     version: {
         py2: {
             enabled: true,
@@ -26,6 +26,11 @@ python_library_host {
             enabled: true,
         },
     },
+}
+
+python_library_host {
+    name: "sdk_proto_python",
+    defaults: ["sdkextensions-proto-python-defaults"],
     srcs: ["sdk.proto"],
     proto: {
         canonical_path_from_root: false,
@@ -43,10 +48,16 @@ cc_library_static {
     apex_available: ["com.android.sdkext"],
 }
 
-filegroup {
-    name: "classpaths-proto-def",
-    srcs: [ "classpaths.proto" ],
-    visibility: ["//visibility:public"],
+python_library_host {
+    name: "classpaths_proto_python",
+    defaults: ["sdkextensions-proto-python-defaults"],
+    srcs: [
+        "classpaths.proto",
+    ],
+    proto: {
+        canonical_path_from_root: false,
+    },
+    visibility: ["//build/soong/scripts"],
 }
 
 cc_library_static {
