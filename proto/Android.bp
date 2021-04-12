@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-python_library_host {
-    name: "sdk_proto_python",
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+python_defaults {
+    name: "sdkextensions-proto-python-defaults",
     version: {
         py2: {
             enabled: true,
@@ -22,6 +26,11 @@ python_library_host {
             enabled: true,
         },
     },
+}
+
+python_library_host {
+    name: "sdk_proto_python",
+    defaults: ["sdkextensions-proto-python-defaults"],
     srcs: ["sdk.proto"],
     proto: {
         canonical_path_from_root: false,
@@ -35,6 +44,29 @@ cc_library_static {
         type: "lite",
     },
     srcs: ["sdk.proto"],
+    min_sdk_version: "30",
+    apex_available: ["com.android.sdkext"],
+}
+
+python_library_host {
+    name: "classpaths_proto_python",
+    defaults: ["sdkextensions-proto-python-defaults"],
+    srcs: [
+        "classpaths.proto",
+    ],
+    proto: {
+        canonical_path_from_root: false,
+    },
+    visibility: ["//build/soong/scripts"],
+}
+
+cc_library_static {
+    name: "libclasspaths_proto",
+    proto: {
+        export_proto_headers: true,
+        type: "lite",
+    },
+    srcs: ["classpaths.proto"],
     min_sdk_version: "30",
     apex_available: ["com.android.sdkext"],
 }
