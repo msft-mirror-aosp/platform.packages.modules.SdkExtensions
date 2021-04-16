@@ -23,5 +23,8 @@ namespace derive_classpath {
 
 bool GenerateClasspathExports();
 
+// This must only be used in tests.
+bool GenerateClasspathExports(const std::string& globPatternPrefix);
+
 }  // namespace derive_classpath
 }  // namespace android
