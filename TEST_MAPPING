@@ -8,7 +8,9 @@
     },
     {
       "name": "gen_sdk_test"
-    },
+    }
+  ],
+  "presubmit-large": [
     {
       "name": "sdkextensions_e2e_tests"
     }
