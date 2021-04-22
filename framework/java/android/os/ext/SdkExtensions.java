@@ -17,6 +17,7 @@
 package android.os.ext;
 
 import android.annotation.IntDef;
+import android.annotation.NonNull;
 import android.annotation.SystemApi;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemProperties;
@@ -53,6 +54,11 @@ public class SdkExtensions {
     @IntDef(value = { VERSION_CODES.R, VERSION_CODES.CUR_DEVELOPMENT })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Extension {}
+
+    /** The current set of extensions. */
+    @NonNull
+    @Extension
+    public static final int[] EXTENSIONS = { VERSION_CODES.R, VERSION_CODES.CUR_DEVELOPMENT };
 
     private SdkExtensions() { }
 
