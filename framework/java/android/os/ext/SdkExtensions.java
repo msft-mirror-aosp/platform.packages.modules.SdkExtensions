@@ -17,6 +17,7 @@
 package android.os.ext;
 
 import android.annotation.IntDef;
+import android.annotation.NonNull;
 import android.annotation.SystemApi;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemProperties;
@@ -52,26 +53,30 @@ public class SdkExtensions {
      */
     @IntDef(value = { VERSION_CODES.R, VERSION_CODES.S })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SdkVersion {}
+    public @interface Extension {}
+
+    /** The current set of extensions. */
+    @NonNull
+    @Extension
+    public static final int[] EXTENSIONS = { VERSION_CODES.R, VERSION_CODES.CUR_DEVELOPMENT };
 
     private SdkExtensions() { }
 
     /**
-     * Return the version of the extension to the given SDK.
+     * Return the version of the specified extensions.
      *
-     * @param sdk the SDK version to get the extension version of.
-     * @see SdkVersion
-     * @throws IllegalArgumentException if sdk is not an sdk version with extensions
+     * @param extension the extension to get the version of.
+     * @throws IllegalArgumentException if extension is not a valid extension
      */
-    public static int getExtensionVersion(@SdkVersion int sdk) {
-        if (sdk < VERSION_CODES.R) {
-            throw new IllegalArgumentException(String.valueOf(sdk) + " does not have extensions");
+    public static int getExtensionVersion(@Extension int extension) {
+        if (extension < VERSION_CODES.R) {
+            throw new IllegalArgumentException("not a valid extension: " + extension);
         }
 
-        if (sdk == VERSION_CODES.R) {
+        if (extension == VERSION_CODES.R) {
             return R_EXTENSION_INT;
         }
-        if (sdk == VERSION_CODES.S) {
+        if (extension == VERSION_CODES.S) {
             return S_EXTENSION_INT;
         }
         return 0;
