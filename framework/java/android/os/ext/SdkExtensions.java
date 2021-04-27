@@ -22,6 +22,8 @@ import android.annotation.SystemApi;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemProperties;
 
+import com.android.modules.utils.build.SdkLevel;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -60,7 +62,10 @@ public class SdkExtensions {
     /** The current set of extensions. */
     @NonNull
     @Extension
-    public static final int[] EXTENSIONS = { VERSION_CODES.R, VERSION_CODE_S };
+    public static final int[] EXTENSIONS =
+        SdkLevel.isAtLeastS()
+            ? new int[] { VERSION_CODES.R, VERSION_CODE_S }
+            : new int[] { VERSION_CODES.R };
 
     private SdkExtensions() { }
 
