@@ -37,6 +37,8 @@ import java.lang.annotation.RetentionPolicy;
 @SystemApi
 public class SdkExtensions {
 
+    // S_VERSION_CODE is a separate field to simplify management across branches.
+    private static final int VERSION_CODE_S = VERSION_CODES.CUR_DEVELOPMENT;
     private static final int R_EXTENSION_INT;
     private static final int S_EXTENSION_INT;
     static {
@@ -51,14 +53,14 @@ public class SdkExtensions {
      * Values suitable as parameters for {@link #getExtensionVersion(int)}.
      * @hide
      */
-    @IntDef(value = { VERSION_CODES.R, VERSION_CODES.CUR_DEVELOPMENT })
+    @IntDef(value = { VERSION_CODES.R, VERSION_CODE_S })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Extension {}
 
     /** The current set of extensions. */
     @NonNull
     @Extension
-    public static final int[] EXTENSIONS = { VERSION_CODES.R, VERSION_CODES.CUR_DEVELOPMENT };
+    public static final int[] EXTENSIONS = { VERSION_CODES.R, VERSION_CODE_S };
 
     private SdkExtensions() { }
 
@@ -76,7 +78,7 @@ public class SdkExtensions {
         if (extension == VERSION_CODES.R) {
             return R_EXTENSION_INT;
         }
-        if (extension == VERSION_CODES.CUR_DEVELOPMENT) {
+        if (extension == VERSION_CODE_S) {
             return S_EXTENSION_INT;
         }
         return 0;
