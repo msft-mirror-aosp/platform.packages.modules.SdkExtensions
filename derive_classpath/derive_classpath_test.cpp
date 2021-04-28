@@ -19,14 +19,18 @@
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/properties.h>
+#include <android-base/stringprintf.h>
 #include <android-base/strings.h>
 #include <android-modules-utils/sdk_level.h>
 #include <gtest/gtest.h>
 #include <stdlib.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 
 #include <cstdlib>
+#include <string_view>
 
+#include "android-base/unique_fd.h"
 #include "packages/modules/SdkExtensions/proto/classpaths.pb.h"
 
 namespace android {
@@ -51,9 +55,9 @@ class DeriveClasspathTest : public ::testing::Test {
   const std::string working_dir() { return std::string(tempDir_.path); }
 
   // Parses the generated classpath exports file and returns each line individually.
-  std::vector<std::string> ParseExportsFile() {
+  std::vector<std::string> ParseExportsFile(const char* file = "/data/system/environ/classpath") {
     std::string contents;
-    EXPECT_TRUE(android::base::ReadFileToString("/data/system/environ/classpath", &contents));
+    EXPECT_TRUE(android::base::ReadFileToString(file, &contents, /*follow_symlinks=*/true));
     return android::base::Split(contents, "\n");
   }
 
@@ -225,6 +229,26 @@ TEST_F(DeriveClasspathTest, ModulesAreSorted) {
   GenerateClasspathExports(working_dir());
 
   auto exportLines = ParseExportsFile();
+  auto splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  auto exportValue = splitExportLine[2];
+
+  EXPECT_EQ("art:system:bar:baz:foo", exportValue);
+}
+
+// Test we can output to custom files.
+TEST_F(DeriveClasspathTest, CustomOutputLocation) {
+  AddJarToClasspath(working_dir() + "/apex/com.android.art", "art", BOOTCLASSPATH);
+  AddJarToClasspath(working_dir() + "/system", "system", BOOTCLASSPATH);
+  AddJarToClasspath(working_dir() + "/apex/com.android.foo", "foo", BOOTCLASSPATH);
+  AddJarToClasspath(working_dir() + "/apex/com.android.bar", "bar", BOOTCLASSPATH);
+  AddJarToClasspath(working_dir() + "/apex/com.android.baz", "baz", BOOTCLASSPATH);
+
+  android::base::unique_fd fd(memfd_create("temp_file", MFD_CLOEXEC));
+  ASSERT_TRUE(fd.ok()) << "Unable to open temp-file";
+  std::string file_name = android::base::StringPrintf("/proc/self/fd/%d", fd.get());
+  GenerateClasspathExports(working_dir(), file_name);
+
+  auto exportLines = ParseExportsFile(file_name.c_str());
   auto splitExportLine = SplitClasspathExportLine(exportLines[0]);
   auto exportValue = splitExportLine[2];
 
