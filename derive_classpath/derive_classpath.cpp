@@ -30,7 +30,6 @@ namespace derive_classpath {
 using Filepaths = std::vector<std::string>;
 using Classpaths = std::unordered_map<Classpath, Filepaths>;
 
-static const std::string kGeneratedClasspathExportsFilepath = "/data/system/environ/classpath";
 static const std::regex kBindMountedApex("^/apex/[^/]+@[0-9]+/");
 
 // Defines the order of individual fragments to be merged:
@@ -84,7 +83,7 @@ bool GlobClasspathFragments(Filepaths* fragments, const std::string& pattern) {
 
 // Writes the contents of *CLASSPATH variables to /data in the format expected by `load_exports`
 // action from init.rc. See platform/system/core/init/README.md.
-bool WriteClasspathExports(Classpaths classpaths) {
+bool WriteClasspathExports(Classpaths classpaths, std::string_view output_path) {
   std::stringstream out;
 
   out << "export BOOTCLASSPATH " << android::base::Join(classpaths[BOOTCLASSPATH], ':') << '\n';
@@ -93,7 +92,8 @@ bool WriteClasspathExports(Classpaths classpaths) {
   out << "export SYSTEMSERVERCLASSPATH "
       << android::base::Join(classpaths[SYSTEMSERVERCLASSPATH], ':') << '\n';
 
-  return android::base::WriteStringToFile(out.str(), kGeneratedClasspathExportsFilepath);
+  const std::string path_str(output_path);
+  return android::base::WriteStringToFile(out.str(), path_str, /*follow_symlinks=*/true);
 }
 
 bool ReadClasspathFragment(ExportedClasspathsJars* fragment, const std::string& filepath) {
@@ -112,15 +112,15 @@ bool ReadClasspathFragment(ExportedClasspathsJars* fragment, const std::string& 
 // Generates /data/system/environ/classpath exports file by globing and merging individual
 // classpaths.proto config fragments. The exports file is read by init.rc to setenv *CLASSPATH
 // environ variables at runtime.
-bool GenerateClasspathExports() {
+bool GenerateClasspathExports(std::string_view output_path) {
   // Outside of tests use actual config fragments.
-  return GenerateClasspathExports("");
+  return GenerateClasspathExports("", output_path);
 }
 
 // Internal implementation of GenerateClasspathExports that allows putting config fragments in
 // temporary directories. `globPatternPrefix` is appended to each glob pattern from
 // kClasspathFragmentGlobPatterns, which allows adding mock configs in /data/local/tmp for example.
-bool GenerateClasspathExports(const std::string& globPatternPrefix) {
+bool GenerateClasspathExports(const std::string& globPatternPrefix, std::string_view output_path) {
   Filepaths fragments;
   for (const auto& pattern : kClasspathFragmentGlobPatterns) {
     if (!GlobClasspathFragments(&fragments, globPatternPrefix + pattern)) {
@@ -141,8 +141,8 @@ bool GenerateClasspathExports(const std::string& globPatternPrefix) {
     }
   }
 
-  if (!WriteClasspathExports(classpaths)) {
-    PLOG(ERROR) << "Failed to write " << kGeneratedClasspathExportsFilepath;
+  if (!WriteClasspathExports(classpaths, output_path)) {
+    PLOG(ERROR) << "Failed to write " << output_path;
     return false;
   }
   return true;

@@ -15,11 +15,20 @@
  */
 
 #include <cstdlib>
+#include <string_view>
 
 #include "derive_classpath.h"
 
-int main(int, char**) {
-  if (!android::derive_classpath::GenerateClasspathExports()) {
+int main(int argc, char** argv) {
+  std::string_view output_location;
+  if (argc == 1) {
+    output_location = android::derive_classpath::kGeneratedClasspathExportsFilepath;
+  } else if (argc == 2) {
+    output_location = argv[1];
+  } else {
+    return EXIT_FAILURE;
+  }
+  if (!android::derive_classpath::GenerateClasspathExports(output_location)) {
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;
