@@ -3,6 +3,7 @@ package android.os.ext {
 
   public class SdkExtensions {
     method public static int getExtensionVersion(int);
+    field @NonNull public static final int[] EXTENSIONS;
   }
 
 }
