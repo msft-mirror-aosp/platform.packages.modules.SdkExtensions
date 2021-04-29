@@ -17,14 +17,18 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
 namespace android {
 namespace derive_classpath {
 
-bool GenerateClasspathExports();
+constexpr std::string_view kGeneratedClasspathExportsFilepath = "/data/system/environ/classpath";
+
+bool GenerateClasspathExports(std::string_view output_path = kGeneratedClasspathExportsFilepath);
 
 // This must only be used in tests.
-bool GenerateClasspathExports(const std::string& globPatternPrefix);
+bool GenerateClasspathExports(const std::string& globPatternPrefix,
+                              std::string_view output_path = kGeneratedClasspathExportsFilepath);
 
 }  // namespace derive_classpath
 }  // namespace android
