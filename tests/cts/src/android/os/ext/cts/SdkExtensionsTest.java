@@ -50,12 +50,4 @@ public class SdkExtensionsTest extends TestCase {
         assertEquals(expectedS, SystemProperties.get("build.version.extensions.s"));
     }
 
-    public void testExtensionVersions() throws Exception {
-        int expectedSize = 1;
-        if (SdkLevel.isAtLeastS()) {
-            expectedSize++;
-        }
-        assertEquals(expectedSize, SdkExtensions.EXTENSIONS.length);
-    }
-
 }
