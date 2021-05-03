@@ -33,8 +33,6 @@ java_sdk_library {
     srcs: [ ":framework-sdkextensions-sources" ],
     defaults: ["framework-module-defaults"],
     permitted_packages: [ "android.os.ext" ],
-    static_libs: ["modules-utils-build"],
-    jarjar_rules: "jarjar_rules.txt",
     apex_available: [
         "com.android.sdkext",
         "test_com.android.sdkext",
