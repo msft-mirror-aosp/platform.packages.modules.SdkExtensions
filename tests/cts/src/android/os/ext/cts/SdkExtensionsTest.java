@@ -21,6 +21,7 @@ import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
 import com.android.modules.utils.build.SdkLevel;
 import junit.framework.TestCase;
+import java.util.Map;
 
 public class SdkExtensionsTest extends TestCase {
 
@@ -48,6 +49,16 @@ public class SdkExtensionsTest extends TestCase {
         assertEquals("0", SystemProperties.get("build.version.extensions.r"));
         String expectedS = SdkLevel.isAtLeastS() ? "0" : "";
         assertEquals(expectedS, SystemProperties.get("build.version.extensions.s"));
+    }
+
+    public void testExtensionVersions() throws Exception {
+        Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
+        int expectedSize = 1;
+        if (SdkLevel.isAtLeastS()) {
+            expectedSize++;
+        }
+        assertEquals(0, (int) versions.get(Build.VERSION_CODES.R));
+        assertEquals(expectedSize, versions.size());
     }
 
 }
