@@ -22,8 +22,13 @@ import android.annotation.SystemApi;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemProperties;
 
+import com.android.modules.utils.build.SdkLevel;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Methods for interacting with the extension SDK.
@@ -37,28 +42,32 @@ import java.lang.annotation.RetentionPolicy;
 @SystemApi
 public class SdkExtensions {
 
+    // S_VERSION_CODE is a separate field to simplify management across branches.
+    private static final int VERSION_CODE_S = VERSION_CODES.S;
     private static final int R_EXTENSION_INT;
     private static final int S_EXTENSION_INT;
+    private static final Map<Integer, Integer> ALL_EXTENSION_INTS;
     static {
         // Note: when adding more extension versions, the logic that records current
         // extension versions when saving a rollback must also be updated.
         // At the time of writing this is in RollbackManagerServiceImpl#getExtensionVersions()
         R_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.r", 0);
         S_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.s", 0);
+        Map<Integer, Integer> extensions = new HashMap<Integer, Integer>();
+        extensions.put(VERSION_CODES.R, R_EXTENSION_INT);
+        if (SdkLevel.isAtLeastS()) {
+            extensions.put(VERSION_CODE_S, S_EXTENSION_INT);
+        }
+        ALL_EXTENSION_INTS = Collections.unmodifiableMap(extensions);
     }
 
     /**
      * Values suitable as parameters for {@link #getExtensionVersion(int)}.
      * @hide
      */
-    @IntDef(value = { VERSION_CODES.R, VERSION_CODES.S })
+    @IntDef(value = { VERSION_CODES.R, VERSION_CODE_S })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Extension {}
-
-    /** The current set of extensions. */
-    @NonNull
-    @Extension
-    public static final int[] EXTENSIONS = { VERSION_CODES.R, VERSION_CODES.CUR_DEVELOPMENT };
 
     private SdkExtensions() { }
 
@@ -76,10 +85,20 @@ public class SdkExtensions {
         if (extension == VERSION_CODES.R) {
             return R_EXTENSION_INT;
         }
-        if (extension == VERSION_CODES.S) {
+        if (extension == VERSION_CODE_S) {
             return S_EXTENSION_INT;
         }
         return 0;
+    }
+
+    /**
+     * Return all extension versions that exist on this device.
+     *
+     * @return a map from extension to extension version.
+     */
+    @NonNull
+    public static Map<Integer, Integer> getAllExtensionVersions() {
+        return ALL_EXTENSION_INTS;
     }
 
 }
