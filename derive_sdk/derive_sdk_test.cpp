@@ -28,7 +28,7 @@
 
 #include <cstdlib>
 
-#include "packages/modules/SdkExtensions/proto/sdk.pb.h"
+#include "packages/modules/common/proto/sdk.pb.h"
 
 class DeriveSdkTest : public ::testing::Test {
  protected:

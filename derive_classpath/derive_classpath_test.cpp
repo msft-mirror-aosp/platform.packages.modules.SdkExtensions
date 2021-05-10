@@ -31,7 +31,7 @@
 #include <string_view>
 
 #include "android-base/unique_fd.h"
-#include "packages/modules/SdkExtensions/proto/classpaths.pb.h"
+#include "packages/modules/common/proto/classpaths.pb.h"
 
 namespace android {
 namespace derive_classpath {
