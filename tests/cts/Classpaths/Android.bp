@@ -28,6 +28,7 @@ java_test_host {
     ],
     static_libs: [
         "compat-classpaths-testing",
+        "compatibility-host-util",
     ],
     test_suites: [
         "cts",

@@ -26,8 +26,12 @@ import static com.google.common.truth.Fact.fact;
 import static com.google.common.truth.Fact.simpleFact;
 import static com.google.common.truth.Truth.assertAbout;
 
+import static org.junit.Assume.assumeTrue;
+
 import android.compat.testing.Classpaths;
 
+import com.android.compatibility.common.util.ApiLevelUtil;
+import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
 import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
 
@@ -37,6 +41,7 @@ import com.google.common.truth.FailureMetadata;
 import com.google.common.truth.IterableSubject;
 import com.google.common.truth.Ordered;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -60,6 +65,13 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
     private static final String SDKEXTENSIONS_JAR =
             "/apex/com.android.sdkext/javalib/framework-sdkextensions.jar";
     private static final String SERVICES_JAR = "/system/framework/services.jar";
+
+    @Before
+    public void before() throws Exception {
+        ITestDevice device = getDevice();
+        assumeTrue(
+                ApiLevelUtil.isAfter(device, 30) || ApiLevelUtil.getCodename(device).equals("S"));
+    }
 
     @Test
     public void testBootclasspath() throws Exception {
