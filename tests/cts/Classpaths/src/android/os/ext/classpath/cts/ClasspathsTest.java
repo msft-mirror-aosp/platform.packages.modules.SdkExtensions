@@ -40,6 +40,8 @@ import com.google.common.truth.Ordered;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.nio.file.Paths;
+
 /**
  * Tests for the contents of *CLASSPATH environ variables on a device.
  */
@@ -80,6 +82,8 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
         assertThat(jars)
                 .prefixesMatch(expectedPrefixes)
                 .inOrder();
+
+        assertThat(getUpdatableApexes(jars)).isInOrder();
     }
 
     @Test
@@ -89,7 +93,7 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
 
         assertThat(jars).containsNoDuplicates();
 
-        // DEX2OATBOOTCLASSPATH should only contain ART, core-icu4j, and platform system jars
+        // DEX2OATBOOTCLASSPATH must only contain ART, core-icu4j, and platform system jars
         assertThat(jars)
                 .containsAtLeast(LIBART_JAR, FRAMEWORK_JAR, ICU4J_JAR)
                 .inOrder();
@@ -101,6 +105,9 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
         assertThat(jars)
                 .prefixesMatch(expectedPrefixes)
                 .inOrder();
+
+        // No updatable jars on DEX2OATBOOTCLASSPATH
+        assertThat(getUpdatableApexes(jars)).isEmpty();
     }
 
     @Test
@@ -118,6 +125,24 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
         assertThat(jars)
                 .prefixesMatch(expectedPrefixes)
                 .inOrder();
+
+        assertThat(getUpdatableApexes(jars)).isInOrder();
+    }
+
+    /**
+     * Returns a derived subject with names of the updatable APEXes preserving the original
+     * order.
+     */
+    private static ImmutableList<String> getUpdatableApexes(ImmutableList<String> jars) {
+        return jars.stream()
+                .filter(jar -> jar.startsWith("/apex"))
+                // ICU4J_JAR is the last non-updatable APEX jar, i.e. everything after is
+                // considered to be an updatable APEX jar
+                .dropWhile(jar -> !jar.equals(ICU4J_JAR))
+                .skip(1)
+                // Map to APEX name from "/apex/<name>/javalibs/foo.jar"
+                .map(jar -> Paths.get(jar).getName(1).toString())
+                .collect(ImmutableList.toImmutableList());
     }
 
     final static class ClasspathSubject extends IterableSubject {
@@ -194,5 +219,6 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
             }
             return -1;
         }
+
     }
 }
