@@ -22,7 +22,7 @@
 #include <regex>
 #include <sstream>
 
-#include "packages/modules/SdkExtensions/proto/classpaths.pb.h"
+#include "packages/modules/common/proto/classpaths.pb.h"
 
 namespace android {
 namespace derive_classpath {
