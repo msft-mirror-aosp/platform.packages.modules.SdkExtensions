@@ -29,7 +29,7 @@
 #include <iostream>
 #include <vector>
 
-#include "packages/modules/SdkExtensions/proto/sdk.pb.h"
+#include "packages/modules/common/proto/sdk.pb.h"
 
 namespace android {
 namespace derivesdk {
