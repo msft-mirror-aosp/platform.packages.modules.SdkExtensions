@@ -22,7 +22,7 @@
 #include <regex>
 #include <sstream>
 
-#include "packages/modules/SdkExtensions/proto/classpaths.pb.h"
+#include "packages/modules/common/proto/classpaths.pb.h"
 
 namespace android {
 namespace derive_classpath {
@@ -47,7 +47,6 @@ static const std::regex kBindMountedApex("^/apex/[^/]+@[0-9]+/");
 static const std::vector<std::string> kClasspathFragmentGlobPatterns = {
     // ART module is a special case and must come first before any other classpath entries.
     "/apex/com.android.art/etc/classpaths/*",
-    // TODO(b/180105615): put all non /system jars after /apex jars.
     "/system/etc/classpaths/*",
     "/apex/*/etc/classpaths/*",
 };
@@ -135,7 +134,7 @@ bool GenerateClasspathExports(const std::string& globPatternPrefix, std::string_
       return false;
     }
     for (const Jar& jar : exportedJars.jars()) {
-      // TODO(b/180105615): check for duplicate jars and SdkVersion ranges;
+      // TODO(b/180105615): check for SdkVersion ranges;
       // TODO(b/180105615): actually make the path relative for apex jars;
       classpaths[jar.classpath()].push_back(jar.relative_path());
     }
