@@ -31,7 +31,7 @@
 #include <string_view>
 
 #include "android-base/unique_fd.h"
-#include "packages/modules/SdkExtensions/proto/classpaths.pb.h"
+#include "packages/modules/common/proto/classpaths.pb.h"
 
 namespace android {
 namespace derive_classpath {
@@ -113,72 +113,6 @@ class DeriveClasspathTest : public ::testing::Test {
 
   TemporaryDir tempDir_;
 };
-
-// Check BOOTCLASSPATH content.
-TEST_F(DeriveClasspathTest, DefaultBootclasspath) {
-  // Re-generate default on device classpaths
-  GenerateClasspathExports();
-
-  auto exportLines = ParseExportsFile();
-  auto splitExportLine = SplitClasspathExportLine(exportLines[0]);
-
-  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
-
-  auto exportValue = splitExportLine[2];
-
-  EXPECT_NE(std::string::npos, exportValue.find(kLibartJarFilepath));
-  EXPECT_NE(std::string::npos, exportValue.find(kFrameworkJarFilepath));
-  EXPECT_NE(std::string::npos, exportValue.find(kSdkExtensionsJarFilepath));
-
-  EXPECT_EQ(std::string::npos, exportValue.find(kServicesJarFilepath));
-
-  CheckClasspathGroupOrder(exportValue,
-                           {"/apex/com.android.art", "/system", "/system_ext", "/apex"});
-}
-
-// Check DEX2OATBOOTCLASSPATH content.
-TEST_F(DeriveClasspathTest, DefaultDex2oatbootclasspath) {
-  // Re-generate default on device classpaths
-  GenerateClasspathExports();
-
-  auto exportLines = ParseExportsFile();
-  auto splitExportLine = SplitClasspathExportLine(exportLines[1]);
-
-  EXPECT_EQ("DEX2OATBOOTCLASSPATH", splitExportLine[1]);
-
-  auto exportValue = splitExportLine[2];
-
-  EXPECT_NE(std::string::npos, exportValue.find(kLibartJarFilepath));
-  EXPECT_NE(std::string::npos, exportValue.find(kFrameworkJarFilepath));
-
-  // DEX2OATBOOTCLASSPATH should only contain ART and system jars
-  EXPECT_EQ(std::string::npos, exportValue.find(kSdkExtensionsJarFilepath));
-
-  EXPECT_EQ(std::string::npos, exportValue.find(kServicesJarFilepath));
-
-  CheckClasspathGroupOrder(exportValue, {"/apex/com.android.art", "/system", "/system_ext"});
-}
-
-// Check SYSTEMSERVERCLASSPATH content.
-TEST_F(DeriveClasspathTest, DefaultSystemserverclasspath) {
-  // Re-generate default on device classpaths
-  GenerateClasspathExports();
-
-  auto exportLines = ParseExportsFile();
-  auto splitExportLine = SplitClasspathExportLine(exportLines[2]);
-
-  EXPECT_EQ("SYSTEMSERVERCLASSPATH", splitExportLine[1]);
-
-  auto exportValue = splitExportLine[2];
-
-  EXPECT_EQ(std::string::npos, exportValue.find(kLibartJarFilepath));
-  EXPECT_EQ(std::string::npos, exportValue.find(kFrameworkJarFilepath));
-  EXPECT_EQ(std::string::npos, exportValue.find(kSdkExtensionsJarFilepath));
-
-  EXPECT_NE(std::string::npos, exportValue.find(kServicesJarFilepath));
-
-  CheckClasspathGroupOrder(exportValue, {"/system", "/system_ext", "/apex"});
-}
 
 // Check only known *CLASSPATH variables are exported.
 TEST_F(DeriveClasspathTest, DefaultNoUnknownClasspaths) {
