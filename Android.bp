@@ -19,7 +19,7 @@ package {
 
 apex {
     name: "com.android.sdkext",
-    defaults: [ "com.android.sdkext-defaults" ],
+    defaults: ["com.android.sdkext-defaults"],
     bootclasspath_fragments: ["com.android.sdkext-bootclasspath-fragment"],
     binaries: [
         "derive_classpath",
