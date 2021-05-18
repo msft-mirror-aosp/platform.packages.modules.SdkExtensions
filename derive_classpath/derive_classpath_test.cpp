@@ -100,7 +100,7 @@ class DeriveClasspathTest : public ::testing::Test {
                          Classpath classpath) {
     ExportedClasspathsJars exportedJars;
     auto jar = exportedJars.add_jars();
-    jar->set_relative_path(jarFilepath);
+    jar->set_path(jarFilepath);
     jar->set_classpath(classpath);
 
     auto testFragmentFilepath_ = baseDir + "/etc/classpaths/" + Classpath_Name(classpath);
