@@ -18,7 +18,7 @@ package {
 
 java_test_host {
     name: "sdkextensions_e2e_tests",
-    srcs:  ["test-src/**/*.java"],
+    srcs: ["test-src/**/*.java"],
     libs: ["tradefed"],
     static_libs: [
         "cts-install-lib-host",
