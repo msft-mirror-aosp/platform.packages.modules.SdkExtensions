@@ -135,8 +135,7 @@ bool GenerateClasspathExports(const std::string& globPatternPrefix, std::string_
     }
     for (const Jar& jar : exportedJars.jars()) {
       // TODO(b/180105615): check for SdkVersion ranges;
-      // TODO(b/180105615): actually make the path relative for apex jars;
-      classpaths[jar.classpath()].push_back(jar.relative_path());
+      classpaths[jar.classpath()].push_back(jar.path());
     }
   }
 
