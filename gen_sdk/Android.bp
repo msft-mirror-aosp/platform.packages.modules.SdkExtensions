@@ -34,7 +34,7 @@ sh_test_host {
     src: "gen_sdk_test.sh",
     data: [
         "extensions_db.textpb",
-        "testdata/**/*"
+        "testdata/**/*",
     ],
     data_bins: ["gen_sdk"],
     test_suites: ["general-tests"],
