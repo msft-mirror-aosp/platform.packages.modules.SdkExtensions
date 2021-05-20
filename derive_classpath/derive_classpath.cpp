@@ -31,6 +31,7 @@ using Filepaths = std::vector<std::string>;
 using Classpaths = std::unordered_map<Classpath, Filepaths>;
 
 static const std::regex kBindMountedApex("^/apex/[^/]+@[0-9]+/");
+static const std::regex kApexPathRegex("(/apex/[^/]+)/");
 
 // Defines the order of individual fragments to be merged:
 // 1. Jars in ART module always come first;
@@ -116,6 +117,19 @@ bool GenerateClasspathExports(std::string_view output_path) {
   return GenerateClasspathExports("", output_path);
 }
 
+// Returns an allowed prefix for a jar filepaths declared in a given fragment.
+// For a given apex fragment, it returns the apex path - "/apex/com.android.foo" - as an allowed
+// prefix for jars. This can be used to enforce that an apex fragment only exports jars located in
+// that apex. For system fragment, it returns an empty string to allow any jars to be exported by
+// the platform.
+std::string GetAllowedJarPathPrefix(const std::string& fragment_path) {
+  std::smatch match;
+  if (std::regex_search(fragment_path, match, kApexPathRegex)) {
+    return match[1];
+  }
+  return "";
+}
+
 // Internal implementation of GenerateClasspathExports that allows putting config fragments in
 // temporary directories. `globPatternPrefix` is appended to each glob pattern from
 // kClasspathFragmentGlobPatterns, which allows adding mock configs in /data/local/tmp for example.
@@ -128,14 +142,21 @@ bool GenerateClasspathExports(const std::string& globPatternPrefix, std::string_
   }
 
   Classpaths classpaths;
-  for (const auto& path : fragments) {
+  for (const auto& fragment_path : fragments) {
     ExportedClasspathsJars exportedJars;
-    if (!ReadClasspathFragment(&exportedJars, path)) {
+    if (!ReadClasspathFragment(&exportedJars, fragment_path)) {
       return false;
     }
+
+    // Either a path to the apex, or an empty string
+    const std::string& allowed_jar_prefix = GetAllowedJarPathPrefix(fragment_path);
+
     for (const Jar& jar : exportedJars.jars()) {
       // TODO(b/180105615): check for SdkVersion ranges;
-      classpaths[jar.classpath()].push_back(jar.path());
+      const std::string& jar_path = jar.path();
+      CHECK(android::base::StartsWith(jar_path, allowed_jar_prefix))
+          << fragment_path << " must not export a jar from outside of the apex: " << jar_path;
+      classpaths[jar.classpath()].push_back(jar_path);
     }
   }
 
