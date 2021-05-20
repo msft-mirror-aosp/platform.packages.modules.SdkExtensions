@@ -19,7 +19,7 @@ package {
 apex_test {
     name: "test_com.android.sdkext",
     defaults: ["com.android.sdkext-defaults"],
-    java_libs: [ "test_framework-sdkextensions" ],
+    java_libs: ["test_framework-sdkextensions"],
     manifest: "test_manifest.json",
     prebuilts: [
         "sdkinfo_45",
@@ -43,8 +43,8 @@ apex_test {
 
 genrule {
     name: "sdkinfo_45_src",
-    out: [ "sdkinfo.binarypb" ],
-    tools: [ "gen_sdkinfo" ],
+    out: ["sdkinfo.binarypb"],
+    tools: ["gen_sdkinfo"],
     cmd: "$(location) -v 45 -o $(out)",
 }
 
@@ -55,7 +55,7 @@ prebuilt_etc {
     installable: false,
     visibility: [
         ":__pkg__",
-        "//frameworks/av/apex/testing"
+        "//frameworks/av/apex/testing",
     ],
 }
 
@@ -85,7 +85,6 @@ filegroup {
         "//packages/modules/SdkExtensions:__subpackages__",
     ],
 }
-
 
 dex_import {
     name: "test_framework-sdkextensions",
