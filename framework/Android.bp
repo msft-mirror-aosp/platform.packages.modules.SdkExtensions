@@ -23,16 +23,16 @@ filegroup {
     ],
     path: "java",
     visibility: [
-        "//frameworks/base",  // For the "global" stubs.
+        "//frameworks/base", // For the "global" stubs.
         "//packages/modules/SdkExtensions:__subpackages__",
     ],
 }
 
 java_sdk_library {
     name: "framework-sdkextensions",
-    srcs: [ ":framework-sdkextensions-sources" ],
+    srcs: [":framework-sdkextensions-sources"],
     defaults: ["framework-module-defaults"],
-    permitted_packages: [ "android.os.ext" ],
+    permitted_packages: ["android.os.ext"],
     static_libs: ["modules-utils-build"],
     jarjar_rules: "jarjar_rules.txt",
     apex_available: [
