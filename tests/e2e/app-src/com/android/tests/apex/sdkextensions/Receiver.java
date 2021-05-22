@@ -40,7 +40,7 @@ public class Receiver extends BroadcastReceiver {
     private static int dessertLetterToInt(char letter) {
         switch (letter) {
             case 'r': return Build.VERSION_CODES.R;
-            case 's': return Build.VERSION_CODES.CUR_DEVELOPMENT;
+            case 's': return Build.VERSION_CODES.S;
         }
         throw new IllegalArgumentException(String.valueOf(letter));
     }
