@@ -26,7 +26,7 @@ apex {
         "derive_sdk",
     ],
     prebuilts: [
-        "cur_sdkinfo",
+        "current_sdkinfo",
         "extensions_db",
     ],
     manifest: "manifest.json",
