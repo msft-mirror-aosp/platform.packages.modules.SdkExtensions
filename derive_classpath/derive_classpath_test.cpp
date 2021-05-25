@@ -52,7 +52,7 @@ class DeriveClasspathTest : public ::testing::Test {
     GenerateClasspathExports();
   }
 
-  const std::string working_dir() { return std::string(tempDir_.path); }
+  const std::string working_dir() { return std::string(temp_dir_.path); }
 
   // Parses the generated classpath exports file and returns each line individually.
   std::vector<std::string> ParseExportsFile(const char* file = "/data/system/environ/classpath") {
@@ -98,21 +98,24 @@ class DeriveClasspathTest : public ::testing::Test {
 
   void AddJarToClasspath(const std::string& partition, const std::string& jar_filepath,
                          Classpath classpath) {
-    ExportedClasspathsJars exportedJars;
-    Jar* jar = exportedJars.add_jars();
+    ExportedClasspathsJars exported_jars;
+    Jar* jar = exported_jars.add_jars();
     jar->set_path(jar_filepath);
     jar->set_classpath(classpath);
 
-    std::string testFragmentFilepath_ =
-        working_dir() + partition + "/etc/classpaths/" + Classpath_Name(classpath);
+    std::string basename = Classpath_Name(classpath) + ".pb";
+    std::transform(basename.begin(), basename.end(), basename.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+
+    std::string fragment_path = working_dir() + partition + "/etc/classpaths/" + basename;
     std::string buf;
-    exportedJars.SerializeToString(&buf);
-    std::string cmd("mkdir -p " + android::base::Dirname(testFragmentFilepath_));
+    exported_jars.SerializeToString(&buf);
+    std::string cmd("mkdir -p " + android::base::Dirname(fragment_path));
     ASSERT_EQ(0, system(cmd.c_str()));
-    ASSERT_TRUE(android::base::WriteStringToFile(buf, testFragmentFilepath_, true));
+    ASSERT_TRUE(android::base::WriteStringToFile(buf, fragment_path, true));
   }
 
-  TemporaryDir tempDir_;
+  TemporaryDir temp_dir_;
 };
 
 using DeriveClasspathDeathTest = DeriveClasspathTest;
@@ -132,8 +135,6 @@ TEST_F(DeriveClasspathTest, DefaultNoUnknownClasspaths) {
 // Test that temp directory does not pick up actual jars.
 TEST_F(DeriveClasspathTest, TempConfig) {
   AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
-  AddJarToClasspath("/apex/com.android.bar", "/apex/com.android.bar/javalib/bar",
-                    DEX2OATBOOTCLASSPATH);
   AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz",
                     SYSTEMSERVERCLASSPATH);
 
@@ -146,11 +147,6 @@ TEST_F(DeriveClasspathTest, TempConfig) {
   splitExportLine = SplitClasspathExportLine(exportLines[0]);
   EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
   EXPECT_EQ("/apex/com.android.foo/javalib/foo", splitExportLine[2]);
-
-  splitExportLine = SplitClasspathExportLine(exportLines[1]);
-  EXPECT_EQ("DEX2OATBOOTCLASSPATH", splitExportLine[1]);
-  EXPECT_EQ("/apex/com.android.bar/javalib/bar", splitExportLine[2]);
-
   splitExportLine = SplitClasspathExportLine(exportLines[2]);
   EXPECT_EQ("SYSTEMSERVERCLASSPATH", splitExportLine[1]);
   EXPECT_EQ("/apex/com.android.baz/javalib/baz", splitExportLine[2]);
@@ -207,7 +203,8 @@ TEST_F(DeriveClasspathTest, CustomOutputLocation) {
   EXPECT_EQ(expectedJars, exportValue);
 }
 
-TEST_F(DeriveClasspathDeathTest, CheckFails) {
+// Test apexes only export their own jars.
+TEST_F(DeriveClasspathDeathTest, ApexJarsBelongToApex) {
   // EXPECT_DEATH expects error messages in stderr, log there
   android::base::SetLogger(android::base::StderrLogger);
 
@@ -216,6 +213,38 @@ TEST_F(DeriveClasspathDeathTest, CheckFails) {
   AddJarToClasspath("/apex/com.android.bar", "/apex/wrong/path/bar", BOOTCLASSPATH);
 
   EXPECT_DEATH(GenerateClasspathExports(working_dir()), "must not export a jar.*wrong/path/bar");
+}
+
+// Test classpath fragments export jars for themselves.
+TEST_F(DeriveClasspathDeathTest, WrongClasspathInFragments) {
+  // Valid configs
+  AddJarToClasspath("/system", "/system/framework/framework-jar", BOOTCLASSPATH);
+  AddJarToClasspath("/system", "/system/framework/service-jar", SYSTEMSERVERCLASSPATH);
+
+  // Manually create an invalid config with both BCP and SSCP jars...
+  ExportedClasspathsJars exported_jars;
+  Jar* jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/foo");
+  jar->set_classpath(BOOTCLASSPATH);
+  // note that DEX2OATBOOTCLASSPATH and BOOTCLASSPATH jars are expected to be in the same config
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/foo");
+  jar->set_classpath(DEX2OATBOOTCLASSPATH);
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/service-foo");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+  // ...and write this config to bootclasspath.pb
+  std::string fragment_path =
+      working_dir() + "/apex/com.android.foo/etc/classpaths/bootclasspath.pb";
+  std::string buf;
+  exported_jars.SerializeToString(&buf);
+  std::string cmd("mkdir -p " + android::base::Dirname(fragment_path));
+  ASSERT_EQ(0, system(cmd.c_str()));
+  ASSERT_TRUE(android::base::WriteStringToFile(buf, fragment_path, true));
+
+  EXPECT_DEATH(GenerateClasspathExports(working_dir()),
+               "must not export a jar for SYSTEMSERVERCLASSPATH");
 }
 
 }  // namespace
