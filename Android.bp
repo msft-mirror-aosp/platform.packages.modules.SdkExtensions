@@ -22,7 +22,7 @@ apex {
     defaults: ["com.android.sdkext-defaults"],
     bootclasspath_fragments: ["com.android.sdkext-bootclasspath-fragment"],
     prebuilts: [
-        "cur_sdkinfo",
+        "current_sdkinfo",
         "extensions_db",
     ],
     manifest: "manifest.json",
