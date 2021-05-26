@@ -51,17 +51,6 @@ cc_binary {
     apex_available: ["com.android.sdkext"],
 }
 
-// Work around testing using a 64-bit test suite on 32-bit test device by
-// using a prefer32 version of derive_sdk in testing.
-cc_binary {
-    name: "derive_sdk_prefer32",
-    defaults: ["derive_sdk_binary-defaults"],
-    compile_multilib: "prefer32",
-    stem: "derive_sdk",
-    apex_available: ["test_com.android.sdkext"],
-    installable: false,
-}
-
 cc_test {
     name: "derive_sdk_test",
     defaults: ["derive_sdk-defaults"],

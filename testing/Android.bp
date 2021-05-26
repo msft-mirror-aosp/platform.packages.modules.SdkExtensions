@@ -27,18 +27,6 @@ apex_test {
     ],
     file_contexts: ":com.android.sdkext-file_contexts",
     installable: false, // Should never be installed on the systemimage
-    multilib: {
-        prefer32: {
-            binaries: [
-                "derive_classpath_prefer32",
-                "derive_sdk_prefer32",
-            ],
-        },
-    },
-    // The automated test infra ends up building this apex for 64+32-bit and
-    // then installs it on a 32-bit-only device. Work around this weirdness
-    // by preferring 32-bit.
-    compile_multilib: "prefer32",
 }
 
 // Encapsulate the contributions made by the test_com.android.sdkext to the
