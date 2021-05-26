@@ -19,7 +19,7 @@ package {
 apex_test {
     name: "test_com.android.sdkext",
     defaults: ["com.android.sdkext-defaults"],
-    java_libs: ["test_framework-sdkextensions"],
+    bootclasspath_fragments: ["test_com.android.sdkext-bootclasspath-fragment"],
     manifest: "test_manifest.json",
     prebuilts: [
         "sdkinfo_45",
@@ -27,6 +27,22 @@ apex_test {
     ],
     file_contexts: ":com.android.sdkext-file_contexts",
     installable: false, // Should never be installed on the systemimage
+}
+
+// Encapsulate the contributions made by the test_com.android.sdkext to the
+// bootclasspath.
+bootclasspath_fragment {
+    name: "test_com.android.sdkext-bootclasspath-fragment",
+    contents: ["test_framework-sdkextensions"],
+    apex_available: ["test_com.android.sdkext"],
+
+    // The bootclasspath_fragments that provide APIs on which this depends.
+    fragments: [
+        {
+            apex: "com.android.art",
+            module: "art-bootclasspath-fragment",
+        },
+    ],
 }
 
 genrule {
@@ -74,28 +90,31 @@ filegroup {
     ],
 }
 
-dex_import {
+java_sdk_library {
     name: "test_framework-sdkextensions",
-    jars: ["test_framework-sdkextensions.jar"],
+    defaults: ["framework-sdkextensions-defaults"],
+    srcs: [
+        // Additional test library specific stuff.
+        ":test_framework-sdkextensions-sources",
+    ],
+    apex_available: [
+        "test_com.android.sdkext",
+    ],
+    impl_library_visibility: [
+        "//packages/modules/SdkExtensions/tests/e2e",
+    ],
+
+    // Output the api files to a special directory that won't trigger an API
+    // review as it is a test only API.
+    api_dir: "apis_for_tests",
+
     stem: "framework-sdkextensions",
-    apex_available: ["test_com.android.sdkext"],
-}
 
-// It isn't currently possible to build this from source because of limitations
-// in the build + hiddenapi generation.
-//java_library {
-//    name: "test_framework-sdkextensions",
-//    srcs: ["impl-src/**/*.java"],
-//    static_libs: ["framework-sdkextensions.impl"],
-//    libs: ["framework-annotations-lib"],
-//    stem: "framework-sdkextensions",
-//    sdk_version: "module_current",
-//    installable: true,
-//    hostdex: true, // for hiddenapi check
-//}
+    // Although this has a different name it is intended to be a later version
+    // of the framework-extensions module so verify its API against its
+    // previously released API.
+    dist_stem: "framework-sdkextensions",
 
-java_library {
-    name: "test_framework-sdkextensions-stubs",
-    srcs: ["stub-src/**/*.java"],
-    sdk_version: "current",
+    // Testing only.
+    no_dist: true,
 }

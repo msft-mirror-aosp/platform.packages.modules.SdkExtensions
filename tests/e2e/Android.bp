@@ -40,8 +40,13 @@ java_test_host {
 android_app {
     name: "sdkextensions_e2e_test_app",
     srcs: ["app-src/**/*.java"],
-    libs: ["test_framework-sdkextensions-stubs"],
+    libs: [
+        // Depend on the impl library directly so that its tests can try and
+        // invoke methods which it is not allowed to use to verify that the
+        // runtime correctly refuses access to them.
+        "test_framework-sdkextensions.impl",
+    ],
     static_libs: ["modules-utils-build_system"],
-    sdk_version: "system_current",
+    sdk_version: "module_current",
     min_sdk_version: "30",
 }
