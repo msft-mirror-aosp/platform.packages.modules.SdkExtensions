@@ -37,7 +37,7 @@ java_test_host {
     test_suites: ["device-tests"],
 }
 
-android_app {
+android_test_helper_app {
     name: "sdkextensions_e2e_test_app",
     srcs: ["app-src/**/*.java"],
     libs: [
