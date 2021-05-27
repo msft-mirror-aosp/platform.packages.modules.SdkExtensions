@@ -47,7 +47,7 @@ bootclasspath_fragment {
 
 genrule {
     name: "sdkinfo_45_src",
-    out: ["sdkinfo.binarypb"],
+    out: ["sdkinfo.pb"],
     tools: ["gen_sdkinfo"],
     cmd: "$(location) -v 45 -o $(out)",
 }
@@ -55,7 +55,7 @@ genrule {
 prebuilt_etc {
     name: "sdkinfo_45",
     src: ":sdkinfo_45_src",
-    filename: "sdkinfo.binarypb",
+    filename: "sdkinfo.pb",
     installable: false,
     visibility: [
         ":__pkg__",
@@ -64,9 +64,9 @@ prebuilt_etc {
 }
 
 genrule {
-    name: "test_extensions_db.binarypb",
+    name: "test_extensions_db.pb",
     srcs: ["test_extensions_db.textpb"],
-    out: ["test_extensions_db.binarypb"],
+    out: ["test_extensions_db.pb"],
     tools: ["gen_sdk"],
     cmd: "$(location gen_sdk) --action print_binary --database $(location test_extensions_db.textpb) > $(out)",
     visibility: ["//visibility:private"],
@@ -74,8 +74,8 @@ genrule {
 
 prebuilt_etc {
     name: "test_extensions_db",
-    src: ":test_extensions_db.binarypb",
-    filename: "extensions_db.binarypb",
+    src: ":test_extensions_db.pb",
+    filename: "extensions_db.pb",
     installable: false,
     visibility: ["//visibility:private"],
 }
