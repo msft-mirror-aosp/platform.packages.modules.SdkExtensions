@@ -77,7 +77,7 @@ public class Receiver extends BroadcastReceiver {
             }
         } catch (Throwable e) {
             Log.e("SdkExtensionsE2E", "Unexpected error/exception", e);
-            setResultData("Unexpected error or exception in test app, see log for details");
+            setResultData(e.toString());
         }
     }
 
