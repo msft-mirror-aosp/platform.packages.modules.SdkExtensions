@@ -28,16 +28,28 @@ filegroup {
     ],
 }
 
-java_sdk_library {
-    name: "framework-sdkextensions",
+filegroup {
+    name: "framework-sdkextensions-jarjar",
+    srcs: ["jarjar_rules.txt"],
+}
+
+java_defaults {
+    name: "framework-sdkextensions-defaults",
     srcs: [":framework-sdkextensions-sources"],
     defaults: ["framework-module-defaults"],
     permitted_packages: ["android.os.ext"],
     static_libs: ["modules-utils-build"],
-    jarjar_rules: "jarjar_rules.txt",
+    jarjar_rules: ":framework-sdkextensions-jarjar",
+    min_sdk_version: "30",
+}
+
+java_sdk_library {
+    name: "framework-sdkextensions",
+    defaults: ["framework-sdkextensions-defaults"],
+    lint: {
+        strict_updatability_linting: true,
+    },
     apex_available: [
         "com.android.sdkext",
-        "test_com.android.sdkext",
     ],
-    min_sdk_version: "30",
 }
