@@ -21,12 +21,8 @@ apex {
     name: "com.android.sdkext",
     defaults: ["com.android.sdkext-defaults"],
     bootclasspath_fragments: ["com.android.sdkext-bootclasspath-fragment"],
-    binaries: [
-        "derive_classpath",
-        "derive_sdk",
-    ],
     prebuilts: [
-        "cur_sdkinfo",
+        "current_sdkinfo",
         "extensions_db",
     ],
     manifest: "manifest.json",
@@ -37,6 +33,10 @@ apex_defaults {
     name: "com.android.sdkext-defaults",
     updatable: true,
     min_sdk_version: "30",
+    binaries: [
+        "derive_classpath",
+        "derive_sdk",
+    ],
     prebuilts: [
         "derive_classpath.rc",
         "derive_sdk.rc",
