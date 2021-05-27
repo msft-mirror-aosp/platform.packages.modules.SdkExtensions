@@ -41,16 +41,16 @@ sh_test_host {
 }
 
 genrule {
-    name: "extensions_db.binarypb",
+    name: "extensions_db.pb",
     srcs: ["extensions_db.textpb"],
-    out: ["extensions_db.binarypb"],
+    out: ["extensions_db.pb"],
     tools: ["gen_sdk"],
     cmd: "$(location gen_sdk) --action print_binary --database $(location extensions_db.textpb) > $(out)",
 }
 
 prebuilt_etc {
     name: "extensions_db",
-    src: ":extensions_db.binarypb",
-    filename: "extensions_db.binarypb",
+    src: ":extensions_db.pb",
+    filename: "extensions_db.pb",
     installable: false,
 }
