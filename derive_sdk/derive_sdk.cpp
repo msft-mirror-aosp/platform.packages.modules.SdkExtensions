@@ -109,8 +109,7 @@ int GetSdkLevel(const ExtensionDatabase& db,
 
 bool SetSdkLevels(const std::string& mountpath) {
   ExtensionDatabase db;
-  if (!ReadDatabase(
-          mountpath + "/com.android.sdkext/etc/extensions_db.binarypb", db)) {
+  if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
     LOG(ERROR) << "Failed to read database";
     return false;
   }
@@ -128,7 +127,7 @@ bool SetSdkLevels(const std::string& mountpath) {
       // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
       continue;
     }
-    std::string path = mountpath + "/" + name + "/etc/sdkinfo.binarypb";
+    std::string path = mountpath + "/" + name + "/etc/sdkinfo.pb";
     struct stat statbuf;
     if (stat(path.c_str(), &statbuf) != 0) {
       continue;
