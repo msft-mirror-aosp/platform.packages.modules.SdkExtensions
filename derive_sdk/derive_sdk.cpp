@@ -40,6 +40,7 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
     {"com.android.permission", SdkModule::PERMISSIONS},
+    {"com.android.scheduling", SdkModule::SCHEDULING},
     {"com.android.sdkext", SdkModule::SDK_EXTENSIONS},
     {"com.android.os.statsd", SdkModule::STATSD},
     {"com.android.tethering", SdkModule::TETHERING},
@@ -52,7 +53,7 @@ static const std::unordered_set<SdkModule> kRModules = {
     SdkModule::TETHERING,
 };
 
-static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART};
+static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
 
 bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
   std::string contents;
