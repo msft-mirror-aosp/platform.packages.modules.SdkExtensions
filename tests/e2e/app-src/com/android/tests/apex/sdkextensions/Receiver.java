@@ -32,8 +32,8 @@ public class Receiver extends BroadcastReceiver {
             "com.android.tests.apex.sdkextensions.GET_SDK_VERSION";
     private static final String ACTION_IS_AT_LEAST =
             "com.android.tests.apex.sdkextensions.IS_AT_LEAST";
-    private static final String ACTION_MAKE_CALLS_0 =
-            "com.android.tests.apex.sdkextensions.MAKE_CALLS_0";
+    private static final String ACTION_MAKE_CALLS_DEFAULT =
+            "com.android.tests.apex.sdkextensions.MAKE_CALLS_DEFAULT";
     private static final String ACTION_MAKE_CALLS_45 =
             "com.android.tests.apex.sdkextensions.MAKE_CALLS_45";
 
@@ -66,8 +66,8 @@ public class Receiver extends BroadcastReceiver {
                     boolean value = isAtLeast(intent.getStringExtra("extra").charAt(0));
                     setResultData(String.valueOf(value));
                     break;
-                case ACTION_MAKE_CALLS_0:
-                    makeCallsVersion0();
+                case ACTION_MAKE_CALLS_DEFAULT:
+                    makeCallsDefault();
                     setResultData("true");
                     break;
                 case ACTION_MAKE_CALLS_45:
@@ -81,7 +81,7 @@ public class Receiver extends BroadcastReceiver {
         }
     }
 
-    private static void makeCallsVersion0() {
+    private static void makeCallsDefault() {
         expectException(NoClassDefFoundError.class, "test class", () -> new Test() );
         expectException(NoClassDefFoundError.class, "test class", () -> Test.staticPublicMethod() );
         expectException(NoClassDefFoundError.class, "test class",
