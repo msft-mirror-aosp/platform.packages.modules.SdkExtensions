@@ -90,12 +90,12 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     @Test
     public void testDefault() throws Exception {
-        assertVersion0();
+        assertVersionDefault();
     }
 
     @Test
     public void upgradeOneApexWithBump()  throws Exception {
-        assertVersion0();
+        assertVersionDefault();
         mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
         reboot();
 
@@ -110,16 +110,16 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     @Test
     public void upgradeOneApex() throws Exception {
         // Version 45 requires updated sdkext and media, so updating just media changes nothing.
-        assertVersion0();
+        assertVersionDefault();
         mInstallUtils.installApexes(MEDIA_FILENAME);
         reboot();
-        assertVersion0();
+        assertVersionDefault();
     }
 
     @Test
     public void upgradeTwoApexes() throws Exception {
         // Updating sdkext and media bumps the version to 45.
-        assertVersion0();
+        assertVersionDefault();
         mInstallUtils.installApexes(MEDIA_FILENAME, SDKEXTENSIONS_FILENAME);
         reboot();
         assertVersion45();
@@ -173,10 +173,10 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         return new AssertionError(message + result);
     }
 
-    private void assertVersion0() throws Exception {
+    private void assertVersionDefault() throws Exception {
         assertRVersionEquals(0);
         assertSVersionEquals(0);
-        assertTrue(broadcastForBoolean("MAKE_CALLS_0", null));
+        assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
     }
 
     private void assertVersion45() throws Exception {
