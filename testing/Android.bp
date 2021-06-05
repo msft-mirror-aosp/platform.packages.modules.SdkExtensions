@@ -113,7 +113,7 @@ java_sdk_library {
         "test_com.android.sdkext",
     ],
     impl_library_visibility: [
-        "//packages/modules/SdkExtensions/tests/e2e",
+        "//packages/modules/SdkExtensions/tests/e2e:__subpackages__",
     ],
 
     // Output the api files to a special directory that won't trigger an API
