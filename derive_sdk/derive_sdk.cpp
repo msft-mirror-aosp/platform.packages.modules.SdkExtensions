@@ -40,6 +40,7 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
     {"com.android.permission", SdkModule::PERMISSIONS},
+    {"com.android.scheduling", SdkModule::SCHEDULING},
     {"com.android.sdkext", SdkModule::SDK_EXTENSIONS},
     {"com.android.os.statsd", SdkModule::STATSD},
     {"com.android.tethering", SdkModule::TETHERING},
@@ -52,7 +53,7 @@ static const std::unordered_set<SdkModule> kRModules = {
     SdkModule::TETHERING,
 };
 
-static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART};
+static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
 
 bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
   std::string contents;
@@ -109,8 +110,7 @@ int GetSdkLevel(const ExtensionDatabase& db,
 
 bool SetSdkLevels(const std::string& mountpath) {
   ExtensionDatabase db;
-  if (!ReadDatabase(
-          mountpath + "/com.android.sdkext/etc/extensions_db.binarypb", db)) {
+  if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
     LOG(ERROR) << "Failed to read database";
     return false;
   }
@@ -128,7 +128,7 @@ bool SetSdkLevels(const std::string& mountpath) {
       // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
       continue;
     }
-    std::string path = mountpath + "/" + name + "/etc/sdkinfo.binarypb";
+    std::string path = mountpath + "/" + name + "/etc/sdkinfo.pb";
     struct stat statbuf;
     if (stat(path.c_str(), &statbuf) != 0) {
       continue;
