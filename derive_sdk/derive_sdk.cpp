@@ -36,6 +36,7 @@ namespace derivesdk {
 
 static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
     {"com.android.art", SdkModule::ART},
+    {"com.android.conscrypt", SdkModule::CONSCRYPT},
     {"com.android.ipsec", SdkModule::IPSEC},
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
@@ -47,10 +48,8 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
 };
 
 static const std::unordered_set<SdkModule> kRModules = {
-    SdkModule::IPSEC,          SdkModule::MEDIA,
-    SdkModule::MEDIA_PROVIDER, SdkModule::PERMISSIONS,
-    SdkModule::SDK_EXTENSIONS, SdkModule::STATSD,
-    SdkModule::TETHERING,
+    SdkModule::CONSCRYPT,   SdkModule::IPSEC,          SdkModule::MEDIA,  SdkModule::MEDIA_PROVIDER,
+    SdkModule::PERMISSIONS, SdkModule::SDK_EXTENSIONS, SdkModule::STATSD, SdkModule::TETHERING,
 };
 
 static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
