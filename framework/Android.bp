@@ -33,23 +33,22 @@ filegroup {
     srcs: ["jarjar_rules.txt"],
 }
 
-java_defaults {
-    name: "framework-sdkextensions-defaults",
-    srcs: [":framework-sdkextensions-sources"],
+java_sdk_library {
+    name: "framework-sdkextensions",
     defaults: ["framework-module-defaults"],
+    srcs: [":framework-sdkextensions-sources"],
     permitted_packages: ["android.os.ext"],
     static_libs: ["modules-utils-build"],
     jarjar_rules: ":framework-sdkextensions-jarjar",
     min_sdk_version: "30",
-}
-
-java_sdk_library {
-    name: "framework-sdkextensions",
-    defaults: ["framework-sdkextensions-defaults"],
     lint: {
         strict_updatability_linting: true,
     },
+    impl_library_visibility: [
+        "//packages/modules/SdkExtensions/tests/e2e:__subpackages__",
+    ],
     apex_available: [
         "com.android.sdkext",
+        "test_com.android.sdkext",
     ],
 }
