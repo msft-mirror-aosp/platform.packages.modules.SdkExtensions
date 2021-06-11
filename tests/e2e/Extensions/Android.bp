@@ -41,6 +41,7 @@ android_test_helper_app {
     name: "sdkextensions_e2e_test_app",
     srcs: ["app-src/**/*.java"],
     libs: [
+        "framework-sdkextensions",
         // Depend on the impl library directly so that its tests can try and
         // invoke methods which it is not allowed to use to verify that the
         // runtime correctly refuses access to them.
