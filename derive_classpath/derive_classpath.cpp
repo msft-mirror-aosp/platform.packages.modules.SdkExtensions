@@ -18,6 +18,7 @@
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/strings.h>
+#include <android-modules-utils/sdk_level.h>
 #include <glob.h>
 #include <regex>
 #include <sstream>
@@ -120,14 +121,6 @@ bool ReadClasspathFragment(ExportedClasspathsJars* fragment, const std::string& 
   return true;
 }
 
-// Generates /data/system/environ/classpath exports file by globing and merging individual
-// classpaths.proto config fragments. The exports file is read by init.rc to setenv *CLASSPATH
-// environ variables at runtime.
-bool GenerateClasspathExports(std::string_view output_path) {
-  // Outside of tests use actual config fragments.
-  return GenerateClasspathExports("", output_path);
-}
-
 // Returns an allowed prefix for a jar filepaths declared in a given fragment.
 // For a given apex fragment, it returns the apex path - "/apex/com.android.foo" - as an allowed
 // prefix for jars. This can be used to enforce that an apex fragment only exports jars located in
@@ -176,12 +169,23 @@ bool ParseFragments(const std::string& globPatternPrefix, Classpaths& classpaths
   return true;
 }
 
+// Generates /data/system/environ/classpath exports file by globing and merging individual
+// classpaths.proto config fragments. The exports file is read by init.rc to setenv *CLASSPATH
+// environ variables at runtime.
+bool GenerateClasspathExports(std::string_view output_path) {
+  // Outside of tests use actual config fragments.
+  return GenerateClasspathExports("", output_path);
+}
+
 // Internal implementation of GenerateClasspathExports that allows putting config fragments in
 // temporary directories. `globPatternPrefix` is appended to each glob pattern from
 // kBootclasspathFragmentGlobPatterns and kSystemserverclasspathFragmentGlobPatterns, which allows
 // adding mock configs in /data/local/tmp for example.
 bool GenerateClasspathExports(const std::string& globPatternPrefix, std::string_view output_path) {
   // Parse all known classpath fragments
+  CHECK(android::modules::sdklevel::IsAtLeastS())
+      << "derive_classpath must only be run on Android 12 or above";
+
   Classpaths classpaths;
   if (!ParseFragments(globPatternPrefix, classpaths, /*boot_jars=*/true)) {
     LOG(ERROR) << "Failed to parse BOOTCLASSPATH fragments";
