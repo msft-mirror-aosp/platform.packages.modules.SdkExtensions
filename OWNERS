@@ -1,4 +1,6 @@
 dariofreni@google.com
 hansson@google.com
 
+per-file testing/*,tests/*=satayev@google.com
+
 include platform/packages/modules/common:/MODULES_OWNERS  # see go/mainline-owners-policy
