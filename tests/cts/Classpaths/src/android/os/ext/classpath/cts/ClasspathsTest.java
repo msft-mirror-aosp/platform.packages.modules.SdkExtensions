@@ -110,6 +110,10 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
         assertThat(jars)
                 .containsNoneOf(SDKEXTENSIONS_JAR, SERVICES_JAR);
 
+        // DEX2OATBOOTCLASSPATH must be a subset of BOOTCLASSPATH
+        ImmutableList<String> bootJars = getJarsOnClasspath(getDevice(), BOOTCLASSPATH);
+        assertThat(bootJars).containsAtLeastElementsIn(jars);
+
         ImmutableList<String> expectedPrefixes = ImmutableList.of(
                 "/apex/com.android.art/", "/system/", "/system_ext/");
         assertThat(jars)
