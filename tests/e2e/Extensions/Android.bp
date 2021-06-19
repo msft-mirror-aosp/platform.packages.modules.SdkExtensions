@@ -18,7 +18,7 @@ package {
 
 java_test_host {
     name: "sdkextensions_e2e_tests",
-    srcs:  ["test-src/**/*.java"],
+    srcs: ["test-src/**/*.java"],
     libs: ["tradefed"],
     static_libs: [
         "cts-install-lib-host",
@@ -37,11 +37,17 @@ java_test_host {
     test_suites: ["device-tests"],
 }
 
-android_app {
+android_test_helper_app {
     name: "sdkextensions_e2e_test_app",
     srcs: ["app-src/**/*.java"],
-    libs: ["test_framework-sdkextensions-stubs"],
+    libs: [
+        "framework-sdkextensions",
+        // Depend on the impl library directly so that its tests can try and
+        // invoke methods which it is not allowed to use to verify that the
+        // runtime correctly refuses access to them.
+        "test_framework-sdkextensions.impl",
+    ],
     static_libs: ["modules-utils-build_system"],
-    sdk_version: "system_current",
+    sdk_version: "module_current",
     min_sdk_version: "30",
 }
