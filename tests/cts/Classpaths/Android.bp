@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-#include <cstdlib>
-#include <string_view>
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
 
-#include "derive_classpath.h"
-
-int main(int argc, char** argv) {
-  std::string_view output_location;
-  if (argc == 1) {
-    output_location = android::derive_classpath::kGeneratedClasspathExportsFilepath;
-  } else if (argc == 2) {
-    output_location = argv[1];
-  } else {
-    return EXIT_FAILURE;
-  }
-  if (!android::derive_classpath::GenerateClasspathExports(output_location)) {
-    return EXIT_FAILURE;
-  }
-  return EXIT_SUCCESS;
+java_test_host {
+    name: "CtsClasspathsTestCases",
+    defaults: ["cts_defaults"],
+    srcs: ["src/**/*.java"],
+    libs: [
+        "cts-tradefed",
+        "tradefed",
+    ],
+    static_libs: [
+        "compat-classpaths-testing",
+        "modules-utils-build-testing",
+    ],
+    test_suites: [
+        "cts",
+        "general-tests",
+        "mts",
+    ],
 }
