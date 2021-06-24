@@ -28,7 +28,7 @@
 
 #include <cstdlib>
 
-#include "packages/modules/SdkExtensions/proto/sdk.pb.h"
+#include "packages/modules/common/proto/sdk.pb.h"
 
 class DeriveSdkTest : public ::testing::Test {
  protected:
@@ -50,7 +50,7 @@ class DeriveSdkTest : public ::testing::Test {
       req->set_module(pair.first);
       req->mutable_version()->set_version(pair.second);
     }
-    WriteProto(db_, EtcDir("com.android.sdkext") + "/extensions_db.binarypb");
+    WriteProto(db_, EtcDir("com.android.sdkext") + "/extensions_db.pb");
 
     android::derivesdk::SetSdkLevels(dir());
   }
@@ -58,7 +58,7 @@ class DeriveSdkTest : public ::testing::Test {
   void SetApexVersion(const std::string apex, int version) {
     SdkVersion sdk_version;
     sdk_version.set_version(version);
-    WriteProto(sdk_version, EtcDir(apex) + "/sdkinfo.binarypb");
+    WriteProto(sdk_version, EtcDir(apex) + "/sdkinfo.pb");
 
     android::derivesdk::SetSdkLevels(dir());
   }
