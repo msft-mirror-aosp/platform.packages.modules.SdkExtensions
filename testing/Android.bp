@@ -45,7 +45,10 @@ apex_test {
 // bootclasspath.
 bootclasspath_fragment {
     name: "test_com.android.sdkext-bootclasspath-fragment",
-    contents: ["test_framework-sdkextensions"],
+    contents: [
+        "framework-sdkextensions",
+        "test_framework-sdkextensions",
+    ],
     apex_available: ["test_com.android.sdkext"],
 
     // The bootclasspath_fragments that provide APIs on which this depends.
@@ -94,38 +97,35 @@ prebuilt_etc {
 
 filegroup {
     name: "test_framework-sdkextensions-sources",
-    srcs: ["impl-src/**/*.java"],
+    srcs: ["impl-src/android/os/ext/test/Test.java"],
     path: "impl-src",
     visibility: [
-        "//frameworks/base",
         "//packages/modules/SdkExtensions:__subpackages__",
     ],
 }
 
 java_sdk_library {
     name: "test_framework-sdkextensions",
-    defaults: ["framework-sdkextensions-defaults"],
-    srcs: [
-        // Additional test library specific stuff.
-        ":test_framework-sdkextensions-sources",
-    ],
+    defaults: ["framework-module-defaults"],
+    srcs: [":test_framework-sdkextensions-sources"],
+    permitted_packages: ["android.os.ext.test"],
+    min_sdk_version: "30",
     apex_available: [
         "test_com.android.sdkext",
     ],
     impl_library_visibility: [
-        "//packages/modules/SdkExtensions/tests/e2e",
+        "//packages/modules/SdkExtensions/tests/e2e:__subpackages__",
     ],
+    lint: {
+        strict_updatability_linting: true,
+    },
+
+    // Test only SDK, don't check against released APIs.
+    unsafe_ignore_missing_latest_api: true,
 
     // Output the api files to a special directory that won't trigger an API
     // review as it is a test only API.
     api_dir: "apis_for_tests",
-
-    stem: "framework-sdkextensions",
-
-    // Although this has a different name it is intended to be a later version
-    // of the framework-extensions module so verify its API against its
-    // previously released API.
-    dist_stem: "framework-sdkextensions",
 
     // Testing only.
     no_dist: true,
