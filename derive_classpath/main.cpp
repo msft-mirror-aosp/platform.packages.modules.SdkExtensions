@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <android-base/logging.h>
 #include <cstdlib>
 #include <string_view>
 
@@ -26,6 +27,7 @@ int main(int argc, char** argv) {
   } else if (argc == 2) {
     output_location = argv[1];
   } else {
+    LOG(ERROR) << "too many arguments " << argc;
     return EXIT_FAILURE;
   }
   if (!android::derive_classpath::GenerateClasspathExports(output_location)) {
