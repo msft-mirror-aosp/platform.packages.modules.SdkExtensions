@@ -55,11 +55,12 @@ public class SdkExtensionsTest extends TestCase {
     public void testExtensionVersions() throws Exception {
         Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
         int expectedSize = 1;
+        assertEquals(1, (int) versions.get(Build.VERSION_CODES.R));
+
         if (SdkLevel.isAtLeastS()) {
+            assertEquals(1, (int) versions.get(Build.VERSION_CODES.S));
             expectedSize++;
         }
-        assertEquals(1, (int) versions.get(Build.VERSION_CODES.R));
-        assertEquals(1, (int) versions.get(Build.VERSION_CODES.S));
         assertEquals(expectedSize, versions.size());
     }
 
