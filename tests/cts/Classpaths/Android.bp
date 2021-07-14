@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-#pragma once
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
 
-#include <string>
-#include <string_view>
-
-namespace android {
-namespace derive_classpath {
-
-constexpr std::string_view kGeneratedClasspathExportsFilepath = "/data/system/environ/classpath";
-
-bool GenerateClasspathExports(std::string_view output_path = kGeneratedClasspathExportsFilepath);
-
-// This must only be used in tests.
-bool GenerateClasspathExports(const std::string& globPatternPrefix,
-                              std::string_view output_path = kGeneratedClasspathExportsFilepath);
-
-}  // namespace derive_classpath
-}  // namespace android
+java_test_host {
+    name: "CtsClasspathsTestCases",
+    defaults: ["cts_defaults"],
+    srcs: ["src/**/*.java"],
+    libs: [
+        "cts-tradefed",
+        "tradefed",
+    ],
+    static_libs: [
+        "compat-classpaths-testing",
+        "modules-utils-build-testing",
+    ],
+    test_suites: [
+        "cts",
+        "general-tests",
+        "mts",
+    ],
+}
