@@ -19,14 +19,14 @@ package {
 
 apex {
     name: "com.android.sdkext",
-    defaults: [ "com.android.sdkext-defaults" ],
+    defaults: ["com.android.sdkext-defaults"],
+    bootclasspath_fragments: ["com.android.sdkext-bootclasspath-fragment"],
     binaries: [
         "derive_classpath",
         "derive_sdk",
     ],
-    java_libs: [ "framework-sdkextensions" ],
     prebuilts: [
-        "cur_sdkinfo",
+        "current_sdkinfo",
         "extensions_db",
     ],
     manifest: "manifest.json",
@@ -58,5 +58,20 @@ android_app_certificate {
 
 sdk {
     name: "sdkextensions-sdk",
-    java_sdk_libs: ["framework-sdkextensions"],
+    bootclasspath_fragments: ["com.android.sdkext-bootclasspath-fragment"],
+}
+
+// Encapsulate the contributions made by the com.android.sdkext to the bootclasspath.
+bootclasspath_fragment {
+    name: "com.android.sdkext-bootclasspath-fragment",
+    contents: ["framework-sdkextensions"],
+    apex_available: ["com.android.sdkext"],
+
+    // The bootclasspath_fragments that provide APIs on which this depends.
+    fragments: [
+        {
+            apex: "com.android.art",
+            module: "art-bootclasspath-fragment",
+        },
+    ],
 }

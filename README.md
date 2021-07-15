@@ -24,7 +24,7 @@ components:
 
 ### Deriving extension SDK level
 `derive_sdk` is a program that reads metadata stored in other apex modules, in
-the form of binary protobuf files in subpath `etc/sdkinfo.binarypb` inside each
+the form of binary protobuf files in subpath `etc/sdkinfo.pb` inside each
 apex. The structure of this protobuf can be seen [here][sdkinfo-proto]. The
 exact steps for converting a set of metadata files to actual extension versions
 is likely to change over time, and should not be depended upon.
