@@ -43,7 +43,7 @@ import java.util.Map;
 public class SdkExtensions {
 
     // S_VERSION_CODE is a separate field to simplify management across branches.
-    private static final int VERSION_CODE_S = VERSION_CODES.CUR_DEVELOPMENT;
+    private static final int VERSION_CODE_S = VERSION_CODES.S;
     private static final int R_EXTENSION_INT;
     private static final int S_EXTENSION_INT;
     private static final Map<Integer, Integer> ALL_EXTENSION_INTS;
