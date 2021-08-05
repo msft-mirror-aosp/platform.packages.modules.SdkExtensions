@@ -138,7 +138,7 @@ TEST_F(DeriveClasspathTest, TempConfig) {
   AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz",
                     SYSTEMSERVERCLASSPATH);
 
-  GenerateClasspathExports(working_dir());
+  ASSERT_TRUE(GenerateClasspathExports(working_dir()));
 
   const std::vector<std::string> exportLines = ParseExportsFile();
 
@@ -160,7 +160,7 @@ TEST_F(DeriveClasspathTest, ModulesAreSorted) {
   AddJarToClasspath("/apex/com.android.bar", "/apex/com.android.bar/javalib/bar", BOOTCLASSPATH);
   AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz", BOOTCLASSPATH);
 
-  GenerateClasspathExports(working_dir());
+  ASSERT_TRUE(GenerateClasspathExports(working_dir()));
 
   const std::vector<std::string> exportLines = ParseExportsFile();
   const std::vector<std::string> splitExportLine = SplitClasspathExportLine(exportLines[0]);
@@ -184,10 +184,8 @@ TEST_F(DeriveClasspathTest, CustomOutputLocation) {
   AddJarToClasspath("/apex/com.android.bar", "/apex/com.android.bar/javalib/bar", BOOTCLASSPATH);
   AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz", BOOTCLASSPATH);
 
-  android::base::unique_fd fd(memfd_create("temp_file", MFD_CLOEXEC));
-  ASSERT_TRUE(fd.ok()) << "Unable to open temp-file";
-  const std::string file_name = android::base::StringPrintf("/proc/self/fd/%d", fd.get());
-  GenerateClasspathExports(working_dir(), file_name);
+  const std::string file_name = "/data/local/tmp/writable_path";
+  ASSERT_TRUE(GenerateClasspathExports(working_dir(), file_name));
 
   const std::vector<std::string> exportLines = ParseExportsFile(file_name.c_str());
   const std::vector<std::string> splitExportLine = SplitClasspathExportLine(exportLines[0]);
@@ -201,6 +199,14 @@ TEST_F(DeriveClasspathTest, CustomOutputLocation) {
       ":/apex/com.android.foo/javalib/foo");
 
   EXPECT_EQ(expectedJars, exportValue);
+}
+
+// Test output location that can't be written to.
+TEST_F(DeriveClasspathTest, NonWriteableOutputLocation) {
+  AddJarToClasspath("/apex/com.android.art", "/apex/com.android.art/javalib/art", BOOTCLASSPATH);
+  AddJarToClasspath("/system", "/system/framework/jar", BOOTCLASSPATH);
+
+  ASSERT_FALSE(GenerateClasspathExports(working_dir(), "/system/non_writable_path"));
 }
 
 // Test apexes only export their own jars.
