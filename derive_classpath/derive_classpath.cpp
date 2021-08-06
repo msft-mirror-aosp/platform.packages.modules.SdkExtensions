@@ -109,7 +109,16 @@ bool WriteClasspathExports(Classpaths classpaths, std::string_view output_path) 
   LOG(INFO) << "WriteClasspathExports content\n" << content;
 
   const std::string path_str(output_path);
-  return android::base::WriteStringToFile(content, path_str, /*follow_symlinks=*/true);
+  if (android::base::StartsWith(path_str, "/data/")) {
+    // When writing to /data, write to a temp file first to make sure the partition is not full.
+    const std::string temp_str(path_str + ".tmp");
+    if (!android::base::WriteStringToFile(content, temp_str, /*follow_symlinks=*/true)) {
+      return false;
+    }
+    return rename(temp_str.c_str(), path_str.c_str()) == 0;
+  } else {
+    return android::base::WriteStringToFile(content, path_str, /*follow_symlinks=*/true);
+  }
 }
 
 bool ReadClasspathFragment(ExportedClasspathsJars* fragment, const std::string& filepath) {
