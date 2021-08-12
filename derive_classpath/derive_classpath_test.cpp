@@ -184,7 +184,9 @@ TEST_F(DeriveClasspathTest, CustomOutputLocation) {
   AddJarToClasspath("/apex/com.android.bar", "/apex/com.android.bar/javalib/bar", BOOTCLASSPATH);
   AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz", BOOTCLASSPATH);
 
-  const std::string file_name = "/data/local/tmp/writable_path";
+  android::base::unique_fd fd(memfd_create("temp_file", MFD_CLOEXEC));
+  ASSERT_TRUE(fd.ok()) << "Unable to open temp-file";
+  const std::string file_name = android::base::StringPrintf("/proc/self/fd/%d", fd.get());
   ASSERT_TRUE(GenerateClasspathExports(working_dir(), file_name));
 
   const std::vector<std::string> exportLines = ParseExportsFile(file_name.c_str());
