@@ -36,6 +36,7 @@ namespace derivesdk {
 
 static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
     {"com.android.art", SdkModule::ART},
+    {"com.android.conscrypt", SdkModule::CONSCRYPT},
     {"com.android.ipsec", SdkModule::IPSEC},
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
@@ -46,10 +47,8 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
 };
 
 static const std::unordered_set<SdkModule> kRModules = {
-    SdkModule::IPSEC,          SdkModule::MEDIA,
-    SdkModule::MEDIA_PROVIDER, SdkModule::PERMISSIONS,
-    SdkModule::SDK_EXTENSIONS, SdkModule::STATSD,
-    SdkModule::TETHERING,
+    SdkModule::CONSCRYPT,   SdkModule::IPSEC,          SdkModule::MEDIA,  SdkModule::MEDIA_PROVIDER,
+    SdkModule::PERMISSIONS, SdkModule::SDK_EXTENSIONS, SdkModule::STATSD, SdkModule::TETHERING,
 };
 
 static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART};
@@ -109,8 +108,7 @@ int GetSdkLevel(const ExtensionDatabase& db,
 
 bool SetSdkLevels(const std::string& mountpath) {
   ExtensionDatabase db;
-  if (!ReadDatabase(
-          mountpath + "/com.android.sdkext/etc/extensions_db.binarypb", db)) {
+  if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
     LOG(ERROR) << "Failed to read database";
     return false;
   }
@@ -128,7 +126,7 @@ bool SetSdkLevels(const std::string& mountpath) {
       // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
       continue;
     }
-    std::string path = mountpath + "/" + name + "/etc/sdkinfo.binarypb";
+    std::string path = mountpath + "/" + name + "/etc/sdkinfo.pb";
     struct stat statbuf;
     if (stat(path.c_str(), &statbuf) != 0) {
       continue;
