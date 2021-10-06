@@ -88,8 +88,8 @@ class DeriveSdkTest : public ::testing::Test {
 };
 
 TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
-  EXPECT_R(0);
-  EXPECT_S(0);
+  EXPECT_R(1);
+  EXPECT_S(1);
 }
 
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_OneApex) {
