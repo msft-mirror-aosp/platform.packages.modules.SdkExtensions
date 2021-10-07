@@ -188,33 +188,24 @@ bool ParseFragments(const std::string& globPatternPrefix, Classpaths& classpaths
 // Generates /data/system/environ/classpath exports file by globing and merging individual
 // classpaths.proto config fragments. The exports file is read by init.rc to setenv *CLASSPATH
 // environ variables at runtime.
-bool GenerateClasspathExports(std::string_view output_path) {
-  // Outside of tests use actual config fragments.
-  return GenerateClasspathExports("", output_path);
-}
-
-// Internal implementation of GenerateClasspathExports that allows putting config fragments in
-// temporary directories. `globPatternPrefix` is appended to each glob pattern from
-// kBootclasspathFragmentGlobPatterns and kSystemserverclasspathFragmentGlobPatterns, which allows
-// adding mock configs in /data/local/tmp for example.
-bool GenerateClasspathExports(const std::string& globPatternPrefix, std::string_view output_path) {
+bool GenerateClasspathExports(const Args& args) {
   // Parse all known classpath fragments
   CHECK(android::modules::sdklevel::IsAtLeastS())
       << "derive_classpath must only be run on Android 12 or above";
 
   Classpaths classpaths;
-  if (!ParseFragments(globPatternPrefix, classpaths, /*boot_jars=*/true)) {
+  if (!ParseFragments(args.glob_pattern_prefix, classpaths, /*boot_jars=*/true)) {
     LOG(ERROR) << "Failed to parse BOOTCLASSPATH fragments";
     return false;
   }
-  if (!ParseFragments(globPatternPrefix, classpaths, /*boot_jars=*/false)) {
+  if (!ParseFragments(args.glob_pattern_prefix, classpaths, /*boot_jars=*/false)) {
     LOG(ERROR) << "Failed to parse SYSTEMSERVERCLASSPATH fragments";
     return false;
   }
 
   // Write export actions for init.rc
-  if (!WriteClasspathExports(classpaths, output_path)) {
-    PLOG(ERROR) << "Failed to write " << output_path;
+  if (!WriteClasspathExports(classpaths, args.output_path)) {
+    PLOG(ERROR) << "Failed to write " << args.output_path;
     return false;
   }
   return true;
