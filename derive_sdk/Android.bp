@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
 cc_defaults {
     name: "derive_sdk-defaults",
     min_sdk_version: "30",
@@ -22,7 +26,7 @@ cc_defaults {
         "libbase",
         "libmodules-utils-build",
         "libprotobuf-cpp-lite",
-        "libsdk_proto"
+        "libsdk_proto",
     ],
 }
 
@@ -40,6 +44,7 @@ cc_defaults {
     static_libs: ["libderive_sdk"],
 
 }
+
 cc_binary {
     name: "derive_sdk",
     defaults: ["derive_sdk_binary-defaults"],
