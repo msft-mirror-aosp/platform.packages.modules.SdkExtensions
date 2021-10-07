@@ -96,19 +96,33 @@ bool GlobClasspathFragments(Filepaths* fragments, const std::string& pattern) {
 // Writes the contents of *CLASSPATH variables to /data in the format expected by `load_exports`
 // action from init.rc. See platform/system/core/init/README.md.
 bool WriteClasspathExports(Classpaths classpaths, std::string_view output_path) {
-  std::stringstream out;
+  LOG(INFO) << "WriteClasspathExports " << output_path;
 
+  std::stringstream out;
   out << "export BOOTCLASSPATH " << android::base::Join(classpaths[BOOTCLASSPATH], ':') << '\n';
   out << "export DEX2OATBOOTCLASSPATH "
       << android::base::Join(classpaths[DEX2OATBOOTCLASSPATH], ':') << '\n';
   out << "export SYSTEMSERVERCLASSPATH "
       << android::base::Join(classpaths[SYSTEMSERVERCLASSPATH], ':') << '\n';
 
+  const std::string& content = out.str();
+  LOG(INFO) << "WriteClasspathExports content\n" << content;
+
   const std::string path_str(output_path);
-  return android::base::WriteStringToFile(out.str(), path_str, /*follow_symlinks=*/true);
+  if (android::base::StartsWith(path_str, "/data/")) {
+    // When writing to /data, write to a temp file first to make sure the partition is not full.
+    const std::string temp_str(path_str + ".tmp");
+    if (!android::base::WriteStringToFile(content, temp_str, /*follow_symlinks=*/true)) {
+      return false;
+    }
+    return rename(temp_str.c_str(), path_str.c_str()) == 0;
+  } else {
+    return android::base::WriteStringToFile(content, path_str, /*follow_symlinks=*/true);
+  }
 }
 
 bool ReadClasspathFragment(ExportedClasspathsJars* fragment, const std::string& filepath) {
+  LOG(INFO) << "ReadClasspathFragment " << filepath;
   std::string contents;
   if (!android::base::ReadFileToString(filepath, &contents)) {
     PLOG(ERROR) << "Failed to read " << filepath;
@@ -136,10 +150,12 @@ std::string GetAllowedJarPathPrefix(const std::string& fragment_path) {
 
 // Finds and parses all classpath fragments on device matching given glob patterns.
 bool ParseFragments(const std::string& globPatternPrefix, Classpaths& classpaths, bool boot_jars) {
-  Filepaths fragments;
+  LOG(INFO) << "ParseFragments for " << (boot_jars ? "bootclasspath" : "systemserverclasspath");
 
   auto glob_patterns =
       boot_jars ? kBootclasspathFragmentGlobPatterns : kSystemserverclasspathFragmentGlobPatterns;
+
+  Filepaths fragments;
   for (const auto& pattern : glob_patterns) {
     if (!GlobClasspathFragments(&fragments, globPatternPrefix + pattern)) {
       return false;
@@ -172,33 +188,24 @@ bool ParseFragments(const std::string& globPatternPrefix, Classpaths& classpaths
 // Generates /data/system/environ/classpath exports file by globing and merging individual
 // classpaths.proto config fragments. The exports file is read by init.rc to setenv *CLASSPATH
 // environ variables at runtime.
-bool GenerateClasspathExports(std::string_view output_path) {
-  // Outside of tests use actual config fragments.
-  return GenerateClasspathExports("", output_path);
-}
-
-// Internal implementation of GenerateClasspathExports that allows putting config fragments in
-// temporary directories. `globPatternPrefix` is appended to each glob pattern from
-// kBootclasspathFragmentGlobPatterns and kSystemserverclasspathFragmentGlobPatterns, which allows
-// adding mock configs in /data/local/tmp for example.
-bool GenerateClasspathExports(const std::string& globPatternPrefix, std::string_view output_path) {
+bool GenerateClasspathExports(const Args& args) {
   // Parse all known classpath fragments
   CHECK(android::modules::sdklevel::IsAtLeastS())
       << "derive_classpath must only be run on Android 12 or above";
 
   Classpaths classpaths;
-  if (!ParseFragments(globPatternPrefix, classpaths, /*boot_jars=*/true)) {
+  if (!ParseFragments(args.glob_pattern_prefix, classpaths, /*boot_jars=*/true)) {
     LOG(ERROR) << "Failed to parse BOOTCLASSPATH fragments";
     return false;
   }
-  if (!ParseFragments(globPatternPrefix, classpaths, /*boot_jars=*/false)) {
+  if (!ParseFragments(args.glob_pattern_prefix, classpaths, /*boot_jars=*/false)) {
     LOG(ERROR) << "Failed to parse SYSTEMSERVERCLASSPATH fragments";
     return false;
   }
 
   // Write export actions for init.rc
-  if (!WriteClasspathExports(classpaths, output_path)) {
-    PLOG(ERROR) << "Failed to write " << output_path;
+  if (!WriteClasspathExports(classpaths, args.output_path)) {
+    PLOG(ERROR) << "Failed to write " << args.output_path;
     return false;
   }
   return true;
