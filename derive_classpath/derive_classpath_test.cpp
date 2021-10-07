@@ -216,6 +216,40 @@ TEST_F(DeriveClasspathTest, CustomOutputLocation) {
   EXPECT_EQ(expectedJars, exportValue);
 }
 
+// Test alternative .pb for bootclasspath and systemclasspath.
+TEST_F(DeriveClasspathTest, CustomInputLocation) {
+  AddJarToClasspath("/other", "/other/bcp-jar", BOOTCLASSPATH);
+  AddJarToClasspath("/other", "/other/systemserver-jar", SYSTEMSERVERCLASSPATH);
+  AddJarToClasspath("/apex/com.android.art", "/apex/com.android.art/javalib/art", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz",
+                    SYSTEMSERVERCLASSPATH);
+
+  Args args = default_args_with_test_dir_;
+  args.system_bootclasspath_fragment = "/other/etc/classpaths/bootclasspath.pb";
+  args.system_systemserverclasspath_fragment = "/other/etc/classpaths/systemserverclasspath.pb";
+
+  ASSERT_TRUE(GenerateClasspathExports(args));
+
+  const std::vector<std::string> exportLines = ParseExportsFile();
+
+  std::vector<std::string> splitExportLine;
+  splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
+  const std::string expectedBcpJars(
+      "/apex/com.android.art/javalib/art"
+      ":/other/bcp-jar"
+      ":/apex/com.android.foo/javalib/foo");
+  EXPECT_EQ(expectedBcpJars, splitExportLine[2]);
+
+  splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  EXPECT_EQ("SYSTEMSERVERCLASSPATH", splitExportLine[1]);
+  const std::string expectedSystemServerJars(
+      "/other/systemserver-jar"
+      ":/apex/com.android.baz/javalib/baz");
+  EXPECT_EQ(expectedSystemServerJars, splitExportLine[2]);
+}
+
 // Test output location that can't be written to.
 TEST_F(DeriveClasspathTest, NonWriteableOutputLocation) {
   AddJarToClasspath("/apex/com.android.art", "/apex/com.android.art/javalib/art", BOOTCLASSPATH);
