@@ -21,18 +21,57 @@
 
 #include "derive_classpath.h"
 
-int main(int argc, char** argv) {
-  // Default args
-  android::derive_classpath::Args args = {
-      .output_path = android::derive_classpath::kGeneratedClasspathExportsFilepath,
-      .glob_pattern_prefix = "",
-  };
-  if (argc == 1) {
+bool ArgumentMatches(std::string_view argument, std::string_view prefix, std::string_view* value) {
+  if (android::base::StartsWith(argument, prefix)) {
+    *value = argument.substr(prefix.size());
+    return true;
+  }
+  return false;
+}
+
+// Command line flags need to be considered as a de facto API since there may be callers outside
+// of the SdkExtensions APEX, which needs to run on older Android versions. For example, otapreopt
+// currently executes derive_classpath with a single output file. When changing the flags, make sure
+// it won't break on older Android.
+bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
+  // Parse flags
+  std::vector<std::string_view> positional_args;
+  for (int i = 1; i < argc; ++i) {
+    const std::string_view arg = argv[i];
+    std::string_view value;
+    if (ArgumentMatches(arg, "--bootclasspath-fragment=", &value)) {
+      if (!args.system_bootclasspath_fragment.empty()) {
+        LOG(ERROR) << "Duplicated flag --bootclasspath-fragment is specified";
+        return false;
+      }
+      args.system_bootclasspath_fragment = value;
+    } else if (ArgumentMatches(arg, "--systemserverclasspath-fragment=", &value)) {
+      if (!args.system_bootclasspath_fragment.empty()) {
+        LOG(ERROR) << "Duplicated flag --systemserverclasspath-fragment is specified";
+        return false;
+      }
+      args.system_systemserverclasspath_fragment = value;
+    } else {
+      positional_args.emplace_back(arg);
+    }
+  }
+
+  // Handle positional args
+  if (positional_args.size() == 0) {
     args.output_path = android::derive_classpath::kGeneratedClasspathExportsFilepath;
-  } else if (argc == 2) {
-    args.output_path = argv[1];
+  } else if (positional_args.size() == 1) {
+    args.output_path = positional_args[0];
   } else {
-    LOG(ERROR) << "too many arguments " << argc;
+    LOG(ERROR) << "Unrecognized positional arguments: "
+               << android::base::Join(positional_args, ' ');
+    return false;
+  }
+  return true;
+}
+
+int main(int argc, char** argv) {
+  android::derive_classpath::Args args;
+  if (!ParseArgs(args, argc, argv)) {
     return EXIT_FAILURE;
   }
   if (!android::derive_classpath::GenerateClasspathExports(args)) {

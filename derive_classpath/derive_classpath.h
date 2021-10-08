@@ -27,6 +27,10 @@ constexpr std::string_view kGeneratedClasspathExportsFilepath = "/data/system/en
 struct Args {
   std::string_view output_path;
 
+  // Alternative *classpath.pb files if provided.
+  std::string system_bootclasspath_fragment;
+  std::string system_systemserverclasspath_fragment;
+
   // Test only. glob_pattern_prefix is appended to each glob pattern to allow adding mock configs in
   // /data/local/tmp for example.
   std::string glob_pattern_prefix;
