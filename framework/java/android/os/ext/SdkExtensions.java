@@ -43,14 +43,11 @@ import java.util.Map;
 public class SdkExtensions {
 
     // S_VERSION_CODE is a separate field to simplify management across branches.
-    private static final int VERSION_CODE_S = VERSION_CODES.CUR_DEVELOPMENT;
+    private static final int VERSION_CODE_S = VERSION_CODES.S;
     private static final int R_EXTENSION_INT;
     private static final int S_EXTENSION_INT;
     private static final Map<Integer, Integer> ALL_EXTENSION_INTS;
     static {
-        // Note: when adding more extension versions, the logic that records current
-        // extension versions when saving a rollback must also be updated.
-        // At the time of writing this is in RollbackManagerServiceImpl#getExtensionVersions()
         R_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.r", 0);
         S_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.s", 0);
         Map<Integer, Integer> extensions = new HashMap<Integer, Integer>();
