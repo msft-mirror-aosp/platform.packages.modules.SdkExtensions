@@ -34,34 +34,51 @@ using Classpaths = std::unordered_map<Classpath, Filepaths>;
 static const std::regex kBindMountedApex("^/apex/[^/]+@[0-9]+/");
 static const std::regex kApexPathRegex("(/apex/[^/]+)/");
 
-// Defines the order of individual fragments to be merged for BOOTCLASSPATH:
-// 1. Jars in ART module always come first;
-// 2. Jars defined as part of /system/etc/classpaths;
-// 3. Jars defined in all non-ART apexes that expose /apex/*/etc/classpaths fragments.
-//
-// Notes:
-// - Relative order in the individual fragment files is not changed when merging.
-// - If a fragment file is matched by multiple globs, the first one is used; i.e. ART module
-//   fragment is only parsed once, even if there is a "/apex/*/" pattern later.
-// - If there are multiple files matched for a glob pattern with wildcards, the results are sorted
-//   by pathname (default glob behaviour); i.e. all fragment files are sorted within a single
-//   "pattern block".
-static const std::vector<std::string> kBootclasspathFragmentGlobPatterns = {
-    // ART module is a special case and must come first before any other classpath entries.
-    "/apex/com.android.art/etc/classpaths/bootclasspath.pb",
-    "/system/etc/classpaths/bootclasspath.pb",
-    "/apex/*/etc/classpaths/bootclasspath.pb",
-};
+std::vector<std::string> getBootclasspathFragmentGlobPatterns(const Args& args) {
+  // Defines the order of individual fragments to be merged for BOOTCLASSPATH:
+  // 1. Jars in ART module always come first;
+  // 2. Jars defined as part of /system/etc/classpaths;
+  // 3. Jars defined in all non-ART apexes that expose /apex/*/etc/classpaths fragments.
+  //
+  // Notes:
+  // - Relative order in the individual fragment files is not changed when merging.
+  // - If a fragment file is matched by multiple globs, the first one is used; i.e. ART module
+  //   fragment is only parsed once, even if there is a "/apex/*/" pattern later.
+  // - If there are multiple files matched for a glob pattern with wildcards, the results are sorted
+  //   by pathname (default glob behaviour); i.e. all fragment files are sorted within a single
+  //   "pattern block".
+  std::vector<std::string> patterns = {
+      // ART module is a special case and must come first before any other classpath entries.
+      "/apex/com.android.art/etc/classpaths/bootclasspath.pb",
+  };
+  if (args.system_bootclasspath_fragment.empty()) {
+    patterns.emplace_back("/system/etc/classpaths/bootclasspath.pb");
+  } else {
+    // TODO: Avoid applying glob(3) expansion later to this path. Although the caller should not
+    // provide a path that contains '*', it can technically happen. Instead of checking the string
+    // format, we should just avoid the glob(3) for this string.
+    patterns.emplace_back(args.system_bootclasspath_fragment);
+  }
+  patterns.emplace_back("/apex/*/etc/classpaths/bootclasspath.pb");
+  return patterns;
+}
 
-// Defines the order of individual fragments to be merged for SYSTEMSERVERCLASSPATH.
-//
-// ART system server jars are not special in this case, and are considered to be part of all the
-// other apexes that may expose system server jars.
-//
-// All notes from kBootclasspathFragmentGlobPatterns apply here.
-static const std::vector<std::string> kSystemserverclasspathFragmentGlobPatterns = {
-    "/system/etc/classpaths/systemserverclasspath.pb",
-    "/apex/*/etc/classpaths/systemserverclasspath.pb",
+std::vector<std::string> getSystemserverclasspathFragmentGlobPatterns(const Args& args) {
+  // Defines the order of individual fragments to be merged for SYSTEMSERVERCLASSPATH.
+  //
+  // ART system server jars are not special in this case, and are considered to be part of all the
+  // other apexes that may expose system server jars.
+  //
+  // All notes from getBootclasspathFragmentGlobPatterns apply here.
+  std::vector<std::string> patterns;
+  if (args.system_systemserverclasspath_fragment.empty()) {
+    patterns.emplace_back("/system/etc/classpaths/systemserverclasspath.pb");
+  } else {
+    // TODO: Avoid applying glob(3) expansion later to this path. See above.
+    patterns.emplace_back(args.system_systemserverclasspath_fragment);
+  }
+  patterns.emplace_back("/apex/*/etc/classpaths/systemserverclasspath.pb");
+  return patterns;
 };
 
 // Finds all classpath fragment files that match the glob pattern and appends them to `fragments`.
@@ -149,15 +166,15 @@ std::string GetAllowedJarPathPrefix(const std::string& fragment_path) {
 }
 
 // Finds and parses all classpath fragments on device matching given glob patterns.
-bool ParseFragments(const std::string& globPatternPrefix, Classpaths& classpaths, bool boot_jars) {
+bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
   LOG(INFO) << "ParseFragments for " << (boot_jars ? "bootclasspath" : "systemserverclasspath");
 
-  auto glob_patterns =
-      boot_jars ? kBootclasspathFragmentGlobPatterns : kSystemserverclasspathFragmentGlobPatterns;
+  auto glob_patterns = boot_jars ? getBootclasspathFragmentGlobPatterns(args)
+                                 : getSystemserverclasspathFragmentGlobPatterns(args);
 
   Filepaths fragments;
   for (const auto& pattern : glob_patterns) {
-    if (!GlobClasspathFragments(&fragments, globPatternPrefix + pattern)) {
+    if (!GlobClasspathFragments(&fragments, args.glob_pattern_prefix + pattern)) {
       return false;
     }
   }
@@ -188,33 +205,24 @@ bool ParseFragments(const std::string& globPatternPrefix, Classpaths& classpaths
 // Generates /data/system/environ/classpath exports file by globing and merging individual
 // classpaths.proto config fragments. The exports file is read by init.rc to setenv *CLASSPATH
 // environ variables at runtime.
-bool GenerateClasspathExports(std::string_view output_path) {
-  // Outside of tests use actual config fragments.
-  return GenerateClasspathExports("", output_path);
-}
-
-// Internal implementation of GenerateClasspathExports that allows putting config fragments in
-// temporary directories. `globPatternPrefix` is appended to each glob pattern from
-// kBootclasspathFragmentGlobPatterns and kSystemserverclasspathFragmentGlobPatterns, which allows
-// adding mock configs in /data/local/tmp for example.
-bool GenerateClasspathExports(const std::string& globPatternPrefix, std::string_view output_path) {
+bool GenerateClasspathExports(const Args& args) {
   // Parse all known classpath fragments
   CHECK(android::modules::sdklevel::IsAtLeastS())
       << "derive_classpath must only be run on Android 12 or above";
 
   Classpaths classpaths;
-  if (!ParseFragments(globPatternPrefix, classpaths, /*boot_jars=*/true)) {
+  if (!ParseFragments(args, classpaths, /*boot_jars=*/true)) {
     LOG(ERROR) << "Failed to parse BOOTCLASSPATH fragments";
     return false;
   }
-  if (!ParseFragments(globPatternPrefix, classpaths, /*boot_jars=*/false)) {
+  if (!ParseFragments(args, classpaths, /*boot_jars=*/false)) {
     LOG(ERROR) << "Failed to parse SYSTEMSERVERCLASSPATH fragments";
     return false;
   }
 
   // Write export actions for init.rc
-  if (!WriteClasspathExports(classpaths, output_path)) {
-    PLOG(ERROR) << "Failed to write " << output_path;
+  if (!WriteClasspathExports(classpaths, args.output_path)) {
+    PLOG(ERROR) << "Failed to write " << args.output_path;
     return false;
   }
   return true;
