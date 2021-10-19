@@ -114,7 +114,7 @@ java_sdk_library {
         "test_com.android.sdkext",
     ],
     impl_library_visibility: [
-        "//packages/modules/SdkExtensions/tests/e2e:__subpackages__",
+        "//packages/modules/SdkExtensions/javatests/com/android/sdkext:__subpackages__",
     ],
     lint: {
         strict_updatability_linting: true,
