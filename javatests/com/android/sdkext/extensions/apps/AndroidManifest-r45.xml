@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.android.tests.apex.sdkextensions.r45">
+        package="com.android.sdkext.extensions.apps.r45">
 
     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="29">
         <extension-sdk android:sdkVersion="30" android:minExtensionVersion="45" />
