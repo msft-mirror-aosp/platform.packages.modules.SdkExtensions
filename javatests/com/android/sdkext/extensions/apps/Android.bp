@@ -1,4 +1,4 @@
-// Copyright (C) 2020 The Android Open Source Project
+// Copyright (C) 2021 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package {
 
 android_test_helper_app {
     name: "sdkextensions_e2e_test_app",
-    srcs: ["app-src/**/*.java"],
+    srcs: ["Receiver.java"],
     libs: [
         "framework-sdkextensions",
         // Depend on the impl library directly so that its tests can try and
@@ -28,5 +28,33 @@ android_test_helper_app {
     ],
     static_libs: ["modules-utils-build_system"],
     sdk_version: "module_current",
+    min_sdk_version: "30",
+}
+
+android_test_helper_app {
+    name: "sdkextensions_e2e_test_app_req_r12",
+    sdk_version: "current",
+    manifest: "AndroidManifest-r12.xml",
+    min_sdk_version: "30",
+}
+
+android_test_helper_app {
+    name: "sdkextensions_e2e_test_app_req_s12",
+    sdk_version: "current",
+    manifest: "AndroidManifest-s12.xml",
+    min_sdk_version: "30",
+}
+
+android_test_helper_app {
+    name: "sdkextensions_e2e_test_app_req_r45",
+    sdk_version: "current",
+    manifest: "AndroidManifest-r45.xml",
+    min_sdk_version: "30",
+}
+
+android_test_helper_app {
+    name: "sdkextensions_e2e_test_app_req_s45",
+    sdk_version: "current",
+    manifest: "AndroidManifest-s45.xml",
     min_sdk_version: "30",
 }
