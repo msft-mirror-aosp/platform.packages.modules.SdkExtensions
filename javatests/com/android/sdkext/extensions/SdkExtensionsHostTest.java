@@ -48,15 +48,15 @@ import java.util.regex.Pattern;
 public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private static final String APP_FILENAME = "sdkextensions_e2e_test_app.apk";
-    private static final String APP_PACKAGE = "com.android.tests.apex.sdkextensions";
+    private static final String APP_PACKAGE = "com.android.sdkext.extensions.apps";
     private static final String APP_R12_FILENAME = "sdkextensions_e2e_test_app_req_r12.apk";
-    private static final String APP_R12_PACKAGE = "com.android.tests.apex.sdkextensions.r12";
+    private static final String APP_R12_PACKAGE = "com.android.sdkext.extensions.apps.r12";
     private static final String APP_S12_FILENAME = "sdkextensions_e2e_test_app_req_s12.apk";
-    private static final String APP_S12_PACKAGE = "com.android.tests.apex.sdkextensions.s12";
+    private static final String APP_S12_PACKAGE = "com.android.sdkext.extensions.apps.s12";
     private static final String APP_R45_FILENAME = "sdkextensions_e2e_test_app_req_r45.apk";
-    private static final String APP_R45_PACKAGE = "com.android.tests.apex.sdkextensions.r45";
+    private static final String APP_R45_PACKAGE = "com.android.sdkext.extensions.apps.r45";
     private static final String APP_S45_FILENAME = "sdkextensions_e2e_test_app_req_s45.apk";
-    private static final String APP_S45_PACKAGE = "com.android.tests.apex.sdkextensions.s45";
+    private static final String APP_S45_PACKAGE = "com.android.sdkext.extensions.apps.s45";
     private static final String MEDIA_FILENAME = "test_com.android.media.apex";
     private static final String SDKEXTENSIONS_FILENAME = "test_com.android.sdkext.apex";
 
@@ -215,11 +215,11 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private static String getBroadcastCommand(String action, String extra) {
         String cmd = "am broadcast";
-        cmd += " -a com.android.tests.apex.sdkextensions." + action;
+        cmd += " -a com.android.sdkext.extensions.apps." + action;
         if (extra != null) {
             cmd += " -e extra " + extra;
         }
-        cmd += " -n com.android.tests.apex.sdkextensions/.Receiver";
+        cmd += " -n com.android.sdkext.extensions.apps/.Receiver";
         return cmd;
     }
 
