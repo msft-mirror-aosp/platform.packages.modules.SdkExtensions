@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.os.ext.cts;
+package com.android.os.ext;
 
 import android.os.Build;
 import android.os.SystemProperties;
