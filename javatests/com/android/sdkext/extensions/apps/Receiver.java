@@ -29,13 +29,13 @@ import com.android.modules.utils.build.SdkLevel;
 public class Receiver extends BroadcastReceiver {
 
     private static final String ACTION_GET_SDK_VERSION =
-            "com.android.tests.apex.sdkextensions.GET_SDK_VERSION";
+            "com.android.sdkext.extensions.apps.GET_SDK_VERSION";
     private static final String ACTION_IS_AT_LEAST =
-            "com.android.tests.apex.sdkextensions.IS_AT_LEAST";
+            "com.android.sdkext.extensions.apps.IS_AT_LEAST";
     private static final String ACTION_MAKE_CALLS_DEFAULT =
-            "com.android.tests.apex.sdkextensions.MAKE_CALLS_DEFAULT";
+            "com.android.sdkext.extensions.apps.MAKE_CALLS_DEFAULT";
     private static final String ACTION_MAKE_CALLS_45 =
-            "com.android.tests.apex.sdkextensions.MAKE_CALLS_45";
+            "com.android.sdkext.extensions.apps.MAKE_CALLS_45";
 
     private static int dessertLetterToInt(char letter) {
         switch (letter) {
