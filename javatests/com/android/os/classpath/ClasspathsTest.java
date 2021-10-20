@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package android.os.ext.classpath.cts;
+package com.android.os.classpath;
 
 import static android.compat.testing.Classpaths.ClasspathType.BOOTCLASSPATH;
 import static android.compat.testing.Classpaths.ClasspathType.DEX2OATBOOTCLASSPATH;
 import static android.compat.testing.Classpaths.ClasspathType.SYSTEMSERVERCLASSPATH;
 import static android.compat.testing.Classpaths.getJarsOnClasspath;
-import static android.os.ext.classpath.cts.ClasspathsTest.ClasspathSubject.assertThat;
+import static com.android.os.classpath.ClasspathsTest.ClasspathSubject.assertThat;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.truth.Fact.fact;
