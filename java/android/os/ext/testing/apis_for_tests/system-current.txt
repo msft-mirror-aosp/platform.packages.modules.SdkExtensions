@@ -1,5 +1,5 @@
 // Signature format: 2.0
-package android.os.ext.test {
+package android.os.ext.testing {
 
   public class Test {
     method public static void staticSystemApiMethod();

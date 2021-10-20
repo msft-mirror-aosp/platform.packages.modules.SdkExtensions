@@ -14,22 +14,14 @@
 
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
-}
-
-filegroup {
-    name: "test_framework-sdkextensions-sources",
-    srcs: ["impl-src/android/os/ext/test/Test.java"],
-    path: "impl-src",
-    visibility: [
-        "//packages/modules/SdkExtensions:__subpackages__",
-    ],
+    default_visibility: ["//packages/modules/SdkExtensions/javatests:__subpackages__"],
 }
 
 java_sdk_library {
     name: "test_framework-sdkextensions",
     defaults: ["framework-module-defaults"],
-    srcs: [":test_framework-sdkextensions-sources"],
-    permitted_packages: ["android.os.ext.test"],
+    srcs: ["Test.java"],
+    permitted_packages: ["android.os.ext.testing"],
     min_sdk_version: "30",
     apex_available: [
         "test_com.android.sdkext",
