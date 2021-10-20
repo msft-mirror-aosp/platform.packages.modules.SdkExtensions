@@ -18,10 +18,7 @@ package {
 
 filegroup {
     name: "framework-sdkextensions-sources",
-    srcs: [
-        "java/**/*.java",
-    ],
-    path: "java",
+    srcs: ["SdkExtensions.java"],
     visibility: [
         "//frameworks/base", // For the "global" stubs.
         "//packages/modules/SdkExtensions:__subpackages__",
