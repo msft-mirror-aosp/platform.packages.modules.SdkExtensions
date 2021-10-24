@@ -17,37 +17,35 @@ package {
 }
 
 filegroup {
-    name: "test_framework-sdkextensions-sources",
-    srcs: ["impl-src/android/os/ext/test/Test.java"],
-    path: "impl-src",
+    name: "framework-sdkextensions-sources",
+    srcs: ["SdkExtensions.java"],
     visibility: [
+        "//frameworks/base", // For the "global" stubs.
         "//packages/modules/SdkExtensions:__subpackages__",
     ],
 }
 
+filegroup {
+    name: "framework-sdkextensions-jarjar",
+    srcs: ["jarjar_rules.txt"],
+}
+
 java_sdk_library {
-    name: "test_framework-sdkextensions",
+    name: "framework-sdkextensions",
     defaults: ["framework-module-defaults"],
-    srcs: [":test_framework-sdkextensions-sources"],
-    permitted_packages: ["android.os.ext.test"],
+    srcs: [":framework-sdkextensions-sources"],
+    permitted_packages: ["android.os.ext"],
+    static_libs: ["modules-utils-build"],
+    jarjar_rules: ":framework-sdkextensions-jarjar",
     min_sdk_version: "30",
-    apex_available: [
-        "test_com.android.sdkext",
-    ],
-    impl_library_visibility: [
-        "//packages/modules/SdkExtensions/javatests/com/android/sdkext:__subpackages__",
-    ],
     lint: {
         strict_updatability_linting: true,
     },
-
-    // Test only SDK, don't check against released APIs.
-    unsafe_ignore_missing_latest_api: true,
-
-    // Output the api files to a special directory that won't trigger an API
-    // review as it is a test only API.
-    api_dir: "apis_for_tests",
-
-    // Testing only.
-    no_dist: true,
+    impl_library_visibility: [
+        "//packages/modules/SdkExtensions/tests/e2e:__subpackages__",
+    ],
+    apex_available: [
+        "com.android.sdkext",
+        "test_com.android.sdkext",
+    ],
 }
