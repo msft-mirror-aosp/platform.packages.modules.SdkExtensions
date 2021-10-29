@@ -31,10 +31,27 @@ namespace derive_classpath {
 using Filepaths = std::vector<std::string>;
 using Classpaths = std::unordered_map<Classpath, Filepaths>;
 
-static const std::regex kBindMountedApex("^/apex/[^/]+@[0-9]+/");
-static const std::regex kApexPathRegex("(/apex/[^/]+)/");
+// Matches path of format: /apex/<module-name>@<version-digits-only>/*
+static const std::regex kBindMountedApex("/apex/[^/]+@[0-9]+/");
+// Capture module name in following formats:
+// - /apex/<module-name>/*
+// - /apex/<module-name>@*/*
+static const std::regex kApexPathRegex("(/apex/[^@/]+)(?:@[^@/]+)?/");
+
+static const std::string kBootclasspathFragmentLocation = "/etc/classpaths/bootclasspath.pb";
+static const std::string kSystemserverclasspathFragmentLocation =
+    "/etc/classpaths/systemserverclasspath.pb";
 
 std::vector<std::string> getBootclasspathFragmentGlobPatterns(const Args& args) {
+  // Scan only specific directory for fragments if scan_dir is specified
+  if (!args.scan_dirs.empty()) {
+    std::vector<std::string> patterns;
+    for (const auto& scan_dir : args.scan_dirs) {
+      patterns.push_back(scan_dir + kBootclasspathFragmentLocation);
+    }
+    return patterns;
+  }
+
   // Defines the order of individual fragments to be merged for BOOTCLASSPATH:
   // 1. Jars in ART module always come first;
   // 2. Jars defined as part of /system/etc/classpaths;
@@ -49,21 +66,30 @@ std::vector<std::string> getBootclasspathFragmentGlobPatterns(const Args& args) 
   //   "pattern block".
   std::vector<std::string> patterns = {
       // ART module is a special case and must come first before any other classpath entries.
-      "/apex/com.android.art/etc/classpaths/bootclasspath.pb",
+      "/apex/com.android.art" + kBootclasspathFragmentLocation,
   };
   if (args.system_bootclasspath_fragment.empty()) {
-    patterns.emplace_back("/system/etc/classpaths/bootclasspath.pb");
+    patterns.emplace_back("/system" + kBootclasspathFragmentLocation);
   } else {
     // TODO: Avoid applying glob(3) expansion later to this path. Although the caller should not
     // provide a path that contains '*', it can technically happen. Instead of checking the string
     // format, we should just avoid the glob(3) for this string.
     patterns.emplace_back(args.system_bootclasspath_fragment);
   }
-  patterns.emplace_back("/apex/*/etc/classpaths/bootclasspath.pb");
+  patterns.emplace_back("/apex/*" + kBootclasspathFragmentLocation);
   return patterns;
 }
 
 std::vector<std::string> getSystemserverclasspathFragmentGlobPatterns(const Args& args) {
+  // Scan only specific directory for fragments if scan_dir is specified
+  if (!args.scan_dirs.empty()) {
+    std::vector<std::string> patterns;
+    for (const auto& scan_dir : args.scan_dirs) {
+      patterns.push_back(scan_dir + kSystemserverclasspathFragmentLocation);
+    }
+    return patterns;
+  }
+
   // Defines the order of individual fragments to be merged for SYSTEMSERVERCLASSPATH.
   //
   // ART system server jars are not special in this case, and are considered to be part of all the
@@ -72,12 +98,12 @@ std::vector<std::string> getSystemserverclasspathFragmentGlobPatterns(const Args
   // All notes from getBootclasspathFragmentGlobPatterns apply here.
   std::vector<std::string> patterns;
   if (args.system_systemserverclasspath_fragment.empty()) {
-    patterns.emplace_back("/system/etc/classpaths/systemserverclasspath.pb");
+    patterns.emplace_back("/system" + kSystemserverclasspathFragmentLocation);
   } else {
     // TODO: Avoid applying glob(3) expansion later to this path. See above.
     patterns.emplace_back(args.system_systemserverclasspath_fragment);
   }
-  patterns.emplace_back("/apex/*/etc/classpaths/systemserverclasspath.pb");
+  patterns.emplace_back("/apex/*" + kSystemserverclasspathFragmentLocation);
   return patterns;
 };
 
@@ -86,19 +112,24 @@ std::vector<std::string> getSystemserverclasspathFragmentGlobPatterns(const Args
 // If a newly found fragment is already present in `fragments`, it is skipped to avoid duplicates.
 // Note that appended fragment files are sorted by pathnames, which is a default behaviour for
 // glob().
-bool GlobClasspathFragments(Filepaths* fragments, const std::string& pattern) {
+//
+// glob_pattern_prefix is only populated for unit tests so that we can search for pattern in a test
+// directory instead of from root.
+bool GlobClasspathFragments(Filepaths* fragments, const std::string& glob_pattern_prefix,
+                            const std::string& pattern) {
   glob_t glob_result;
-  const int ret = glob(pattern.c_str(), GLOB_MARK, nullptr, &glob_result);
+  const int ret = glob((glob_pattern_prefix + pattern).c_str(), GLOB_MARK, nullptr, &glob_result);
   if (ret != 0 && ret != GLOB_NOMATCH) {
     globfree(&glob_result);
-    LOG(ERROR) << "Failed to glob " << pattern;
+    LOG(ERROR) << "Failed to glob " << glob_pattern_prefix + pattern;
     return false;
   }
 
   for (size_t i = 0; i < glob_result.gl_pathc; i++) {
     std::string path = glob_result.gl_pathv[i];
     // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
-    if (std::regex_search(path, kBindMountedApex)) {
+    // Remove glob_pattern_prefix first since kBindMountedAPex has prefix requirement
+    if (std::regex_search(path.substr(glob_pattern_prefix.size()), kBindMountedApex)) {
       continue;
     }
     // Make sure we don't push duplicate fragments from previously processed patterns
@@ -174,7 +205,7 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
 
   Filepaths fragments;
   for (const auto& pattern : glob_patterns) {
-    if (!GlobClasspathFragments(&fragments, args.glob_pattern_prefix + pattern)) {
+    if (!GlobClasspathFragments(&fragments, args.glob_pattern_prefix, pattern)) {
       return false;
     }
   }
