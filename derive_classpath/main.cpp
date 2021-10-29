@@ -51,9 +51,22 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
         return false;
       }
       args.system_systemserverclasspath_fragment = value;
+    } else if (ArgumentMatches(arg, "--scan-dirs=", &value)) {
+      if (!args.scan_dirs.empty()) {
+        LOG(ERROR) << "Duplicated flag --scan-dirs is specified";
+        return false;
+      }
+      args.scan_dirs = android::base::Split(std::string(value), ",");
     } else {
       positional_args.emplace_back(arg);
     }
+  }
+
+  // Validate flag combinations
+  if (!args.scan_dirs.empty() && (!args.system_bootclasspath_fragment.empty() ||
+                                  !args.system_systemserverclasspath_fragment.empty())) {
+    LOG(ERROR) << "--scan-dirs should not be accompanied by other flags";
+    return false;
   }
 
   // Handle positional args
