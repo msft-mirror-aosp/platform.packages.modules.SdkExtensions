@@ -262,17 +262,83 @@ TEST_F(DeriveClasspathTest, NonWriteableOutputLocation) {
   ASSERT_FALSE(GenerateClasspathExports(args));
 }
 
+TEST_F(DeriveClasspathTest, ScanOnlySpecificDirectories) {
+  AddJarToClasspath("/system", "/system/framework/jar", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/sys",
+                    SYSTEMSERVERCLASSPATH);
+  AddJarToClasspath("/apex/com.android.bar", "/apex/com.android.bar/javalib/bar", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz", BOOTCLASSPATH);
+
+  auto args_with_scan_dirs = default_args_with_test_dir_;
+  args_with_scan_dirs.scan_dirs.push_back("/apex/com.android.foo");
+  args_with_scan_dirs.scan_dirs.push_back("/apex/com.android.bar");
+  ASSERT_TRUE(GenerateClasspathExports(args_with_scan_dirs));
+
+  const std::vector<std::string> exportLines = ParseExportsFile();
+
+  std::vector<std::string> splitExportLine;
+
+  splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
+  // Not sorted. Maintains the ordering provided in scan_dirs
+  const std::string expectedJars(
+      "/apex/com.android.foo/javalib/foo"
+      ":/apex/com.android.bar/javalib/bar");
+  EXPECT_EQ(expectedJars, splitExportLine[2]);
+  splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  EXPECT_EQ("SYSTEMSERVERCLASSPATH", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.foo/javalib/sys", splitExportLine[2]);
+}
+
 // Test apexes only export their own jars.
 TEST_F(DeriveClasspathDeathTest, ApexJarsBelongToApex) {
   // EXPECT_DEATH expects error messages in stderr, log there
   android::base::SetLogger(android::base::StderrLogger);
 
   AddJarToClasspath("/system", "/system/framework/jar", BOOTCLASSPATH);
-  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
-  AddJarToClasspath("/apex/com.android.bar", "/apex/wrong/path/bar", BOOTCLASSPATH);
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
 
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  AddJarToClasspath("/apex/com.android.bar@12345.tmp", "/apex/com.android.bar/javalib/bar",
+                    BOOTCLASSPATH);
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  AddJarToClasspath("/apex/com.android.baz@12345", "/apex/this/path/is/skipped", BOOTCLASSPATH);
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  AddJarToClasspath("/apex/com.android.bar", "/apex/wrong/path/bar", BOOTCLASSPATH);
   EXPECT_DEATH(GenerateClasspathExports(default_args_with_test_dir_),
                "must not export a jar.*wrong/path/bar");
+}
+
+// Test only bind mounted apexes are skipped
+TEST_F(DeriveClasspathTest, OnlyBindMountedApexIsSkipped) {
+  AddJarToClasspath("/system", "/system/framework/jar", BOOTCLASSPATH);
+  // Normal APEX with format: /apex/<module-name>/*
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
+  // Bind mounted APEX with format: /apex/<module-name>@<version>/*
+  AddJarToClasspath("/apex/com.android.bar@123", "/apex/com.android.bar/javalib/bar",
+                    BOOTCLASSPATH);
+  // Temp mounted APEX with format: /apex/<module-name>@<version>.tmp/*
+  AddJarToClasspath("/apex/com.android.baz@123.tmp", "/apex/com.android.baz/javalib/baz",
+                    BOOTCLASSPATH);
+
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  const std::vector<std::string> exportLines = ParseExportsFile();
+
+  std::vector<std::string> splitExportLine;
+
+  splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
+  const std::string expectedJars(
+      "/system/framework/jar"
+      ":/apex/com.android.baz/javalib/baz"
+      ":/apex/com.android.foo/javalib/foo");
+  EXPECT_EQ(expectedJars, splitExportLine[2]);
 }
 
 // Test classpath fragments export jars for themselves.
