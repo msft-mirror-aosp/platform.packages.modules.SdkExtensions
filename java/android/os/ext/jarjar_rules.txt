@@ -1,1 +1,1 @@
-rule com.android.modules.utils.build.SdkLevel android.os.ext.util.SdkLevel
+rule com.android.modules.utils.build.** android.os.ext.util.@1
