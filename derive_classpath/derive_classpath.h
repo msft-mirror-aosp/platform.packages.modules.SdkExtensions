@@ -18,6 +18,7 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace android {
 namespace derive_classpath {
@@ -34,6 +35,9 @@ struct Args {
   // Test only. glob_pattern_prefix is appended to each glob pattern to allow adding mock configs in
   // /data/local/tmp for example.
   std::string glob_pattern_prefix;
+
+  // Scan specified list of directories instead of using default glob patterns
+  std::vector<std::string> scan_dirs;
 };
 
 bool GenerateClasspathExports(const Args& args);
