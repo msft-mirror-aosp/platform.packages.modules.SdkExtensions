@@ -49,7 +49,7 @@ class DeriveClasspathTest : public ::testing::Test {
   ~DeriveClasspathTest() override {
     // Not really needed, as a test device will re-generate a proper classpath on reboot,
     // but it's better to leave it in a clean state after a test.
-    GenerateClasspathExports();
+    GenerateClasspathExports(default_args_);
   }
 
   const std::string working_dir() { return std::string(temp_dir_.path); }
@@ -115,7 +115,16 @@ class DeriveClasspathTest : public ::testing::Test {
     ASSERT_TRUE(android::base::WriteStringToFile(buf, fragment_path, true));
   }
 
-  TemporaryDir temp_dir_;
+  const TemporaryDir temp_dir_;
+
+  const Args default_args_ = {
+      .output_path = kGeneratedClasspathExportsFilepath,
+  };
+
+  const Args default_args_with_test_dir_ = {
+      .output_path = kGeneratedClasspathExportsFilepath,
+      .glob_pattern_prefix = temp_dir_.path,
+  };
 };
 
 using DeriveClasspathDeathTest = DeriveClasspathTest;
@@ -123,7 +132,7 @@ using DeriveClasspathDeathTest = DeriveClasspathTest;
 // Check only known *CLASSPATH variables are exported.
 TEST_F(DeriveClasspathTest, DefaultNoUnknownClasspaths) {
   // Re-generate default on device classpaths
-  GenerateClasspathExports();
+  GenerateClasspathExports(default_args_);
 
   const std::vector<std::string> exportLines = ParseExportsFile();
   // The first three lines are tested above.
@@ -138,7 +147,7 @@ TEST_F(DeriveClasspathTest, TempConfig) {
   AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz",
                     SYSTEMSERVERCLASSPATH);
 
-  ASSERT_TRUE(GenerateClasspathExports(working_dir()));
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
 
   const std::vector<std::string> exportLines = ParseExportsFile();
 
@@ -160,7 +169,7 @@ TEST_F(DeriveClasspathTest, ModulesAreSorted) {
   AddJarToClasspath("/apex/com.android.bar", "/apex/com.android.bar/javalib/bar", BOOTCLASSPATH);
   AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz", BOOTCLASSPATH);
 
-  ASSERT_TRUE(GenerateClasspathExports(working_dir()));
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
 
   const std::vector<std::string> exportLines = ParseExportsFile();
   const std::vector<std::string> splitExportLine = SplitClasspathExportLine(exportLines[0]);
@@ -187,7 +196,11 @@ TEST_F(DeriveClasspathTest, CustomOutputLocation) {
   android::base::unique_fd fd(memfd_create("temp_file", MFD_CLOEXEC));
   ASSERT_TRUE(fd.ok()) << "Unable to open temp-file";
   const std::string file_name = android::base::StringPrintf("/proc/self/fd/%d", fd.get());
-  ASSERT_TRUE(GenerateClasspathExports(working_dir(), file_name));
+  Args args = {
+      .output_path = file_name,
+      .glob_pattern_prefix = working_dir(),
+  };
+  ASSERT_TRUE(GenerateClasspathExports(args));
 
   const std::vector<std::string> exportLines = ParseExportsFile(file_name.c_str());
   const std::vector<std::string> splitExportLine = SplitClasspathExportLine(exportLines[0]);
@@ -203,12 +216,79 @@ TEST_F(DeriveClasspathTest, CustomOutputLocation) {
   EXPECT_EQ(expectedJars, exportValue);
 }
 
+// Test alternative .pb for bootclasspath and systemclasspath.
+TEST_F(DeriveClasspathTest, CustomInputLocation) {
+  AddJarToClasspath("/other", "/other/bcp-jar", BOOTCLASSPATH);
+  AddJarToClasspath("/other", "/other/systemserver-jar", SYSTEMSERVERCLASSPATH);
+  AddJarToClasspath("/apex/com.android.art", "/apex/com.android.art/javalib/art", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz",
+                    SYSTEMSERVERCLASSPATH);
+
+  Args args = default_args_with_test_dir_;
+  args.system_bootclasspath_fragment = "/other/etc/classpaths/bootclasspath.pb";
+  args.system_systemserverclasspath_fragment = "/other/etc/classpaths/systemserverclasspath.pb";
+
+  ASSERT_TRUE(GenerateClasspathExports(args));
+
+  const std::vector<std::string> exportLines = ParseExportsFile();
+
+  std::vector<std::string> splitExportLine;
+  splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
+  const std::string expectedBcpJars(
+      "/apex/com.android.art/javalib/art"
+      ":/other/bcp-jar"
+      ":/apex/com.android.foo/javalib/foo");
+  EXPECT_EQ(expectedBcpJars, splitExportLine[2]);
+
+  splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  EXPECT_EQ("SYSTEMSERVERCLASSPATH", splitExportLine[1]);
+  const std::string expectedSystemServerJars(
+      "/other/systemserver-jar"
+      ":/apex/com.android.baz/javalib/baz");
+  EXPECT_EQ(expectedSystemServerJars, splitExportLine[2]);
+}
+
 // Test output location that can't be written to.
 TEST_F(DeriveClasspathTest, NonWriteableOutputLocation) {
   AddJarToClasspath("/apex/com.android.art", "/apex/com.android.art/javalib/art", BOOTCLASSPATH);
   AddJarToClasspath("/system", "/system/framework/jar", BOOTCLASSPATH);
 
-  ASSERT_FALSE(GenerateClasspathExports(working_dir(), "/system/non_writable_path"));
+  Args args = {
+      .output_path = "/system/non_writable_path",
+      .glob_pattern_prefix = working_dir(),
+  };
+  ASSERT_FALSE(GenerateClasspathExports(args));
+}
+
+TEST_F(DeriveClasspathTest, ScanOnlySpecificDirectories) {
+  AddJarToClasspath("/system", "/system/framework/jar", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/sys",
+                    SYSTEMSERVERCLASSPATH);
+  AddJarToClasspath("/apex/com.android.bar", "/apex/com.android.bar/javalib/bar", BOOTCLASSPATH);
+  AddJarToClasspath("/apex/com.android.baz", "/apex/com.android.baz/javalib/baz", BOOTCLASSPATH);
+
+  auto args_with_scan_dirs = default_args_with_test_dir_;
+  args_with_scan_dirs.scan_dirs.push_back("/apex/com.android.foo");
+  args_with_scan_dirs.scan_dirs.push_back("/apex/com.android.bar");
+  ASSERT_TRUE(GenerateClasspathExports(args_with_scan_dirs));
+
+  const std::vector<std::string> exportLines = ParseExportsFile();
+
+  std::vector<std::string> splitExportLine;
+
+  splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
+  // Not sorted. Maintains the ordering provided in scan_dirs
+  const std::string expectedJars(
+      "/apex/com.android.foo/javalib/foo"
+      ":/apex/com.android.bar/javalib/bar");
+  EXPECT_EQ(expectedJars, splitExportLine[2]);
+  splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  EXPECT_EQ("SYSTEMSERVERCLASSPATH", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.foo/javalib/sys", splitExportLine[2]);
 }
 
 // Test apexes only export their own jars.
@@ -217,10 +297,48 @@ TEST_F(DeriveClasspathDeathTest, ApexJarsBelongToApex) {
   android::base::SetLogger(android::base::StderrLogger);
 
   AddJarToClasspath("/system", "/system/framework/jar", BOOTCLASSPATH);
-  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
-  AddJarToClasspath("/apex/com.android.bar", "/apex/wrong/path/bar", BOOTCLASSPATH);
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
 
-  EXPECT_DEATH(GenerateClasspathExports(working_dir()), "must not export a jar.*wrong/path/bar");
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  AddJarToClasspath("/apex/com.android.bar@12345.tmp", "/apex/com.android.bar/javalib/bar",
+                    BOOTCLASSPATH);
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  AddJarToClasspath("/apex/com.android.baz@12345", "/apex/this/path/is/skipped", BOOTCLASSPATH);
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  AddJarToClasspath("/apex/com.android.bar", "/apex/wrong/path/bar", BOOTCLASSPATH);
+  EXPECT_DEATH(GenerateClasspathExports(default_args_with_test_dir_),
+               "must not export a jar.*wrong/path/bar");
+}
+
+// Test only bind mounted apexes are skipped
+TEST_F(DeriveClasspathTest, OnlyBindMountedApexIsSkipped) {
+  AddJarToClasspath("/system", "/system/framework/jar", BOOTCLASSPATH);
+  // Normal APEX with format: /apex/<module-name>/*
+  AddJarToClasspath("/apex/com.android.foo", "/apex/com.android.foo/javalib/foo", BOOTCLASSPATH);
+  // Bind mounted APEX with format: /apex/<module-name>@<version>/*
+  AddJarToClasspath("/apex/com.android.bar@123", "/apex/com.android.bar/javalib/bar",
+                    BOOTCLASSPATH);
+  // Temp mounted APEX with format: /apex/<module-name>@<version>.tmp/*
+  AddJarToClasspath("/apex/com.android.baz@123.tmp", "/apex/com.android.baz/javalib/baz",
+                    BOOTCLASSPATH);
+
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  const std::vector<std::string> exportLines = ParseExportsFile();
+
+  std::vector<std::string> splitExportLine;
+
+  splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
+  const std::string expectedJars(
+      "/system/framework/jar"
+      ":/apex/com.android.baz/javalib/baz"
+      ":/apex/com.android.foo/javalib/foo");
+  EXPECT_EQ(expectedJars, splitExportLine[2]);
 }
 
 // Test classpath fragments export jars for themselves.
@@ -251,7 +369,7 @@ TEST_F(DeriveClasspathDeathTest, WrongClasspathInFragments) {
   ASSERT_EQ(0, system(cmd.c_str()));
   ASSERT_TRUE(android::base::WriteStringToFile(buf, fragment_path, true));
 
-  EXPECT_DEATH(GenerateClasspathExports(working_dir()),
+  EXPECT_DEATH(GenerateClasspathExports(default_args_with_test_dir_),
                "must not export a jar for SYSTEMSERVERCLASSPATH");
 }
 
