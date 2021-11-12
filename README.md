@@ -61,5 +61,3 @@ are the steps necessary to do that:
  * add a unit test to `derive_sdk_test.cpp` verifying the new extensions works
 - Make the `SdkExtensions.getExtensionVersion` API support the new extensions.
 - Extend the CTS test to verify the above two behaviors.
-- Update `RollbackManagerServiceImpl#getExtensionVersions` to account for the
-  new extension version.
