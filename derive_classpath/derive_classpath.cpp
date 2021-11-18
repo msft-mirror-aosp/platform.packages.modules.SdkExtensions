@@ -19,6 +19,7 @@
 #include <android-base/logging.h>
 #include <android-base/strings.h>
 #include <android-modules-utils/sdk_level.h>
+#include <android-modules-utils/unbounded_sdk_level.h>
 #include <glob.h>
 #include <regex>
 #include <sstream>
@@ -220,13 +221,30 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
     const std::string& allowed_jar_prefix = GetAllowedJarPathPrefix(fragment_path);
 
     for (const Jar& jar : exportedJars.jars()) {
-      // TODO(b/180105615): check for SdkVersion ranges;
       const std::string& jar_path = jar.path();
       CHECK(android::base::StartsWith(jar_path, allowed_jar_prefix))
           << fragment_path << " must not export a jar from outside of the apex: " << jar_path;
+
       const Classpath classpath = jar.classpath();
       CHECK(boot_jars ^ (classpath == SYSTEMSERVERCLASSPATH))
           << fragment_path << " must not export a jar for " << Classpath_Name(classpath);
+
+      if (!jar.min_sdk_version().empty()) {
+        const auto& min_sdk_version = jar.min_sdk_version();
+        if (!android::modules::sdklevel::unbounded::IsAtLeast(min_sdk_version)) {
+          LOG(INFO) << "not installing " << jar_path << " with min_sdk_version " << min_sdk_version;
+          continue;
+        }
+      }
+
+      if (!jar.max_sdk_version().empty()) {
+        const auto& max_sdk_version = jar.max_sdk_version();
+        if (!android::modules::sdklevel::unbounded::IsAtMost(max_sdk_version)) {
+          LOG(INFO) << "not installing " << jar_path << " with max_sdk_version " << max_sdk_version;
+          continue;
+        }
+      }
+
       classpaths[classpath].push_back(jar_path);
     }
   }
