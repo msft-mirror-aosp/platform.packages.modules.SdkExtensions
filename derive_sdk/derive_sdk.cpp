@@ -152,7 +152,10 @@ bool SetSdkLevels(const std::string& mountpath) {
     versions[module] = sdk_version.version();
   }
 
-  int version_R = GetSdkLevel(db, kRModules, versions);
+  std::unordered_set<SdkModule> relevant_modules;
+  relevant_modules.insert(kRModules.begin(), kRModules.end());
+
+  int version_R = GetSdkLevel(db, relevant_modules, versions);
   LOG(INFO) << "R extension version is " << version_R;
 
   if (!android::base::SetProperty("build.version.extensions.r",
@@ -161,7 +164,8 @@ bool SetSdkLevels(const std::string& mountpath) {
     return false;
   }
   if (android::modules::sdklevel::IsAtLeastS()) {
-    int version_S = GetSdkLevel(db, kSModules, versions);
+    relevant_modules.insert(kSModules.begin(), kSModules.end());
+    int version_S = GetSdkLevel(db, relevant_modules, versions);
     LOG(INFO) << "S extension version is " << version_S;
     if (!android::base::SetProperty("build.version.extensions.s",
                                     std::to_string(version_S))) {
