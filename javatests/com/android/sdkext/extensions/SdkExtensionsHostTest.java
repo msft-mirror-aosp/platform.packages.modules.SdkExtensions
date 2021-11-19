@@ -99,11 +99,10 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
         reboot();
 
-        // R-Version 12 requires sdkext, which is fulfilled
-        // R-Version 45 requires sdkext + media, which isn't fulfilled
-        // S-Version 45 does not have any particular requirements.
+        // Version 12 requires sdkext, which is fulfilled
+        // Version 45 requires sdkext + media, which isn't fulfilled
         assertRVersionEquals(12);
-        assertSVersionEquals(45);
+        assertSVersionEquals(12);
         assertTrue(broadcastForBoolean("MAKE_CALLS_45", null)); // 45 APIs are available on 12 too.
     }
 
