@@ -83,13 +83,17 @@ class DeriveSdkTest : public ::testing::Test {
     EXPECT_EQ(S, android::modules::sdklevel::IsAtLeastS() ? n : -1);
   }
 
+  void EXPECT_ALL(int n) {
+    EXPECT_R(n);
+    EXPECT_S(n);
+  }
+
   ExtensionDatabase db_;
   TemporaryDir dir_;
 };
 
 TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
-  EXPECT_R(1);
-  EXPECT_S(1);
+  EXPECT_ALL(1);
 }
 
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_OneApex) {
@@ -98,8 +102,7 @@ TEST_F(DeriveSdkTest, OneDessert_OneVersion_OneApex) {
 
   SetApexVersion("com.android.sdkext", 3);
 
-  EXPECT_R(3);
-  EXPECT_S(3);
+  EXPECT_ALL(3);
 }
 
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_TwoApexes) {
@@ -113,7 +116,7 @@ TEST_F(DeriveSdkTest, OneDessert_OneVersion_TwoApexes) {
   SetApexVersion("com.android.sdkext", 2);
   EXPECT_R(0);
   SetApexVersion("com.android.media", 5);
-  EXPECT_R(5);
+  EXPECT_ALL(5);
 }
 
 TEST_F(DeriveSdkTest, OneDessert_ManyVersions) {
@@ -144,7 +147,7 @@ TEST_F(DeriveSdkTest, OneDessert_ManyVersions) {
   SetApexVersion("com.android.media", 3);
   EXPECT_R(2);
   SetApexVersion("com.android.sdkext", 3);
-  EXPECT_R(3);
+  EXPECT_ALL(3);
 }
 
 TEST_F(DeriveSdkTest, TwoDesserts_ManyVersions) {
@@ -168,15 +171,13 @@ TEST_F(DeriveSdkTest, TwoDesserts_ManyVersions) {
   EXPECT_S(1);
 
   SetApexVersion("com.android.art", 2);
-  EXPECT_R(2);
-  EXPECT_S(2);
+  EXPECT_ALL(2);
 
   SetApexVersion("com.android.media", 3);
   EXPECT_R(3);
   EXPECT_S(2);
   SetApexVersion("com.android.art", 3);
-  EXPECT_R(3);
-  EXPECT_S(3);
+  EXPECT_ALL(3);
 }
 
 int main(int argc, char** argv) {
