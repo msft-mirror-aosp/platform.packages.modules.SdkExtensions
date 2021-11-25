@@ -42,8 +42,6 @@ import java.util.Map;
 @SystemApi
 public class SdkExtensions {
 
-    // S_VERSION_CODE is a separate field to simplify management across branches.
-    private static final int VERSION_CODE_S = VERSION_CODES.S;
     private static final int R_EXTENSION_INT;
     private static final int S_EXTENSION_INT;
     private static final Map<Integer, Integer> ALL_EXTENSION_INTS;
@@ -53,7 +51,7 @@ public class SdkExtensions {
         Map<Integer, Integer> extensions = new HashMap<Integer, Integer>();
         extensions.put(VERSION_CODES.R, R_EXTENSION_INT);
         if (SdkLevel.isAtLeastS()) {
-            extensions.put(VERSION_CODE_S, S_EXTENSION_INT);
+            extensions.put(VERSION_CODES.S, S_EXTENSION_INT);
         }
         ALL_EXTENSION_INTS = Collections.unmodifiableMap(extensions);
     }
@@ -62,7 +60,7 @@ public class SdkExtensions {
      * Values suitable as parameters for {@link #getExtensionVersion(int)}.
      * @hide
      */
-    @IntDef(value = { VERSION_CODES.R, VERSION_CODE_S })
+    @IntDef(value = { VERSION_CODES.R, VERSION_CODES.S })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Extension {}
 
@@ -82,7 +80,7 @@ public class SdkExtensions {
         if (extension == VERSION_CODES.R) {
             return R_EXTENSION_INT;
         }
-        if (extension == VERSION_CODE_S) {
+        if (extension == VERSION_CODES.S) {
             return S_EXTENSION_INT;
         }
         return 0;
