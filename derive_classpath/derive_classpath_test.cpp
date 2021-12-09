@@ -140,10 +140,49 @@ TEST_F(DeriveClasspathTest, DefaultNoUnknownClasspaths) {
   GenerateClasspathExports(default_args_);
 
   const std::vector<std::string> exportLines = ParseExportsFile();
-  // The first three lines are tested above.
-  for (int i = 3; i < exportLines.size(); i++) {
+  // The first four lines are tested below.
+  for (int i = 4; i < exportLines.size(); i++) {
     EXPECT_EQ(exportLines[i], "");
   }
+}
+
+// Test that all variables are properly generated.
+TEST_F(DeriveClasspathTest, AllVariables) {
+  ExportedClasspathsJars exported_jars;
+  Jar* jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/foo");
+  jar->set_classpath(BOOTCLASSPATH);
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.bar/javalib/bar");
+  jar->set_classpath(DEX2OATBOOTCLASSPATH);
+  WriteConfig(exported_jars, "/system/etc/classpaths/bootclasspath.pb");
+
+  exported_jars.clear_jars();
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.baz/javalib/baz");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.qux/javalib/qux");
+  jar->set_classpath(STANDALONE_SYSTEMSERVER_JARS);
+  WriteConfig(exported_jars, "/system/etc/classpaths/systemserverclasspath.pb");
+
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  const std::vector<std::string> exportLines = ParseExportsFile();
+  std::vector<std::string> splitExportLine;
+
+  splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.foo/javalib/foo", splitExportLine[2]);
+  splitExportLine = SplitClasspathExportLine(exportLines[1]);
+  EXPECT_EQ("DEX2OATBOOTCLASSPATH", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.bar/javalib/bar", splitExportLine[2]);
+  splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  EXPECT_EQ("SYSTEMSERVERCLASSPATH", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.baz/javalib/baz", splitExportLine[2]);
+  splitExportLine = SplitClasspathExportLine(exportLines[3]);
+  EXPECT_EQ("STANDALONE_SYSTEMSERVER_JARS", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.qux/javalib/qux", splitExportLine[2]);
 }
 
 // Test that temp directory does not pick up actual jars.
