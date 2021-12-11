@@ -83,23 +83,25 @@ class DeriveSdkTest : public ::testing::Test {
     EXPECT_EQ(S, android::modules::sdklevel::IsAtLeastS() ? n : -1);
   }
 
+  void EXPECT_ALL(int n) {
+    EXPECT_R(n);
+    EXPECT_S(n);
+  }
+
   ExtensionDatabase db_;
   TemporaryDir dir_;
 };
 
 TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
-  EXPECT_R(1);
-  EXPECT_S(1);
+  EXPECT_ALL(1);
 }
 
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_OneApex) {
   AddExtensionVersion(3, {{SdkModule::SDK_EXTENSIONS, 2}});
-  EXPECT_S(3);
+  EXPECT_ALL(0);
 
   SetApexVersion("com.android.sdkext", 3);
-
-  EXPECT_R(3);
-  EXPECT_S(3);
+  EXPECT_ALL(3);
 }
 
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_TwoApexes) {
@@ -107,76 +109,101 @@ TEST_F(DeriveSdkTest, OneDessert_OneVersion_TwoApexes) {
                              {SdkModule::MEDIA, 5},
                              {SdkModule::SDK_EXTENSIONS, 2},
                          });
-  EXPECT_R(0);
-  EXPECT_S(5);
+  EXPECT_ALL(0);
 
+  // Only sdkext
   SetApexVersion("com.android.sdkext", 2);
-  EXPECT_R(0);
+  EXPECT_ALL(0);
+
+  // Only media
+  SetApexVersion("com.android.sdkext", 0);
   SetApexVersion("com.android.media", 5);
-  EXPECT_R(5);
+  EXPECT_ALL(0);
+
+  // Both
+  SetApexVersion("com.android.sdkext", 2);
+  EXPECT_ALL(5);
 }
 
 TEST_F(DeriveSdkTest, OneDessert_ManyVersions) {
   AddExtensionVersion(1, {
                              {SdkModule::MEDIA, 1},
                          });
+  EXPECT_ALL(0);
+  SetApexVersion("com.android.media", 1);
+  EXPECT_ALL(1);
+
   AddExtensionVersion(2, {
                              {SdkModule::MEDIA, 1},
                              {SdkModule::MEDIA_PROVIDER, 2},
                              {SdkModule::SDK_EXTENSIONS, 2},
                          });
+  EXPECT_ALL(1);
+  SetApexVersion("com.android.mediaprovider", 2);
+  EXPECT_ALL(1);
+  SetApexVersion("com.android.sdkext", 2);
+  EXPECT_ALL(2);
+
   AddExtensionVersion(3, {
                              {SdkModule::MEDIA, 3},
                              {SdkModule::MEDIA_PROVIDER, 2},
                              {SdkModule::SDK_EXTENSIONS, 3},
                          });
-  EXPECT_R(0);
-  EXPECT_S(3);
-
-  SetApexVersion("com.android.media", 1);
-  EXPECT_R(1);
-
-  SetApexVersion("com.android.mediaprovider", 2);
-  EXPECT_R(1);
-  SetApexVersion("com.android.sdkext", 2);
-  EXPECT_R(2);
-
+  EXPECT_ALL(2);
   SetApexVersion("com.android.media", 3);
-  EXPECT_R(2);
+  EXPECT_ALL(2);
   SetApexVersion("com.android.sdkext", 3);
-  EXPECT_R(3);
+  EXPECT_ALL(3);
 }
 
 TEST_F(DeriveSdkTest, TwoDesserts_ManyVersions) {
   AddExtensionVersion(1, {
                              {SdkModule::TETHERING, 1},
                          });
+  EXPECT_ALL(0);
+
+  // Only tethering v1
+  SetApexVersion("com.android.tethering", 1);
+  EXPECT_ALL(1);
+
+  // V2 defined
   AddExtensionVersion(2, {
                              {SdkModule::ART, 2},
                              {SdkModule::TETHERING, 1},
                          });
+  EXPECT_R(2);
+  EXPECT_S(1);
+
+  // Only art v2
+  SetApexVersion("com.android.tethering", 0);
+  SetApexVersion("com.android.art", 2);
+  EXPECT_ALL(0);
+
+  // Both
+  SetApexVersion("com.android.tethering", 1);
+  EXPECT_ALL(2);
+
+  // V3 defined
   AddExtensionVersion(3, {
                              {SdkModule::ART, 3},
                              {SdkModule::MEDIA, 3},
                              {SdkModule::TETHERING, 1},
                          });
-  EXPECT_R(0);
-  EXPECT_S(1);
+  EXPECT_ALL(2);
 
-  SetApexVersion("com.android.tethering", 1);
-  EXPECT_R(2);
-  EXPECT_S(1);
-
-  SetApexVersion("com.android.art", 2);
-  EXPECT_R(2);
-  EXPECT_S(2);
-
+  // Only media v3
   SetApexVersion("com.android.media", 3);
   EXPECT_R(3);
   EXPECT_S(2);
+
+  // Only art v3
+  SetApexVersion("com.android.media", 0);
   SetApexVersion("com.android.art", 3);
-  EXPECT_R(3);
-  EXPECT_S(3);
+  EXPECT_ALL(2);
+
+  // Both
+  SetApexVersion("com.android.media", 3);
+  EXPECT_ALL(3);
 }
 
 int main(int argc, char** argv) {
