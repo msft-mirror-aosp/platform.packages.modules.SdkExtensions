@@ -22,6 +22,7 @@
 #include <android-base/stringprintf.h>
 #include <android-base/strings.h>
 #include <android-modules-utils/sdk_level.h>
+#include <android/api-level.h>
 #include <gtest/gtest.h>
 #include <stdlib.h>
 #include <sys/mman.h>
@@ -96,6 +97,15 @@ class DeriveClasspathTest : public ::testing::Test {
     EXPECT_EQ(jar, jars.end());
   }
 
+  void WriteConfig(const ExportedClasspathsJars& exported_jars, const std::string& path) {
+    std::string fragment_path = working_dir() + path;
+    std::string buf;
+    exported_jars.SerializeToString(&buf);
+    std::string cmd("mkdir -p " + android::base::Dirname(fragment_path));
+    ASSERT_EQ(0, system(cmd.c_str()));
+    ASSERT_TRUE(android::base::WriteStringToFile(buf, fragment_path, true));
+  }
+
   void AddJarToClasspath(const std::string& partition, const std::string& jar_filepath,
                          Classpath classpath) {
     ExportedClasspathsJars exported_jars;
@@ -107,12 +117,7 @@ class DeriveClasspathTest : public ::testing::Test {
     std::transform(basename.begin(), basename.end(), basename.begin(),
                    [](unsigned char c) { return std::tolower(c); });
 
-    std::string fragment_path = working_dir() + partition + "/etc/classpaths/" + basename;
-    std::string buf;
-    exported_jars.SerializeToString(&buf);
-    std::string cmd("mkdir -p " + android::base::Dirname(fragment_path));
-    ASSERT_EQ(0, system(cmd.c_str()));
-    ASSERT_TRUE(android::base::WriteStringToFile(buf, fragment_path, true));
+    WriteConfig(exported_jars, partition + "/etc/classpaths/" + basename);
   }
 
   const TemporaryDir temp_dir_;
@@ -135,10 +140,49 @@ TEST_F(DeriveClasspathTest, DefaultNoUnknownClasspaths) {
   GenerateClasspathExports(default_args_);
 
   const std::vector<std::string> exportLines = ParseExportsFile();
-  // The first three lines are tested above.
-  for (int i = 3; i < exportLines.size(); i++) {
+  // The first four lines are tested below.
+  for (int i = 4; i < exportLines.size(); i++) {
     EXPECT_EQ(exportLines[i], "");
   }
+}
+
+// Test that all variables are properly generated.
+TEST_F(DeriveClasspathTest, AllVariables) {
+  ExportedClasspathsJars exported_jars;
+  Jar* jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/foo");
+  jar->set_classpath(BOOTCLASSPATH);
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.bar/javalib/bar");
+  jar->set_classpath(DEX2OATBOOTCLASSPATH);
+  WriteConfig(exported_jars, "/system/etc/classpaths/bootclasspath.pb");
+
+  exported_jars.clear_jars();
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.baz/javalib/baz");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.qux/javalib/qux");
+  jar->set_classpath(STANDALONE_SYSTEMSERVER_JARS);
+  WriteConfig(exported_jars, "/system/etc/classpaths/systemserverclasspath.pb");
+
+  ASSERT_TRUE(GenerateClasspathExports(default_args_with_test_dir_));
+
+  const std::vector<std::string> exportLines = ParseExportsFile();
+  std::vector<std::string> splitExportLine;
+
+  splitExportLine = SplitClasspathExportLine(exportLines[0]);
+  EXPECT_EQ("BOOTCLASSPATH", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.foo/javalib/foo", splitExportLine[2]);
+  splitExportLine = SplitClasspathExportLine(exportLines[1]);
+  EXPECT_EQ("DEX2OATBOOTCLASSPATH", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.bar/javalib/bar", splitExportLine[2]);
+  splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  EXPECT_EQ("SYSTEMSERVERCLASSPATH", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.baz/javalib/baz", splitExportLine[2]);
+  splitExportLine = SplitClasspathExportLine(exportLines[3]);
+  EXPECT_EQ("STANDALONE_SYSTEMSERVER_JARS", splitExportLine[1]);
+  EXPECT_EQ("/apex/com.android.qux/javalib/qux", splitExportLine[2]);
 }
 
 // Test that temp directory does not pick up actual jars.
@@ -361,16 +405,134 @@ TEST_F(DeriveClasspathDeathTest, WrongClasspathInFragments) {
   jar->set_classpath(SYSTEMSERVERCLASSPATH);
 
   // ...and write this config to bootclasspath.pb
-  std::string fragment_path =
-      working_dir() + "/apex/com.android.foo/etc/classpaths/bootclasspath.pb";
-  std::string buf;
-  exported_jars.SerializeToString(&buf);
-  std::string cmd("mkdir -p " + android::base::Dirname(fragment_path));
-  ASSERT_EQ(0, system(cmd.c_str()));
-  ASSERT_TRUE(android::base::WriteStringToFile(buf, fragment_path, true));
+  WriteConfig(exported_jars, "/apex/com.android.foo/etc/classpaths/bootclasspath.pb");
 
   EXPECT_DEATH(GenerateClasspathExports(default_args_with_test_dir_),
                "must not export a jar for SYSTEMSERVERCLASSPATH");
+}
+
+TEST_F(DeriveClasspathDeathTest, CurrentSdkVersion) {
+  if (android_get_device_api_level() < __ANDROID_API_S__) {
+    GTEST_SKIP();
+  }
+
+  ExportedClasspathsJars exported_jars;
+  Jar* jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdkcurrent");
+  jar->set_min_sdk_version("current");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  WriteConfig(exported_jars, "/apex/com.android.foo/etc/classpaths/systemserverclasspath.pb");
+
+  EXPECT_DEATH(GenerateClasspathExports(default_args_with_test_dir_), "no conversion");
+}
+
+// Test jars with different sdk versions.
+TEST_F(DeriveClasspathTest, SdkVersionsAreRespected) {
+  if (android_get_device_api_level() < __ANDROID_API_S__) {
+    GTEST_SKIP();
+  }
+
+  // List of jars expected to be in SYSTEMSERVERCLASSPATH
+  std::vector<std::string> expected_jars;
+
+  // Add an unbounded jar
+  AddJarToClasspath("/system", "/system/framework/unbounded", SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/system/framework/unbounded");
+
+  // Manually create a config with jars that set sdk versions...
+  ExportedClasspathsJars exported_jars;
+
+  // known released versions:
+  Jar* jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk30");
+  jar->set_min_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdk30");
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdk30");
+  jar->set_max_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+  // Device's reported version:
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdklatest");
+  jar->set_min_sdk_version(std::to_string(android_get_device_api_level()));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdklatest");
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdklatest");
+  jar->set_max_sdk_version(std::to_string(android_get_device_api_level()));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  if ("REL" == android::base::GetProperty("ro.build.version.codename", "")) {
+    expected_jars.push_back("/apex/com.android.foo/javalib/maxsdklatest");
+  }
+
+  // unknown SDK_INT+1 version
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk_plus1");
+  jar->set_min_sdk_version(std::to_string(android_get_device_api_level() + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdk_plus1");
+  jar->set_max_sdk_version(std::to_string(android_get_device_api_level() + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/maxsdk_plus1");
+
+  // known min_sdk_version and future max_sdk_version
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk30maxsdk10000");
+  jar->set_min_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_max_sdk_version(std::to_string(android_get_device_api_level() + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdk30maxsdk10000");
+
+  // codename
+  if ("REL" != android::base::GetProperty("ro.build.version.codename", "")) {
+    jar = exported_jars.add_jars();
+    jar->set_path("/apex/com.android.foo/javalib/minsdkS");
+    jar->set_min_sdk_version("S");
+    jar->set_classpath(SYSTEMSERVERCLASSPATH);
+    expected_jars.push_back("/apex/com.android.foo/javalib/minsdkS");
+
+    jar = exported_jars.add_jars();
+    jar->set_path("/apex/com.android.foo/javalib/minsdkSv2");
+    jar->set_min_sdk_version("Sv2");
+    jar->set_classpath(SYSTEMSERVERCLASSPATH);
+    expected_jars.push_back("/apex/com.android.foo/javalib/minsdkSv2");
+
+    jar = exported_jars.add_jars();
+    jar->set_path("/apex/com.android.foo/javalib/minsdkTiramisu");
+    jar->set_min_sdk_version("Tiramisu");
+    jar->set_classpath(SYSTEMSERVERCLASSPATH);
+    expected_jars.push_back("/apex/com.android.foo/javalib/minsdkTiramisu");
+
+    jar = exported_jars.add_jars();
+    jar->set_path("/apex/com.android.foo/javalib/maxsdkS");
+    jar->set_max_sdk_version("S");
+    jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+    jar = exported_jars.add_jars();
+    jar->set_path("/apex/com.android.foo/javalib/maxsdkSv2");
+    jar->set_max_sdk_version("Sv2");
+    jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+    jar = exported_jars.add_jars();
+    jar->set_path("/apex/com.android.foo/javalib/maxsdkTiramisu");
+    jar->set_max_sdk_version("Tiramisu");
+    jar->set_classpath(SYSTEMSERVERCLASSPATH);
+    expected_jars.push_back("/apex/com.android.foo/javalib/maxsdkTiramisu");
+  }
+
+  // ...and write this config to systemserverclasspath.pb
+  WriteConfig(exported_jars, "/apex/com.android.foo/etc/classpaths/systemserverclasspath.pb");
+
+  // Generate and parse SYSTEMSERVERCLASSPATH
+  GenerateClasspathExports(default_args_with_test_dir_);
+  const std::vector<std::string> exportLines = ParseExportsFile();
+  const std::vector<std::string> splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  const std::string exportValue = splitExportLine[2];
+
+  EXPECT_EQ(android::base::Join(expected_jars, ":"), exportValue);
 }
 
 }  // namespace
