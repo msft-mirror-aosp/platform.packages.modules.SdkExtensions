@@ -41,14 +41,19 @@ public class SdkExtensions {
 
     private static final int R_EXTENSION_INT;
     private static final int S_EXTENSION_INT;
+    private static final int T_EXTENSION_INT;
     private static final Map<Integer, Integer> ALL_EXTENSION_INTS;
     static {
         R_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.r", 0);
         S_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.s", 0);
+        T_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.t", 0);
         Map<Integer, Integer> extensions = new HashMap<Integer, Integer>();
         extensions.put(VERSION_CODES.R, R_EXTENSION_INT);
         if (SdkLevel.isAtLeastS()) {
             extensions.put(VERSION_CODES.S, S_EXTENSION_INT);
+        }
+        if (SdkLevel.isAtLeastT()) {
+            extensions.put(VERSION_CODES.TIRAMISU, T_EXTENSION_INT);
         }
         ALL_EXTENSION_INTS = Collections.unmodifiableMap(extensions);
     }
@@ -57,7 +62,7 @@ public class SdkExtensions {
      * Values suitable as parameters for {@link #getExtensionVersion(int)}.
      * @hide
      */
-    @IntDef(value = { VERSION_CODES.R, VERSION_CODES.S })
+    @IntDef(value = { VERSION_CODES.R, VERSION_CODES.S, VERSION_CODES.TIRAMISU })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Extension {}
 
@@ -79,6 +84,9 @@ public class SdkExtensions {
         }
         if (extension == VERSION_CODES.S) {
             return S_EXTENSION_INT;
+        }
+        if (extension == VERSION_CODES.TIRAMISU) {
+            return T_EXTENSION_INT;
         }
         return 0;
     }
