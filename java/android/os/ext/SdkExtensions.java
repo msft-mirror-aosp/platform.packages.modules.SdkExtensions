@@ -36,10 +36,7 @@ import java.util.Map;
  * This class provides information about the extension SDK version present
  * on this device. Use the {@link #getExtensionVersion(int) getExtension} to
  * query for the extension version for the given SDK version.
-
- * @hide
  */
-@SystemApi
 public class SdkExtensions {
 
     private static final int R_EXTENSION_INT;
