@@ -47,18 +47,18 @@ public class SdkExtensionsTest extends TestCase {
 
     /** Verifies that the public sysprops are set as expected */
     public void testSystemProperties() throws Exception {
-        assertEquals("1", SystemProperties.get("build.version.extensions.r"));
-        String expectedS = SdkLevel.isAtLeastS() ? "1" : "";
+        assertEquals("2", SystemProperties.get("build.version.extensions.r"));
+        String expectedS = SdkLevel.isAtLeastS() ? "2" : "";
         assertEquals(expectedS, SystemProperties.get("build.version.extensions.s"));
     }
 
     public void testExtensionVersions() throws Exception {
         Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
         int expectedSize = 1;
-        assertEquals(1, (int) versions.get(Build.VERSION_CODES.R));
+        assertEquals(2, (int) versions.get(Build.VERSION_CODES.R));
 
         if (SdkLevel.isAtLeastS()) {
-            assertEquals(1, (int) versions.get(Build.VERSION_CODES.S));
+            assertEquals(2, (int) versions.get(Build.VERSION_CODES.S));
             expectedSize++;
         }
         assertEquals(expectedSize, versions.size());
