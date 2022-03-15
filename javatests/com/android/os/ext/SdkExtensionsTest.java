@@ -16,6 +16,8 @@
 
 package com.android.os.ext;
 
+import static com.android.os.ext.testing.CurrentVersion.V;
+
 import android.os.Build;
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
@@ -47,24 +49,25 @@ public class SdkExtensionsTest extends TestCase {
 
     /** Verifies that the public sysprops are set as expected */
     public void testSystemProperties() throws Exception {
-        assertEquals("2", SystemProperties.get("build.version.extensions.r"));
-        String expectedS = SdkLevel.isAtLeastS() ? "2" : "";
+        String v = String.valueOf(V);
+        assertEquals(v, SystemProperties.get("build.version.extensions.r"));
+        String expectedS = SdkLevel.isAtLeastS() ? v : "";
         assertEquals(expectedS, SystemProperties.get("build.version.extensions.s"));
-        String expectedT = SdkLevel.isAtLeastT() ? "2" : "";
+        String expectedT = SdkLevel.isAtLeastT() ? v : "";
         assertEquals(expectedT, SystemProperties.get("build.version.extensions.t"));
     }
 
     public void testExtensionVersions() throws Exception {
         Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
         int expectedSize = 1;
-        assertEquals(2, (int) versions.get(Build.VERSION_CODES.R));
+        assertEquals(V, (int) versions.get(Build.VERSION_CODES.R));
 
         if (SdkLevel.isAtLeastS()) {
-            assertEquals(2, (int) versions.get(Build.VERSION_CODES.S));
+            assertEquals(V, (int) versions.get(Build.VERSION_CODES.S));
             expectedSize++;
         }
         if (SdkLevel.isAtLeastT()) {
-            assertEquals(2, (int) versions.get(Build.VERSION_CODES.TIRAMISU));
+            assertEquals(V, (int) versions.get(Build.VERSION_CODES.TIRAMISU));
             expectedSize++;
         }
         assertEquals(expectedSize, versions.size());
