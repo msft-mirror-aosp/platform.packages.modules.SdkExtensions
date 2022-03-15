@@ -173,8 +173,8 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertVersionDefault() throws Exception {
-        assertRVersionEquals(1);
-        assertSVersionEquals(1);
+        assertRVersionEquals(2);
+        assertSVersionEquals(2);
         assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
     }
 
