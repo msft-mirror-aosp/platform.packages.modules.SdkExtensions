@@ -51,7 +51,7 @@ public class SdkExtensionsTest extends TestCase {
         String expectedS = SdkLevel.isAtLeastS() ? "2" : "";
         assertEquals(expectedS, SystemProperties.get("build.version.extensions.s"));
         String expectedT = SdkLevel.isAtLeastT() ? "2" : "";
-        assertEquals(expectedS, SystemProperties.get("build.version.extensions.t"));
+        assertEquals(expectedT, SystemProperties.get("build.version.extensions.t"));
     }
 
     public void testExtensionVersions() throws Exception {
