@@ -15,11 +15,30 @@
  */
 package com.android.os.ext.testing;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
  * This class is intended to serve as a single place to define the current SDK extension
- * version to expect in tests.
+ * versions to expect / allow in tests.
  */
 public class CurrentVersion {
-    /** The current SDK Extension version to expect in tests. */
+
+    /** The current extension version */
     public static final int V = 1;
+
+    /**
+     * The current SDK Extension versions to expect / allow in CTS.
+     *
+     * Note: This construct exists because CTS is currently versioned together with the dessert
+     * versions, and not with the module itself. For example, Android R shipped with extension
+     * version 0, but it is allowed to preload new mainline trains with a higher extension version.
+     * When a new extension version is defined, this Set must therefore be extended to include the
+     * new version.
+     */
+    public static final Set<Integer> ALLOWED_VERSIONS = Collections.unmodifiableSet(Set.of(
+        V,
+        2
+    ));
+
 }
