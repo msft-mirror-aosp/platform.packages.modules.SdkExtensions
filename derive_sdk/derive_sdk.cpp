@@ -166,8 +166,8 @@ bool SetSdkLevels(const std::string& mountpath) {
     LOG(ERROR) << "failed to set r sdk_info prop";
     return false;
   }
+  relevant_modules.insert(kSModules.begin(), kSModules.end());
   if (android::modules::sdklevel::IsAtLeastS()) {
-    relevant_modules.insert(kSModules.begin(), kSModules.end());
     int version_S = GetSdkLevel(db, relevant_modules, versions);
     LOG(INFO) << "S extension version is " << version_S;
     if (!android::base::SetProperty("build.version.extensions.s",
@@ -177,13 +177,24 @@ bool SetSdkLevels(const std::string& mountpath) {
     }
   }
 
+  relevant_modules.insert(kTModules.begin(), kTModules.end());
   if (android::modules::sdklevel::IsAtLeastT()) {
-    relevant_modules.insert(kTModules.begin(), kTModules.end());
     int version_T = GetSdkLevel(db, relevant_modules, versions);
     LOG(INFO) << "T extension version is " << version_T;
     if (!android::base::SetProperty("build.version.extensions.t", std::to_string(version_T))) {
       LOG(ERROR) << "failed to set t sdk_info prop";
       return false;
+    }
+  }
+
+  // Consistency check: verify all modules with requirements is included in some dessert
+  for (const auto& ext_version : db.versions()) {
+    for (const auto& requirement : ext_version.requirements()) {
+      if (relevant_modules.find(requirement.module()) == relevant_modules.end()) {
+        LOG(ERROR) << "version " << ext_version.version() << " requires unmapped module"
+                   << requirement.module();
+        return false;
+      }
     }
   }
 
