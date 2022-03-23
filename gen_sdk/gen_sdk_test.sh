@@ -22,7 +22,7 @@ tmp_dir="$(mktemp -d -t gen_sdk_test-XXXXXXXXXX)"
 function test_print_binary() {
   # Golden binary rep generated with:
   # $ gqui from textproto:testdata/test_extensions_db.textpb \
-  #        proto extensions_db.proto:ExtensionDatabase \
+  #        proto ../../common/proto/sdk.proto:ExtensionDatabase \
   #        --outfile rawproto:- | xxd -p
   cat > ${tmp_dir}/golden_binary << EOF
 0a0a080112060803120208010a1a08021206080312020801120608021202
@@ -30,8 +30,8 @@ function test_print_binary() {
 12060801120208020a220804120608031202080312060802120208021206
 0801120208041206080512020804
 EOF
-
-  diff ${tmp_dir}/golden_binary <(gen_sdk --action print_binary --database testdata/test_extensions_db.textpb | xxd -p)
+  # Uses "toybox xxd" to avoid directly calling "xxd" which might be not found on a clean system.
+  diff -b ${tmp_dir}/golden_binary <(gen_sdk --action print_binary --database testdata/test_extensions_db.textpb | toybox xxd -p)
 }
 test_print_binary
 
