@@ -16,6 +16,8 @@
 
 package com.android.os.ext;
 
+import static com.android.os.ext.testing.CurrentVersion.V;
+
 import android.os.Build;
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
@@ -47,18 +49,19 @@ public class SdkExtensionsTest extends TestCase {
 
     /** Verifies that the public sysprops are set as expected */
     public void testSystemProperties() throws Exception {
-        assertEquals("1", SystemProperties.get("build.version.extensions.r"));
-        String expectedS = SdkLevel.isAtLeastS() ? "1" : "";
+        String v = String.valueOf(V);
+        assertEquals(v, SystemProperties.get("build.version.extensions.r"));
+        String expectedS = SdkLevel.isAtLeastS() ? v : "";
         assertEquals(expectedS, SystemProperties.get("build.version.extensions.s"));
     }
 
     public void testExtensionVersions() throws Exception {
         Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
         int expectedSize = 1;
-        assertEquals(1, (int) versions.get(Build.VERSION_CODES.R));
+        assertEquals(V, (int) versions.get(Build.VERSION_CODES.R));
 
         if (SdkLevel.isAtLeastS()) {
-            assertEquals(1, (int) versions.get(Build.VERSION_CODES.S));
+            assertEquals(V, (int) versions.get(Build.VERSION_CODES.S));
             expectedSize++;
         }
         assertEquals(expectedSize, versions.size());
