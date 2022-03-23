@@ -33,13 +33,13 @@ import java.util.Map;
 /**
  * Methods for interacting with the extension SDK.
  *
- * This class provides information about the extension SDK version present
- * on this device. Use the {@link #getExtensionVersion(int) getExtension} to
- * query for the extension version for the given SDK version.
-
- * @hide
+ * This class provides information about the extension SDK versions present
+ * on this device. Use the {@link #getExtensionVersion(int) getExtension} method
+ * to lookup the version of a given extension.
+ *
+ * The extension version advances as the platform evolves and new APIs are added,
+ * so is suitable to use for determining API availability at runtime.
  */
-@SystemApi
 public class SdkExtensions {
 
     private static final int R_EXTENSION_INT;
@@ -68,6 +68,14 @@ public class SdkExtensions {
 
     /**
      * Return the version of the specified extensions.
+     *
+     * This method is suitable to use in conditional statements to determine whether an API is
+     * available and is safe to use. For example:
+     * <pre>
+     * if (getExtensionVersion(VERSION_CODES.R) >= 3) {
+     *   // Safely use API available since R extensions version 3
+     * }
+     * </pre>
      *
      * @param extension the extension to get the version of.
      * @throws IllegalArgumentException if extension is not a valid extension
