@@ -40,7 +40,7 @@ public class SdkExtensionsTest extends TestCase {
 
     /** Verifies that getExtensionVersion only return existing versions */
     public void testValidValues() throws Exception {
-        int firstUnassigned = Build.VERSION_CODES.TIRAMISU + 1;
+        int firstUnassigned = Build.VERSION_CODES.S + 1;
         for (int sdk = firstUnassigned; sdk <= 1_000_000; sdk++) {
             // No extension SDKs versions yet.
             assertEquals(0, SdkExtensions.getExtensionVersion(sdk));
@@ -53,8 +53,6 @@ public class SdkExtensionsTest extends TestCase {
         assertEquals(v, SystemProperties.get("build.version.extensions.r"));
         String expectedS = SdkLevel.isAtLeastS() ? v : "";
         assertEquals(expectedS, SystemProperties.get("build.version.extensions.s"));
-        String expectedT = SdkLevel.isAtLeastT() ? v : "";
-        assertEquals(expectedT, SystemProperties.get("build.version.extensions.t"));
     }
 
     public void testExtensionVersions() throws Exception {
@@ -64,10 +62,6 @@ public class SdkExtensionsTest extends TestCase {
 
         if (SdkLevel.isAtLeastS()) {
             assertEquals(V, (int) versions.get(Build.VERSION_CODES.S));
-            expectedSize++;
-        }
-        if (SdkLevel.isAtLeastT()) {
-            assertEquals(V, (int) versions.get(Build.VERSION_CODES.TIRAMISU));
             expectedSize++;
         }
         assertEquals(expectedSize, versions.size());

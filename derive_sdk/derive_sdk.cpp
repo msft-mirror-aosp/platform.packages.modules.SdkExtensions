@@ -54,9 +54,6 @@ static const std::unordered_set<SdkModule> kRModules = {
 
 static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
 
-// TODO(b/222051472): Add full set of required T modules when available.
-static const std::unordered_set<SdkModule> kTModules = {};
-
 bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
   std::string contents;
   if (!android::base::ReadFileToString(db_path, &contents, true)) {
@@ -173,16 +170,6 @@ bool SetSdkLevels(const std::string& mountpath) {
     if (!android::base::SetProperty("build.version.extensions.s",
                                     std::to_string(version_S))) {
       LOG(ERROR) << "failed to set s sdk_info prop";
-      return false;
-    }
-  }
-
-  relevant_modules.insert(kTModules.begin(), kTModules.end());
-  if (android::modules::sdklevel::IsAtLeastT()) {
-    int version_T = GetSdkLevel(db, relevant_modules, versions);
-    LOG(INFO) << "T extension version is " << version_T;
-    if (!android::base::SetProperty("build.version.extensions.t", std::to_string(version_T))) {
-      LOG(ERROR) << "failed to set t sdk_info prop";
       return false;
     }
   }
