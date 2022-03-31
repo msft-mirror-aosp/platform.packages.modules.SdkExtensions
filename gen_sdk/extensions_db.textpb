@@ -61,3 +61,66 @@ versions {
     }
   }
 }
+versions {
+  version: 2
+  requirements {
+    module: ART
+    version {
+      version: 1
+    }
+  }
+  requirements {
+    module: CONSCRYPT
+    version {
+      version: 1
+    }
+  }
+  requirements {
+    module: IPSEC
+    version {
+      version: 1
+    }
+  }
+  requirements {
+    module: MEDIA
+    version {
+      version: 1
+    }
+  }
+  requirements {
+    module: MEDIA_PROVIDER
+    version {
+      version: 2
+    }
+  }
+  requirements {
+    module: PERMISSIONS
+    version {
+      version: 1
+    }
+  }
+  requirements {
+    module: SCHEDULING
+    version {
+      version: 1
+    }
+  }
+  requirements {
+    module: SDK_EXTENSIONS
+    version {
+      version: 2
+    }
+  }
+  requirements {
+    module: STATSD
+    version {
+      version: 1
+    }
+  }
+  requirements {
+    module: TETHERING
+    version {
+      version: 1
+    }
+  }
+}
