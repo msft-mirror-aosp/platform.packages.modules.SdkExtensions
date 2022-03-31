@@ -16,9 +16,9 @@
 
 package com.android.os.ext;
 
+import static android.os.Build.VERSION_CODES;
 import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS;
 
-import android.os.Build;
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
 import com.android.modules.utils.build.SdkLevel;
@@ -30,6 +30,14 @@ public class SdkExtensionsTest extends TestCase {
 
     private static void assertCorrectVersion(int version) throws Exception {
         assertTrue(ALLOWED_VERSIONS.contains(version));
+    }
+
+    private static void assertCorrectVersion(boolean expected, int version) throws Exception {
+        if (expected) {
+            assertCorrectVersion(version);
+        } else {
+            assertEquals(0, version);
+        }
     }
 
     private static void assertCorrectVersion(boolean expected, String propValue) throws Exception {
@@ -44,7 +52,7 @@ public class SdkExtensionsTest extends TestCase {
     /** Verify that getExtensionVersion only accepts valid extension SDKs */
     public void testBadArgument() throws Exception {
         // R is the first SDK version with extensions.
-        for (int sdk = -1_000_000; sdk < Build.VERSION_CODES.R; sdk++) {
+        for (int sdk = -1_000_000; sdk < VERSION_CODES.R; sdk++) {
             try {
                 SdkExtensions.getExtensionVersion(sdk);
                 fail("expected IllegalArgumentException");
@@ -54,10 +62,11 @@ public class SdkExtensionsTest extends TestCase {
 
     /** Verifies that getExtensionVersion only return existing versions */
     public void testValidValues() throws Exception {
-        int firstUnassigned = Build.VERSION_CODES.S + 1;
-        assertCorrectVersion(SdkExtensions.getExtensionVersion(Build.VERSION_CODES.R));
-        assertCorrectVersion(SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S));
+        assertCorrectVersion(true, SdkExtensions.getExtensionVersion(VERSION_CODES.R));
+        assertCorrectVersion(
+            SdkLevel.isAtLeastS(), SdkExtensions.getExtensionVersion(VERSION_CODES.S));
 
+        int firstUnassigned = VERSION_CODES.S + 1;
         for (int sdk = firstUnassigned; sdk <= 1_000_000; sdk++) {
             // No extension SDKs yet.
             assertEquals(0, SdkExtensions.getExtensionVersion(sdk));
@@ -74,10 +83,10 @@ public class SdkExtensionsTest extends TestCase {
     public void testExtensionVersions() throws Exception {
         Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
         int expectedSize = 1;
-        assertCorrectVersion(versions.get(Build.VERSION_CODES.R));
+        assertCorrectVersion(versions.get(VERSION_CODES.R));
 
         if (SdkLevel.isAtLeastS()) {
-            assertCorrectVersion(versions.get(Build.VERSION_CODES.S));
+            assertCorrectVersion(versions.get(VERSION_CODES.S));
             expectedSize++;
         }
         assertEquals(expectedSize, versions.size());
