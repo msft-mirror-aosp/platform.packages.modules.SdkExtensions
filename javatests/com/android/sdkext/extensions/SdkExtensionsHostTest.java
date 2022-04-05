@@ -16,6 +16,8 @@
 
 package com.android.sdkext.extensions;
 
+import static com.android.os.ext.testing.CurrentVersion.V;
+
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertEquals;
@@ -173,8 +175,8 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertVersionDefault() throws Exception {
-        assertRVersionEquals(1);
-        assertSVersionEquals(1);
+        assertRVersionEquals(V);
+        assertSVersionEquals(V);
         assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
     }
 
