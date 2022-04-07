@@ -234,7 +234,7 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
 
       if (!jar.min_sdk_version().empty()) {
         const auto& min_sdk_version = jar.min_sdk_version();
-        if (!android::modules::sdklevel::unbounded::IsAtLeast(min_sdk_version)) {
+        if (!android::modules::sdklevel::unbounded::IsAtLeast(min_sdk_version.c_str())) {
           LOG(INFO) << "not installing " << jar_path << " with min_sdk_version " << min_sdk_version;
           continue;
         }
@@ -242,7 +242,7 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
 
       if (!jar.max_sdk_version().empty()) {
         const auto& max_sdk_version = jar.max_sdk_version();
-        if (!android::modules::sdklevel::unbounded::IsAtMost(max_sdk_version)) {
+        if (!android::modules::sdklevel::unbounded::IsAtMost(max_sdk_version.c_str())) {
           LOG(INFO) << "not installing " << jar_path << " with max_sdk_version " << max_sdk_version;
           continue;
         }
