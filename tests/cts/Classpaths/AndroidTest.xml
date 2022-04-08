@@ -23,12 +23,4 @@
     <test class="com.android.tradefed.testtype.HostTest" >
         <option name="jar" value="CtsClasspathsTestCases.jar" />
     </test>
-
-    <!-- Run tests when "com.google.android.sdkext" is on device.
-      Otherwise skip. The logic only applies to situations when this
-      is triggered via mts-tradefed. It is disabled for all other *TS.
-    -->
-    <object type="module_controller" class="com.android.tradefed.testtype.suite.module.MainlineTestModuleController">
-        <option name="mainline-module-package-name" value="com.google.android.sdkext" />
-    </object>
 </configuration>

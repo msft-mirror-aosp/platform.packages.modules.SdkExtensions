@@ -24,7 +24,7 @@ components:
 
 ### Deriving extension SDK level
 `derive_sdk` is a program that reads metadata stored in other apex modules, in
-the form of binary protobuf files in subpath `etc/sdkinfo.pb` inside each
+the form of binary protobuf files in subpath `etc/sdkinfo.binarypb` inside each
 apex. The structure of this protobuf can be seen [here][sdkinfo-proto]. The
 exact steps for converting a set of metadata files to actual extension versions
 is likely to change over time, and should not be depended upon.
@@ -61,3 +61,5 @@ are the steps necessary to do that:
  * add a unit test to `derive_sdk_test.cpp` verifying the new extensions works
 - Make the `SdkExtensions.getExtensionVersion` API support the new extensions.
 - Extend the CTS test to verify the above two behaviors.
+- Update `RollbackManagerServiceImpl#getExtensionVersions` to account for the
+  new extension version.

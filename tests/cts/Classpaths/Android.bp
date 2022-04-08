@@ -21,14 +21,14 @@ package {
 java_test_host {
     name: "CtsClasspathsTestCases",
     defaults: ["cts_defaults"],
-    srcs: ["src/**/*.java"],
+    srcs: [ "src/**/*.java" ],
     libs: [
         "cts-tradefed",
         "tradefed",
     ],
     static_libs: [
         "compat-classpaths-testing",
-        "modules-utils-build-testing",
+        "compatibility-host-util",
     ],
     test_suites: [
         "cts",

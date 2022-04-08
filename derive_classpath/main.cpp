@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-#include <android-base/logging.h>
-#include <android-base/strings.h>
 #include <cstdlib>
 #include <string_view>
 
 #include "derive_classpath.h"
 
 int main(int argc, char** argv) {
-  // Default args
-  android::derive_classpath::Args args = {
-      .output_path = android::derive_classpath::kGeneratedClasspathExportsFilepath,
-      .glob_pattern_prefix = "",
-  };
+  std::string_view output_location;
   if (argc == 1) {
-    args.output_path = android::derive_classpath::kGeneratedClasspathExportsFilepath;
+    output_location = android::derive_classpath::kGeneratedClasspathExportsFilepath;
   } else if (argc == 2) {
-    args.output_path = argv[1];
+    output_location = argv[1];
   } else {
-    LOG(ERROR) << "too many arguments " << argc;
     return EXIT_FAILURE;
   }
-  if (!android::derive_classpath::GenerateClasspathExports(args)) {
+  if (!android::derive_classpath::GenerateClasspathExports(output_location)) {
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;

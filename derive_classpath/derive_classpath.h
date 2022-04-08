@@ -24,15 +24,11 @@ namespace derive_classpath {
 
 constexpr std::string_view kGeneratedClasspathExportsFilepath = "/data/system/environ/classpath";
 
-struct Args {
-  std::string_view output_path;
+bool GenerateClasspathExports(std::string_view output_path = kGeneratedClasspathExportsFilepath);
 
-  // Test only. glob_pattern_prefix is appended to each glob pattern to allow adding mock configs in
-  // /data/local/tmp for example.
-  std::string glob_pattern_prefix;
-};
-
-bool GenerateClasspathExports(const Args& args);
+// This must only be used in tests.
+bool GenerateClasspathExports(const std::string& globPatternPrefix,
+                              std::string_view output_path = kGeneratedClasspathExportsFilepath);
 
 }  // namespace derive_classpath
 }  // namespace android

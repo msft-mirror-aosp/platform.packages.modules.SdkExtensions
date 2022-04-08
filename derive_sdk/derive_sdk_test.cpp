@@ -50,7 +50,7 @@ class DeriveSdkTest : public ::testing::Test {
       req->set_module(pair.first);
       req->mutable_version()->set_version(pair.second);
     }
-    WriteProto(db_, EtcDir("com.android.sdkext") + "/extensions_db.pb");
+    WriteProto(db_, EtcDir("com.android.sdkext") + "/extensions_db.binarypb");
 
     android::derivesdk::SetSdkLevels(dir());
   }
@@ -58,7 +58,7 @@ class DeriveSdkTest : public ::testing::Test {
   void SetApexVersion(const std::string apex, int version) {
     SdkVersion sdk_version;
     sdk_version.set_version(version);
-    WriteProto(sdk_version, EtcDir(apex) + "/sdkinfo.pb");
+    WriteProto(sdk_version, EtcDir(apex) + "/sdkinfo.binarypb");
 
     android::derivesdk::SetSdkLevels(dir());
   }
@@ -88,8 +88,8 @@ class DeriveSdkTest : public ::testing::Test {
 };
 
 TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
-  EXPECT_R(1);
-  EXPECT_S(1);
+  EXPECT_R(0);
+  EXPECT_S(0);
 }
 
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_OneApex) {

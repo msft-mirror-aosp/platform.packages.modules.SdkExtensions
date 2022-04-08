@@ -39,7 +39,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
-import java.lang.NumberFormatException;
 import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,12 +89,12 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     @Test
     public void testDefault() throws Exception {
-        assertVersionDefault();
+        assertVersion0();
     }
 
     @Test
     public void upgradeOneApexWithBump()  throws Exception {
-        assertVersionDefault();
+        assertVersion0();
         mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
         reboot();
 
@@ -104,22 +103,22 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         // S-Version 45 does not have any particular requirements.
         assertRVersionEquals(12);
         assertSVersionEquals(45);
-        assertTrue(broadcastForBoolean("MAKE_CALLS_45", null)); // 45 APIs are available on 12 too.
+        assertEquals("true", broadcast("MAKE_CALLS_45")); // sdkext 45 APIs are available in 12 too.
     }
 
     @Test
     public void upgradeOneApex() throws Exception {
         // Version 45 requires updated sdkext and media, so updating just media changes nothing.
-        assertVersionDefault();
+        assertVersion0();
         mInstallUtils.installApexes(MEDIA_FILENAME);
         reboot();
-        assertVersionDefault();
+        assertVersion0();
     }
 
     @Test
     public void upgradeTwoApexes() throws Exception {
         // Updating sdkext and media bumps the version to 45.
-        assertVersionDefault();
+        assertVersion0();
         mInstallUtils.installApexes(MEDIA_FILENAME, SDKEXTENSIONS_FILENAME);
         reboot();
         assertVersion45();
@@ -142,6 +141,10 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         return res.getStdout().replace("\n", "");
     }
 
+    private String broadcast(String action) throws Exception {
+        return broadcast(action, null);
+    }
+
     private String broadcast(String action, String extra) throws Exception {
         String command = getBroadcastCommand(action, extra);
         CommandResult res = getDevice().executeShellV2Command(command);
@@ -151,42 +154,20 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         return matcher.group(1);
     }
 
-    private boolean broadcastForBoolean(String action, String extra) throws Exception {
-        String result = broadcast(action, extra);
-        if (result.equals("true") || result.equals("false")) {
-            return result.equals("true");
-        }
-        throw getAppParsingError(result);
-    }
-
-    private int broadcastForInt(String action, String extra) throws Exception {
-        String result = broadcast(action, extra);
-        try {
-            return Integer.parseInt(result);
-        } catch (NumberFormatException e) {
-            throw getAppParsingError(result);
-        }
-    }
-
-    private Error getAppParsingError(String result) {
-        String message = "App error! Full stack trace in logcat (grep for SdkExtensionsE2E): ";
-        return new AssertionError(message + result);
-    }
-
-    private void assertVersionDefault() throws Exception {
-        assertRVersionEquals(1);
-        assertSVersionEquals(1);
-        assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
+    private void assertVersion0() throws Exception {
+        assertRVersionEquals(0);
+        assertSVersionEquals(0);
+        assertEquals("true", broadcast("MAKE_CALLS_0"));
     }
 
     private void assertVersion45() throws Exception {
         assertRVersionEquals(45);
         assertSVersionEquals(45);
-        assertTrue(broadcastForBoolean("MAKE_CALLS_45", null));
+        assertEquals("true", broadcast("MAKE_CALLS_45"));
     }
 
     private void assertRVersionEquals(int version) throws Exception {
-        int appValue = broadcastForInt("GET_SDK_VERSION", "r");
+        int appValue = Integer.parseInt(broadcast("GET_SDK_VERSION", "r"));
         String syspropValue = getExtensionVersionFromSysprop("r");
         assertEquals(version, appValue);
         assertEquals(String.valueOf(version), syspropValue);
@@ -195,14 +176,14 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertSVersionEquals(int version) throws Exception {
-        int appValue = broadcastForInt("GET_SDK_VERSION", "s");
+        int appValue = Integer.parseInt(broadcast("GET_SDK_VERSION", "s"));
         String syspropValue = getExtensionVersionFromSysprop("s");
         if (isAtLeastS()) {
             assertEquals(version, appValue);
             assertEquals(String.valueOf(version), syspropValue);
 
             // These APKs require the same R version as they do S version.
-            int minVersion = Math.min(version, broadcastForInt("GET_SDK_VERSION", "r"));
+            int minVersion = Math.min(version, Integer.parseInt(broadcast("GET_SDK_VERSION", "r")));
             assertEquals(minVersion >= 12, canInstallApp(APP_S12_FILENAME, APP_S12_PACKAGE));
             assertEquals(minVersion >= 45, canInstallApp(APP_S45_FILENAME, APP_S45_PACKAGE));
         } else {
@@ -225,7 +206,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private boolean isAtLeastS() throws Exception {
         if (mIsAtLeastS == null) {
-            mIsAtLeastS = broadcastForBoolean("IS_AT_LEAST", "s");
+            mIsAtLeastS = broadcast("IS_AT_LEAST", "s").equals("true");
         }
         return mIsAtLeastS;
     }

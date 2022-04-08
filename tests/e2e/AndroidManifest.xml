@@ -21,14 +21,10 @@
         android:versionCode="1">
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="30" />
 
-    <!--
-        We explicitly set usesNonSdkApi to false because the fact that we compile against
-        module_current makes the build system auto-insert usesNonSdkApi="true".
-    -->
-    <application android:label="SDK Extensions verifier" android:usesNonSdkApi="false">
+    <application android:label="SDK Extensions verifier">
         <receiver android:name=".Receiver">
             <intent-filter>
-                <action android:name="com.android.tests.apex.sdkextensions.MAKE_CALLS_DEFAULT" />
+                <action android:name="com.android.tests.apex.sdkextensions.MAKE_CALLS_0" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.android.tests.apex.sdkextensions.MAKE_CALLS_45" />
