@@ -87,6 +87,22 @@ function test_validate() {
     exit 1
   fi
 
+  if gen_sdk --action validate --database testdata/unknown_module.textpb; then
+    echo "FAILED: expect sdk containing UNKNOWN module to be invalid"
+    exit 1
+  fi
+
+  if gen_sdk --action validate --database testdata/undefined_module.textpb; then
+    echo "FAILED: expect sdk containing undefined module to be invalid"
+    exit 1
+  fi
+
+  rm -f ${db} && touch ${db}
+  if gen_sdk --action new_sdk --sdk 1 --modules UNKNOWN --database ${db}; then
+    echo "FAILED: expected new sdk with UNKNOWN module to be invalid"
+    exit 1
+  fi
+
   set -e
 }
 test_validate

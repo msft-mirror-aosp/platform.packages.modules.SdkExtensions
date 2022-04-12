@@ -100,6 +100,14 @@ def ValidateDatabase(database, dbname):
           if prev.version > requirement.version.version:
             return 'Found module requirement moving backwards: %s in %s' % (requirement, version)
         prev_requirements[requirement.module] = requirement.version
+
+    for version in database.versions:
+      required_modules = [r.module for r in version.requirements]
+      if SdkModule.UNKNOWN in required_modules:
+        return 'SDK %d has a requirement on the UNKNOWN module' % version.version
+      if not all([m in SdkModule.values() for m in required_modules]):
+        return 'SDK %d has a requirement on an undefined module value' % version.version
+
     return None
 
   err = find_bug()
