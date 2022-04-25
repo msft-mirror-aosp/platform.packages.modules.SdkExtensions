@@ -517,10 +517,10 @@ TEST_F(DeriveClasspathTest, SdkVersionsAreRespected) {
     jar->set_classpath(SYSTEMSERVERCLASSPATH);
 
     jar = exported_jars.add_jars();
-    jar->set_path("/apex/com.android.foo/javalib/maxsdkTiramisu");
-    jar->set_max_sdk_version("Tiramisu");
+    jar->set_path("/apex/com.android.foo/javalib/maxsdkZFutureSdkVersion");
+    jar->set_max_sdk_version("ZFutureSdkVersion");
     jar->set_classpath(SYSTEMSERVERCLASSPATH);
-    expected_jars.push_back("/apex/com.android.foo/javalib/maxsdkTiramisu");
+    expected_jars.push_back("/apex/com.android.foo/javalib/maxsdkZFutureSdkVersion");
   }
 
   // ...and write this config to systemserverclasspath.pb
