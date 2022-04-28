@@ -35,11 +35,14 @@ namespace android {
 namespace derivesdk {
 
 static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
+    {"com.android.adservices", SdkModule::AD_SERVICES},
+    {"com.android.appsearch", SdkModule::APPSEARCH},
     {"com.android.art", SdkModule::ART},
     {"com.android.conscrypt", SdkModule::CONSCRYPT},
     {"com.android.ipsec", SdkModule::IPSEC},
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
+    {"com.android.ondevicepersonalization", SdkModule::ON_DEVICE_PERSONALIZATION},
     {"com.android.permission", SdkModule::PERMISSIONS},
     {"com.android.scheduling", SdkModule::SCHEDULING},
     {"com.android.sdkext", SdkModule::SDK_EXTENSIONS},
@@ -54,8 +57,8 @@ static const std::unordered_set<SdkModule> kRModules = {
 
 static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
 
-// TODO(b/222051472): Add full set of required T modules when available.
-static const std::unordered_set<SdkModule> kTModules = {};
+static const std::unordered_set<SdkModule> kTModules = {
+    SdkModule::AD_SERVICES, SdkModule::APPSEARCH, SdkModule::ON_DEVICE_PERSONALIZATION};
 
 bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
   std::string contents;
@@ -166,8 +169,8 @@ bool SetSdkLevels(const std::string& mountpath) {
     LOG(ERROR) << "failed to set r sdk_info prop";
     return false;
   }
+  relevant_modules.insert(kSModules.begin(), kSModules.end());
   if (android::modules::sdklevel::IsAtLeastS()) {
-    relevant_modules.insert(kSModules.begin(), kSModules.end());
     int version_S = GetSdkLevel(db, relevant_modules, versions);
     LOG(INFO) << "S extension version is " << version_S;
     if (!android::base::SetProperty("build.version.extensions.s",
@@ -177,13 +180,24 @@ bool SetSdkLevels(const std::string& mountpath) {
     }
   }
 
+  relevant_modules.insert(kTModules.begin(), kTModules.end());
   if (android::modules::sdklevel::IsAtLeastT()) {
-    relevant_modules.insert(kTModules.begin(), kTModules.end());
     int version_T = GetSdkLevel(db, relevant_modules, versions);
     LOG(INFO) << "T extension version is " << version_T;
     if (!android::base::SetProperty("build.version.extensions.t", std::to_string(version_T))) {
       LOG(ERROR) << "failed to set t sdk_info prop";
       return false;
+    }
+  }
+
+  // Consistency check: verify all modules with requirements is included in some dessert
+  for (const auto& ext_version : db.versions()) {
+    for (const auto& requirement : ext_version.requirements()) {
+      if (relevant_modules.find(requirement.module()) == relevant_modules.end()) {
+        LOG(ERROR) << "version " << ext_version.version() << " requires unmapped module"
+                   << requirement.module();
+        return false;
+      }
     }
   }
 
