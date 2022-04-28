@@ -25,7 +25,7 @@ import java.util.Set;
 public class CurrentVersion {
 
     /** The current extension version */
-    public static final int V = 2;
+    public static final int V = 3;
 
     /**
      * The current SDK Extension versions to expect / allow in CTS.
