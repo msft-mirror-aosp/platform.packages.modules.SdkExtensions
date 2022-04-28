@@ -22,7 +22,7 @@ tmp_dir="$(mktemp -d -t gen_sdk_test-XXXXXXXXXX)"
 function test_print_binary() {
   # Golden binary rep generated with:
   # $ gqui from textproto:testdata/test_extensions_db.textpb \
-  #        proto extensions_db.proto:ExtensionDatabase \
+  #        proto ../../common/proto/sdk.proto:ExtensionDatabase \
   #        --outfile rawproto:- | xxd -p
   cat > ${tmp_dir}/golden_binary << EOF
 0a0a080112060803120208010a1a08021206080312020801120608021202
@@ -30,13 +30,13 @@ function test_print_binary() {
 12060801120208020a220804120608031202080312060802120208021206
 0801120208041206080512020804
 EOF
-
-  diff ${tmp_dir}/golden_binary <(gen_sdk --action print_binary --database testdata/test_extensions_db.textpb | xxd -p)
+  # Uses "toybox xxd" to avoid directly calling "xxd" which might be not found on a clean system.
+  diff -b ${tmp_dir}/golden_binary <(gen_sdk --action print_binary --database testdata/test_extensions_db.textpb | toybox xxd -p)
 }
 test_print_binary
 
 # Verifies the tool is able to re-create the test DB correctly.
-function test_new_sdk() {
+function test_new_sdk_filtered() {
   db=${tmp_dir}/extensions_db.textpb
   rm -f ${db} && touch ${db}
   gen_sdk --action new_sdk --sdk 1 --modules MEDIA_PROVIDER --database ${db}
@@ -46,7 +46,17 @@ function test_new_sdk() {
 
   diff -u0 testdata/test_extensions_db.textpb ${db}
 }
-test_new_sdk
+test_new_sdk_filtered
+
+# Verifies the tool can create new SDKs requiring all modules
+function test_new_sdk_all_modules() {
+  db=${tmp_dir}/extensions_db.textpb
+  rm -f ${db} && touch ${db}
+  gen_sdk --action new_sdk --sdk 1 --database ${db} | grep -q MEDIA_PROVIDER
+  gen_sdk --action new_sdk --sdk 2 --database ${db} | grep -q ART
+  ! gen_sdk --action new_sdk --sdk 3 --database ${db} | grep -q UNKNOWN
+}
+test_new_sdk_all_modules
 
 # Verifies the tool won't allow bogus SDK updates
 function test_validate() {
@@ -74,6 +84,22 @@ function test_validate() {
 
   if gen_sdk --action validate --database testdata/backward_req.textpb; then
     echo "FAILED: expect version requirement going backward to fail"
+    exit 1
+  fi
+
+  if gen_sdk --action validate --database testdata/unknown_module.textpb; then
+    echo "FAILED: expect sdk containing UNKNOWN module to be invalid"
+    exit 1
+  fi
+
+  if gen_sdk --action validate --database testdata/undefined_module.textpb; then
+    echo "FAILED: expect sdk containing undefined module to be invalid"
+    exit 1
+  fi
+
+  rm -f ${db} && touch ${db}
+  if gen_sdk --action new_sdk --sdk 1 --modules UNKNOWN --database ${db}; then
+    echo "FAILED: expected new sdk with UNKNOWN module to be invalid"
     exit 1
   fi
 
