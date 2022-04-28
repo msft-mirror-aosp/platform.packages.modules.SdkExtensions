@@ -35,11 +35,14 @@ namespace android {
 namespace derivesdk {
 
 static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
+    {"com.android.adservices", SdkModule::AD_SERVICES},
+    {"com.android.appsearch", SdkModule::APPSEARCH},
     {"com.android.art", SdkModule::ART},
     {"com.android.conscrypt", SdkModule::CONSCRYPT},
     {"com.android.ipsec", SdkModule::IPSEC},
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
+    {"com.android.ondevicepersonalization", SdkModule::ON_DEVICE_PERSONALIZATION},
     {"com.android.permission", SdkModule::PERMISSIONS},
     {"com.android.scheduling", SdkModule::SCHEDULING},
     {"com.android.sdkext", SdkModule::SDK_EXTENSIONS},
@@ -54,8 +57,8 @@ static const std::unordered_set<SdkModule> kRModules = {
 
 static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
 
-// TODO(b/222051472): Add full set of required T modules when available.
-static const std::unordered_set<SdkModule> kTModules = {};
+static const std::unordered_set<SdkModule> kTModules = {
+    SdkModule::AD_SERVICES, SdkModule::APPSEARCH, SdkModule::ON_DEVICE_PERSONALIZATION};
 
 bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
   std::string contents;
