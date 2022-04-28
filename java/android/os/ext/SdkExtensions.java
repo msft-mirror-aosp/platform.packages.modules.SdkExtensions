@@ -33,25 +33,30 @@ import java.util.Map;
 /**
  * Methods for interacting with the extension SDK.
  *
- * This class provides information about the extension SDK version present
- * on this device. Use the {@link #getExtensionVersion(int) getExtension} to
- * query for the extension version for the given SDK version.
-
- * @hide
+ * This class provides information about the extension SDK versions present
+ * on this device. Use the {@link #getExtensionVersion(int) getExtension} method
+ * to lookup the version of a given extension.
+ *
+ * The extension version advances as the platform evolves and new APIs are added,
+ * so is suitable to use for determining API availability at runtime.
  */
-@SystemApi
 public class SdkExtensions {
 
     private static final int R_EXTENSION_INT;
     private static final int S_EXTENSION_INT;
+    private static final int T_EXTENSION_INT;
     private static final Map<Integer, Integer> ALL_EXTENSION_INTS;
     static {
         R_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.r", 0);
         S_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.s", 0);
+        T_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.t", 0);
         Map<Integer, Integer> extensions = new HashMap<Integer, Integer>();
         extensions.put(VERSION_CODES.R, R_EXTENSION_INT);
         if (SdkLevel.isAtLeastS()) {
             extensions.put(VERSION_CODES.S, S_EXTENSION_INT);
+        }
+        if (SdkLevel.isAtLeastT()) {
+            extensions.put(VERSION_CODES.TIRAMISU, T_EXTENSION_INT);
         }
         ALL_EXTENSION_INTS = Collections.unmodifiableMap(extensions);
     }
@@ -60,7 +65,7 @@ public class SdkExtensions {
      * Values suitable as parameters for {@link #getExtensionVersion(int)}.
      * @hide
      */
-    @IntDef(value = { VERSION_CODES.R, VERSION_CODES.S })
+    @IntDef(value = { VERSION_CODES.R, VERSION_CODES.S, VERSION_CODES.TIRAMISU })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Extension {}
 
@@ -68,6 +73,14 @@ public class SdkExtensions {
 
     /**
      * Return the version of the specified extensions.
+     *
+     * This method is suitable to use in conditional statements to determine whether an API is
+     * available and is safe to use. For example:
+     * <pre>
+     * if (getExtensionVersion(VERSION_CODES.R) >= 3) {
+     *   // Safely use API available since R extensions version 3
+     * }
+     * </pre>
      *
      * @param extension the extension to get the version of.
      * @throws IllegalArgumentException if extension is not a valid extension
@@ -82,6 +95,9 @@ public class SdkExtensions {
         }
         if (extension == VERSION_CODES.S) {
             return S_EXTENSION_INT;
+        }
+        if (extension == VERSION_CODES.TIRAMISU) {
+            return T_EXTENSION_INT;
         }
         return 0;
     }
