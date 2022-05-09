@@ -23,6 +23,7 @@ java_test_host {
     static_libs: [
         "cts-install-lib-host",
         "frameworks-base-hostutils",
+        "test_util_current_version",
     ],
     data: [
         ":sdkextensions_e2e_test_app",
