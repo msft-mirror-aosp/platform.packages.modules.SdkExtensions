@@ -16,6 +16,8 @@
 
 package com.android.sdkext.extensions;
 
+import static com.android.os.ext.testing.CurrentVersion.V;
+
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertEquals;
@@ -99,11 +101,10 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
         reboot();
 
-        // R-Version 12 requires sdkext, which is fulfilled
-        // R-Version 45 requires sdkext + media, which isn't fulfilled
-        // S-Version 45 does not have any particular requirements.
+        // Version 12 requires sdkext, which is fulfilled
+        // Version 45 requires sdkext + media, which isn't fulfilled
         assertRVersionEquals(12);
-        assertSVersionEquals(45);
+        assertSVersionEquals(12);
         assertTrue(broadcastForBoolean("MAKE_CALLS_45", null)); // 45 APIs are available on 12 too.
     }
 
@@ -174,8 +175,8 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertVersionDefault() throws Exception {
-        assertRVersionEquals(1);
-        assertSVersionEquals(1);
+        assertRVersionEquals(V);
+        assertSVersionEquals(V);
         assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
     }
 

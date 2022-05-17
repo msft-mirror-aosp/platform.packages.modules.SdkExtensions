@@ -153,6 +153,8 @@ bool WriteClasspathExports(Classpaths classpaths, std::string_view output_path) 
       << android::base::Join(classpaths[DEX2OATBOOTCLASSPATH], ':') << '\n';
   out << "export SYSTEMSERVERCLASSPATH "
       << android::base::Join(classpaths[SYSTEMSERVERCLASSPATH], ':') << '\n';
+  out << "export STANDALONE_SYSTEMSERVER_JARS "
+      << android::base::Join(classpaths[STANDALONE_SYSTEMSERVER_JARS], ':') << '\n';
 
   const std::string& content = out.str();
   LOG(INFO) << "WriteClasspathExports content\n" << content;
@@ -226,12 +228,13 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
           << fragment_path << " must not export a jar from outside of the apex: " << jar_path;
 
       const Classpath classpath = jar.classpath();
-      CHECK(boot_jars ^ (classpath == SYSTEMSERVERCLASSPATH))
+      CHECK(boot_jars ^
+            (classpath == SYSTEMSERVERCLASSPATH || classpath == STANDALONE_SYSTEMSERVER_JARS))
           << fragment_path << " must not export a jar for " << Classpath_Name(classpath);
 
       if (!jar.min_sdk_version().empty()) {
         const auto& min_sdk_version = jar.min_sdk_version();
-        if (!android::modules::sdklevel::unbounded::IsAtLeast(min_sdk_version)) {
+        if (!android::modules::sdklevel::unbounded::IsAtLeast(min_sdk_version.c_str())) {
           LOG(INFO) << "not installing " << jar_path << " with min_sdk_version " << min_sdk_version;
           continue;
         }
@@ -239,7 +242,7 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
 
       if (!jar.max_sdk_version().empty()) {
         const auto& max_sdk_version = jar.max_sdk_version();
-        if (!android::modules::sdklevel::unbounded::IsAtMost(max_sdk_version)) {
+        if (!android::modules::sdklevel::unbounded::IsAtMost(max_sdk_version.c_str())) {
           LOG(INFO) << "not installing " << jar_path << " with max_sdk_version " << max_sdk_version;
           continue;
         }

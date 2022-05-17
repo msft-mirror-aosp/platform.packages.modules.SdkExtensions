@@ -46,7 +46,7 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
       }
       args.system_bootclasspath_fragment = value;
     } else if (ArgumentMatches(arg, "--systemserverclasspath-fragment=", &value)) {
-      if (!args.system_bootclasspath_fragment.empty()) {
+      if (!args.system_systemserverclasspath_fragment.empty()) {
         LOG(ERROR) << "Duplicated flag --systemserverclasspath-fragment is specified";
         return false;
       }
