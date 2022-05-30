@@ -107,7 +107,7 @@ int GetSdkLevel(const ExtensionDatabase& db,
   return max;
 }
 
-bool SetExtension(const std::string extension_name, const ExtensionDatabase& db,
+bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db,
                   const std::unordered_set<SdkModule>& relevant_modules,
                   const std::unordered_map<SdkModule, int>& module_versions) {
   int version = GetSdkLevel(db, relevant_modules, module_versions);
