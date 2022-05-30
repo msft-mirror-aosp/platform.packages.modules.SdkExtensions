@@ -24,8 +24,20 @@ import java.util.Set;
  */
 public class CurrentVersion {
 
-    /** The current extension version */
-    public static final int V = 1;
+    /** The latest train's version */
+    public static final int CURRENT_TRAIN_VERSION = 3;
+
+    /** The version R shipped with (0) */
+    public static final int R_BASE_VERSION = 0;
+
+    /** The version S shipped with (1) */
+    public static final int S_BASE_VERSION = 1;
+
+    /** The version T shipped with (3) */
+    public static final int T_BASE_VERSION = 3;
+
+    /** The current platform's version */
+    public static final int CURRENT_BASE_VERSION = S_BASE_VERSION;
 
     /**
      * The current SDK Extension versions to expect / allow in CTS.
@@ -36,9 +48,8 @@ public class CurrentVersion {
      * When a new extension version is defined, this Set must therefore be extended to include the
      * new version.
      */
-    public static final Set<Integer> ALLOWED_VERSIONS = Collections.unmodifiableSet(Set.of(
-        V,
-        2
-    ));
+    public static final Set<Integer> ALLOWED_VERSIONS_CTS =
+        CURRENT_BASE_VERSION == CURRENT_TRAIN_VERSION ? Set.of(CURRENT_BASE_VERSION)
+            : Set.of(CURRENT_BASE_VERSION, CURRENT_TRAIN_VERSION);
 
 }
