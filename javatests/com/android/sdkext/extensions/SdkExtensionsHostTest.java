@@ -187,30 +187,35 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertRVersionEquals(int version) throws Exception {
-        int appValue = broadcastForInt("GET_SDK_VERSION", "r");
-        String syspropValue = getExtensionVersionFromSysprop("r");
-        assertEquals(version, appValue);
-        assertEquals(String.valueOf(version), syspropValue);
-        assertEquals(version >= 12, canInstallApp("r12"));
-        assertEquals(version >= 45, canInstallApp("r45"));
+        String[] apps = version >= 45 ? new String[]{"r12", "r45"} :
+            version >= 12 ? new String[]{"r12"} : new String[]{};
+        assertExtensionVersionEquals("r", version, apps, true);
     }
 
     private void assertSVersionEquals(int version) throws Exception {
-        int appValue = broadcastForInt("GET_SDK_VERSION", "s");
-        String syspropValue = getExtensionVersionFromSysprop("s");
-        if (isAtLeastS()) {
+        // These APKs require the same R version as they do S version.
+        int minVersion = Math.min(version, broadcastForInt("GET_SDK_VERSION", "r"));
+        String[] apps = minVersion >= 45 ? new String[]{"s12", "s45"}
+                : minVersion >= 12 ? new String[]{"s12"} : new String[]{};
+        assertExtensionVersionEquals("s", version, apps, isAtLeastS());
+    }
+
+    private void assertExtensionVersionEquals(String extension, int version, String[] apps,
+            boolean expected) throws Exception {
+        int appValue = broadcastForInt("GET_SDK_VERSION", extension);
+        String syspropValue = getExtensionVersionFromSysprop(extension);
+        if (expected) {
             assertEquals(version, appValue);
             assertEquals(String.valueOf(version), syspropValue);
-
-            // These APKs require the same R version as they do S version.
-            int minVersion = Math.min(version, broadcastForInt("GET_SDK_VERSION", "r"));
-            assertEquals(minVersion >= 12, canInstallApp("s12"));
-            assertEquals(minVersion >= 45, canInstallApp("s45"));
+            for (String app : apps) {
+                assertTrue(canInstallApp(app));
+            }
         } else {
             assertEquals(0, appValue);
             assertEquals("", syspropValue);
-            assertFalse(canInstallApp("s12"));
-            assertFalse(canInstallApp("s45"));
+            for (String app : apps) {
+                assertFalse(canInstallApp(app));
+            }
         }
     }
 
