@@ -17,7 +17,7 @@
 package com.android.os.ext;
 
 import static android.os.Build.VERSION_CODES;
-import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS;
+import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
 import static com.google.common.truth.Truth.assertThat;
 
 import android.os.SystemProperties;
@@ -30,7 +30,7 @@ import java.util.Set;
 public class SdkExtensionsTest extends TestCase {
 
     private static void assertCorrectVersion(int version) throws Exception {
-        assertThat(ALLOWED_VERSIONS).contains(version);
+        assertThat(ALLOWED_VERSIONS_CTS).contains(version);
     }
 
     private static void assertCorrectVersion(boolean expected, int version) throws Exception {
