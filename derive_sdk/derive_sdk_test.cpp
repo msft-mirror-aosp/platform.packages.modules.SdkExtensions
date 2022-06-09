@@ -101,10 +101,6 @@ class DeriveSdkTest : public ::testing::Test {
   TemporaryDir dir_;
 };
 
-TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
-  EXPECT_ALL(3);
-}
-
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_OneApex) {
   AddExtensionVersion(3, {{SdkModule::SDK_EXTENSIONS, 2}});
   EXPECT_ALL(0);
