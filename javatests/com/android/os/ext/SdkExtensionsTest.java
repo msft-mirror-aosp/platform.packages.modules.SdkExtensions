@@ -17,8 +17,7 @@
 package com.android.os.ext;
 
 import static android.os.Build.VERSION_CODES;
-import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
-import static com.google.common.truth.Truth.assertThat;
+import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS;
 
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
@@ -30,7 +29,7 @@ import java.util.Set;
 public class SdkExtensionsTest extends TestCase {
 
     private static void assertCorrectVersion(int version) throws Exception {
-        assertThat(ALLOWED_VERSIONS_CTS).contains(version);
+        assertTrue(ALLOWED_VERSIONS.contains(version));
     }
 
     private static void assertCorrectVersion(boolean expected, int version) throws Exception {
@@ -66,10 +65,8 @@ public class SdkExtensionsTest extends TestCase {
         assertCorrectVersion(true, SdkExtensions.getExtensionVersion(VERSION_CODES.R));
         assertCorrectVersion(
             SdkLevel.isAtLeastS(), SdkExtensions.getExtensionVersion(VERSION_CODES.S));
-        assertCorrectVersion(
-            SdkLevel.isAtLeastT(), SdkExtensions.getExtensionVersion(VERSION_CODES.TIRAMISU));
 
-        int firstUnassigned = VERSION_CODES.TIRAMISU + 1;
+        int firstUnassigned = VERSION_CODES.S + 1;
         for (int sdk = firstUnassigned; sdk <= 1_000_000; sdk++) {
             // No extension SDKs yet.
             assertEquals(0, SdkExtensions.getExtensionVersion(sdk));
@@ -81,8 +78,6 @@ public class SdkExtensionsTest extends TestCase {
         assertCorrectVersion(true, SystemProperties.get("build.version.extensions.r"));
         assertCorrectVersion(
             SdkLevel.isAtLeastS(), SystemProperties.get("build.version.extensions.s"));
-        assertCorrectVersion(
-            SdkLevel.isAtLeastT(), SystemProperties.get("build.version.extensions.t"));
     }
 
     public void testExtensionVersions() throws Exception {
@@ -92,10 +87,6 @@ public class SdkExtensionsTest extends TestCase {
 
         if (SdkLevel.isAtLeastS()) {
             assertCorrectVersion(versions.get(VERSION_CODES.S));
-            expectedSize++;
-        }
-        if (SdkLevel.isAtLeastT()) {
-            assertCorrectVersion(versions.get(VERSION_CODES.TIRAMISU));
             expectedSize++;
         }
         assertEquals(expectedSize, versions.size());

@@ -16,6 +16,8 @@
 
 package com.android.sdkext.extensions;
 
+import static com.android.os.ext.testing.CurrentVersion.V;
+
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +28,6 @@ import static org.junit.Assume.assumeTrue;
 
 import android.cts.install.lib.host.InstallUtilsHost;
 
-import com.android.os.ext.testing.CurrentVersion;
 import com.android.tests.rollback.host.AbandonSessionsRule;
 import com.android.tradefed.device.ITestDevice.ApexInfo;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
@@ -50,23 +51,22 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private static final String APP_FILENAME = "sdkextensions_e2e_test_app.apk";
     private static final String APP_PACKAGE = "com.android.sdkext.extensions.apps";
+    private static final String APP_R12_FILENAME = "sdkextensions_e2e_test_app_req_r12.apk";
+    private static final String APP_R12_PACKAGE = "com.android.sdkext.extensions.apps.r12";
+    private static final String APP_S12_FILENAME = "sdkextensions_e2e_test_app_req_s12.apk";
+    private static final String APP_S12_PACKAGE = "com.android.sdkext.extensions.apps.s12";
+    private static final String APP_R45_FILENAME = "sdkextensions_e2e_test_app_req_r45.apk";
+    private static final String APP_R45_PACKAGE = "com.android.sdkext.extensions.apps.r45";
+    private static final String APP_S45_FILENAME = "sdkextensions_e2e_test_app_req_s45.apk";
+    private static final String APP_S45_PACKAGE = "com.android.sdkext.extensions.apps.s45";
     private static final String MEDIA_FILENAME = "test_com.android.media.apex";
     private static final String SDKEXTENSIONS_FILENAME = "test_com.android.sdkext.apex";
-
-    private static String appFilename(String appName) {
-        return "sdkextensions_e2e_test_app_req_" + appName + ".apk";
-    }
-
-    private static String appPackage(String appName) {
-        return "com.android.sdkext.extensions.apps." + appName;
-    }
 
     private static final Duration BOOT_COMPLETE_TIMEOUT = Duration.ofMinutes(2);
 
     private final InstallUtilsHost mInstallUtils = new InstallUtilsHost(this);
 
     private Boolean mIsAtLeastS = null;
-    private Boolean mIsAtLeastT = null;
 
     @Rule
     public AbandonSessionsRule mHostTestRule = new AbandonSessionsRule(this);
@@ -105,8 +105,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         // Version 45 requires sdkext + media, which isn't fulfilled
         assertRVersionEquals(12);
         assertSVersionEquals(12);
-        assertTVersionEquals(12);
-        assertTestMethodsPresent(); // 45 APIs are available on 12 too.
+        assertTrue(broadcastForBoolean("MAKE_CALLS_45", null)); // 45 APIs are available on 12 too.
     }
 
     @Test
@@ -127,13 +126,13 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         assertVersion45();
     }
 
-    private boolean canInstallApp(String appName) throws Exception {
-        File appFile = mInstallUtils.getTestFile(appFilename(appName));
+    private boolean canInstallApp(String filename, String packageName) throws Exception {
+        File appFile = mInstallUtils.getTestFile(filename);
         String installResult = getDevice().installPackage(appFile, true);
         if (installResult != null) {
             return false;
         }
-        assertNull(getDevice().uninstallPackage(appPackage(appName)));
+        assertNull(getDevice().uninstallPackage(packageName));
         return true;
     }
 
@@ -176,71 +175,42 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertVersionDefault() throws Exception {
-        int expected = isAtLeastT() ? CurrentVersion.T_BASE_VERSION
-            : isAtLeastS() ? CurrentVersion.S_BASE_VERSION
-            : CurrentVersion.R_BASE_VERSION;
-        assertRVersionEquals(expected);
-        assertSVersionEquals(expected);
-        assertTVersionEquals(expected);
-        assertTestMethodsNotPresent();
+        assertRVersionEquals(V);
+        assertSVersionEquals(V);
+        assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
     }
 
     private void assertVersion45() throws Exception {
         assertRVersionEquals(45);
         assertSVersionEquals(45);
-        assertTVersionEquals(45);
-        assertTestMethodsPresent();
-    }
-
-    private void assertTestMethodsNotPresent() throws Exception {
-        assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
-    }
-
-    private void assertTestMethodsPresent() throws Exception {
-        if (isAtLeastS()) {
-            assertTrue(broadcastForBoolean("MAKE_CALLS_45", null));
-        } else {
-            // The APIs in the test apex are not currently getting installed correctly
-            // on Android R devices because they rely on the dynamic classpath feature.
-            // TODO(b/234361913): fix this
-            assertTestMethodsNotPresent();
-        }
+        assertTrue(broadcastForBoolean("MAKE_CALLS_45", null));
     }
 
     private void assertRVersionEquals(int version) throws Exception {
-        String[] apps = version >= 45 ? new String[]{"r12", "r45"} :
-            version >= 12 ? new String[]{"r12"} : new String[]{};
-        assertExtensionVersionEquals("r", version, apps, true);
+        int appValue = broadcastForInt("GET_SDK_VERSION", "r");
+        String syspropValue = getExtensionVersionFromSysprop("r");
+        assertEquals(version, appValue);
+        assertEquals(String.valueOf(version), syspropValue);
+        assertEquals(version >= 12, canInstallApp(APP_R12_FILENAME, APP_R12_PACKAGE));
+        assertEquals(version >= 45, canInstallApp(APP_R45_FILENAME, APP_R45_PACKAGE));
     }
 
     private void assertSVersionEquals(int version) throws Exception {
-        // These APKs require the same R version as they do S version.
-        int minVersion = Math.min(version, broadcastForInt("GET_SDK_VERSION", "r"));
-        String[] apps = minVersion >= 45 ? new String[]{"s12", "s45"}
-                : minVersion >= 12 ? new String[]{"s12"} : new String[]{};
-        assertExtensionVersionEquals("s", version, apps, isAtLeastS());
-    }
-
-    private void assertTVersionEquals(int version) throws Exception {
-        assertExtensionVersionEquals("t", version, new String[]{}, isAtLeastT());
-    }
-
-    private void assertExtensionVersionEquals(String extension, int version, String[] apps,
-            boolean expected) throws Exception {
-        int appValue = broadcastForInt("GET_SDK_VERSION", extension);
-        String syspropValue = getExtensionVersionFromSysprop(extension);
-        if (expected) {
+        int appValue = broadcastForInt("GET_SDK_VERSION", "s");
+        String syspropValue = getExtensionVersionFromSysprop("s");
+        if (isAtLeastS()) {
             assertEquals(version, appValue);
             assertEquals(String.valueOf(version), syspropValue);
-            for (String app : apps) {
-                assertTrue(canInstallApp(app));
-            }
+
+            // These APKs require the same R version as they do S version.
+            int minVersion = Math.min(version, broadcastForInt("GET_SDK_VERSION", "r"));
+            assertEquals(minVersion >= 12, canInstallApp(APP_S12_FILENAME, APP_S12_PACKAGE));
+            assertEquals(minVersion >= 45, canInstallApp(APP_S45_FILENAME, APP_S45_PACKAGE));
         } else {
             assertEquals(0, appValue);
             assertEquals("", syspropValue);
-            for (String app : apps) {
-                assertFalse(canInstallApp(app));
-            }
+            assertFalse(canInstallApp(APP_S12_FILENAME, APP_S12_PACKAGE));
+            assertFalse(canInstallApp(APP_S45_FILENAME, APP_S45_PACKAGE));
         }
     }
 
@@ -259,13 +229,6 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
             mIsAtLeastS = broadcastForBoolean("IS_AT_LEAST", "s");
         }
         return mIsAtLeastS;
-    }
-
-    private boolean isAtLeastT() throws Exception {
-        if (mIsAtLeastT == null) {
-            mIsAtLeastT = broadcastForBoolean("IS_AT_LEAST", "t");
-        }
-        return mIsAtLeastT;
     }
 
     private boolean uninstallApexes(String... filenames) throws Exception {

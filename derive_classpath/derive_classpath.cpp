@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "derive_classpath"
-
 #include "derive_classpath.h"
 #include <android-base/file.h>
 #include <android-base/logging.h>

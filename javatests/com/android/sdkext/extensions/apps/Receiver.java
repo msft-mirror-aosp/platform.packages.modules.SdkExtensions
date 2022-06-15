@@ -41,7 +41,6 @@ public class Receiver extends BroadcastReceiver {
         switch (letter) {
             case 'r': return Build.VERSION_CODES.R;
             case 's': return Build.VERSION_CODES.S;
-            case 't': return Build.VERSION_CODES.TIRAMISU;
         }
         throw new IllegalArgumentException(String.valueOf(letter));
     }
@@ -50,7 +49,6 @@ public class Receiver extends BroadcastReceiver {
         switch (letter) {
             case 'r': return true; // our min sdk version is 30
             case 's': return SdkLevel.isAtLeastS();
-            case 't': return SdkLevel.isAtLeastT();
         }
         return false;
     }
