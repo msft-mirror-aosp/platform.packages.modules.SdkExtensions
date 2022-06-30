@@ -23,6 +23,8 @@ android_test {
         "androidx.test.rules",
         "ctstestrunner-axt",
         "modules-utils-build",
+        "test_util_current_version",
+        "truth-prebuilt",
     ],
     srcs: ["*.java"],
     test_config: "CtsSdkExtensionsTestCases.xml",
@@ -33,4 +35,5 @@ android_test {
     ],
     sdk_version: "system_current",
     min_sdk_version: "30",
+    jarjar_rules: "jarjar-rules.txt",
 }

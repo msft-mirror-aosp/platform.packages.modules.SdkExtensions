@@ -40,9 +40,7 @@ class DeriveSdkTest : public ::testing::Test {
     return dir() + "/" + apex + "/etc";
   }
 
-  void AddExtensionVersion(
-      const int version,
-      const std::unordered_map<SdkModule, int>& requirements) {
+  void AddVersionToDb(const int version, const std::unordered_map<SdkModule, int>& requirements) {
     ExtensionVersion* sdk = db_.add_versions();
     sdk->set_version(version);
     for (auto pair : requirements) {
@@ -51,8 +49,12 @@ class DeriveSdkTest : public ::testing::Test {
       req->mutable_version()->set_version(pair.second);
     }
     WriteProto(db_, EtcDir("com.android.sdkext") + "/extensions_db.pb");
+  }
 
-    android::derivesdk::SetSdkLevels(dir());
+  void AddExtensionVersion(const int version,
+                           const std::unordered_map<SdkModule, int>& requirements) {
+    AddVersionToDb(version, requirements);
+    ASSERT_TRUE(android::derivesdk::SetSdkLevels(dir()));
   }
 
   void SetApexVersion(const std::string apex, int version) {
@@ -60,7 +62,7 @@ class DeriveSdkTest : public ::testing::Test {
     sdk_version.set_version(version);
     WriteProto(sdk_version, EtcDir(apex) + "/sdkinfo.pb");
 
-    android::derivesdk::SetSdkLevels(dir());
+    ASSERT_TRUE(android::derivesdk::SetSdkLevels(dir()));
   }
 
   void WriteProto(const google::protobuf::MessageLite& proto,
@@ -83,18 +85,27 @@ class DeriveSdkTest : public ::testing::Test {
     EXPECT_EQ(S, android::modules::sdklevel::IsAtLeastS() ? n : -1);
   }
 
+  void EXPECT_T(int n) {
+    int T = android::base::GetIntProperty("build.version.extensions.t", -1);
+    // Only expect the T extension level to be set on T+ devices.
+    EXPECT_EQ(T, android::modules::sdklevel::IsAtLeastT() ? n : -1);
+  }
+
+  void EXPECT_ADSERVICES(int n) {
+    int A = android::base::GetIntProperty("build.version.extensions.ad_services", -1);
+    // Only expect the AdServices extension level to be set on T+ devices.
+    EXPECT_EQ(A, android::modules::sdklevel::IsAtLeastT() ? n : -1);
+  }
+
   void EXPECT_ALL(int n) {
     EXPECT_R(n);
     EXPECT_S(n);
+    EXPECT_T(n);
   }
 
   ExtensionDatabase db_;
   TemporaryDir dir_;
 };
-
-TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
-  EXPECT_ALL(1);
-}
 
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_OneApex) {
   AddExtensionVersion(3, {{SdkModule::SDK_EXTENSIONS, 2}});
@@ -204,6 +215,52 @@ TEST_F(DeriveSdkTest, TwoDesserts_ManyVersions) {
   // Both
   SetApexVersion("com.android.media", 3);
   EXPECT_ALL(3);
+}
+
+TEST_F(DeriveSdkTest, UnmappedModule) {
+  AddVersionToDb(5, {
+                        {static_cast<SdkModule>(77), 5},  // Doesn't exist.
+                        {SdkModule::SDK_EXTENSIONS, 2},
+                    });
+
+  ASSERT_FALSE(android::derivesdk::SetSdkLevels(dir()));
+}
+
+TEST_F(DeriveSdkTest, AdServices) {
+  AddExtensionVersion(1, {
+                             {SdkModule::TETHERING, 1},
+                         });
+  EXPECT_ALL(0);
+  EXPECT_ADSERVICES(1);
+
+  SetApexVersion("com.android.tethering", 1);
+  EXPECT_ALL(1);
+
+  // V2 defined
+  AddExtensionVersion(2, {
+                             {SdkModule::AD_SERVICES, 2},
+                             {SdkModule::TETHERING, 2},
+                         });
+  EXPECT_ALL(1);
+  EXPECT_ADSERVICES(1);
+
+  // Only adservices v2
+  SetApexVersion("com.android.adservices", 2);
+  EXPECT_ALL(1);
+  EXPECT_ADSERVICES(2);
+
+  // Both v2
+  SetApexVersion("com.android.tethering", 2);
+  EXPECT_ALL(2);
+  EXPECT_ADSERVICES(2);
+
+  // Only tethering v2. R and S extension are bumped, but T requires adserices.
+  SetApexVersion("com.android.adservices", 0);
+  SetApexVersion("com.android.tethering", 2);
+  EXPECT_R(2);
+  EXPECT_S(2);
+  EXPECT_T(1);
+  EXPECT_ADSERVICES(1);
 }
 
 int main(int argc, char** argv) {

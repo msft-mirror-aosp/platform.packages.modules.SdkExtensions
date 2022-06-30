@@ -35,11 +35,14 @@ namespace android {
 namespace derivesdk {
 
 static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
+    {"com.android.adservices", SdkModule::AD_SERVICES},
+    {"com.android.appsearch", SdkModule::APPSEARCH},
     {"com.android.art", SdkModule::ART},
     {"com.android.conscrypt", SdkModule::CONSCRYPT},
     {"com.android.ipsec", SdkModule::IPSEC},
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
+    {"com.android.ondevicepersonalization", SdkModule::ON_DEVICE_PERSONALIZATION},
     {"com.android.permission", SdkModule::PERMISSIONS},
     {"com.android.scheduling", SdkModule::SCHEDULING},
     {"com.android.sdkext", SdkModule::SDK_EXTENSIONS},
@@ -53,6 +56,9 @@ static const std::unordered_set<SdkModule> kRModules = {
 };
 
 static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
+
+static const std::unordered_set<SdkModule> kTModules = {
+    SdkModule::AD_SERVICES, SdkModule::APPSEARCH, SdkModule::ON_DEVICE_PERSONALIZATION};
 
 bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
   std::string contents;
@@ -107,6 +113,20 @@ int GetSdkLevel(const ExtensionDatabase& db,
   return max;
 }
 
+bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db,
+                  const std::unordered_set<SdkModule>& relevant_modules,
+                  const std::unordered_map<SdkModule, int>& module_versions) {
+  int version = GetSdkLevel(db, relevant_modules, module_versions);
+  LOG(INFO) << "extension " << extension_name << " version is " << version;
+
+  const std::string property_name = "build.version.extensions." + extension_name;
+  if (!android::base::SetProperty(property_name, std::to_string(version))) {
+    LOG(ERROR) << "failed to set sdk_info prop " << property_name;
+    return false;
+  }
+  return true;
+}
+
 bool SetSdkLevels(const std::string& mountpath) {
   ExtensionDatabase db;
   if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
@@ -154,22 +174,39 @@ bool SetSdkLevels(const std::string& mountpath) {
 
   std::unordered_set<SdkModule> relevant_modules;
   relevant_modules.insert(kRModules.begin(), kRModules.end());
-
-  int version_R = GetSdkLevel(db, relevant_modules, versions);
-  LOG(INFO) << "R extension version is " << version_R;
-
-  if (!android::base::SetProperty("build.version.extensions.r",
-                                  std::to_string(version_R))) {
-    LOG(ERROR) << "failed to set r sdk_info prop";
+  if (!SetExtension("r", db, relevant_modules, versions)) {
     return false;
   }
+
+  relevant_modules.insert(kSModules.begin(), kSModules.end());
   if (android::modules::sdklevel::IsAtLeastS()) {
-    relevant_modules.insert(kSModules.begin(), kSModules.end());
-    int version_S = GetSdkLevel(db, relevant_modules, versions);
-    LOG(INFO) << "S extension version is " << version_S;
-    if (!android::base::SetProperty("build.version.extensions.s",
-                                    std::to_string(version_S))) {
-      LOG(ERROR) << "failed to set s sdk_info prop";
+    if (!SetExtension("s", db, relevant_modules, versions)) {
+      return false;
+    }
+  }
+
+  relevant_modules.insert(kTModules.begin(), kTModules.end());
+  if (android::modules::sdklevel::IsAtLeastT()) {
+    if (!SetExtension("t", db, relevant_modules, versions)) {
+      return false;
+    }
+  }
+
+  // Consistency check: verify all modules with requirements is included in some dessert
+  for (const auto& ext_version : db.versions()) {
+    for (const auto& requirement : ext_version.requirements()) {
+      if (relevant_modules.find(requirement.module()) == relevant_modules.end()) {
+        LOG(ERROR) << "version " << ext_version.version() << " requires unmapped module"
+                   << requirement.module();
+        return false;
+      }
+    }
+  }
+
+  relevant_modules.clear();
+  relevant_modules.insert(SdkModule::AD_SERVICES);
+  if (android::modules::sdklevel::IsAtLeastT()) {
+    if (!SetExtension("ad_services", db, relevant_modules, versions)) {
       return false;
     }
   }
