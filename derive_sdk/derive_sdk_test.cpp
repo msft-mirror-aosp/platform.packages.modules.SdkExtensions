@@ -91,6 +91,12 @@ class DeriveSdkTest : public ::testing::Test {
     EXPECT_EQ(T, android::modules::sdklevel::IsAtLeastT() ? n : -1);
   }
 
+  void EXPECT_ADSERVICES(int n) {
+    int A = android::base::GetIntProperty("build.version.extensions.ad_services", -1);
+    // Only expect the AdServices extension level to be set on T+ devices.
+    EXPECT_EQ(A, android::modules::sdklevel::IsAtLeastT() ? n : -1);
+  }
+
   void EXPECT_ALL(int n) {
     EXPECT_R(n);
     EXPECT_S(n);
@@ -218,6 +224,43 @@ TEST_F(DeriveSdkTest, UnmappedModule) {
                     });
 
   ASSERT_FALSE(android::derivesdk::SetSdkLevels(dir()));
+}
+
+TEST_F(DeriveSdkTest, AdServices) {
+  AddExtensionVersion(1, {
+                             {SdkModule::TETHERING, 1},
+                         });
+  EXPECT_ALL(0);
+  EXPECT_ADSERVICES(1);
+
+  SetApexVersion("com.android.tethering", 1);
+  EXPECT_ALL(1);
+
+  // V2 defined
+  AddExtensionVersion(2, {
+                             {SdkModule::AD_SERVICES, 2},
+                             {SdkModule::TETHERING, 2},
+                         });
+  EXPECT_ALL(1);
+  EXPECT_ADSERVICES(1);
+
+  // Only adservices v2
+  SetApexVersion("com.android.adservices", 2);
+  EXPECT_ALL(1);
+  EXPECT_ADSERVICES(2);
+
+  // Both v2
+  SetApexVersion("com.android.tethering", 2);
+  EXPECT_ALL(2);
+  EXPECT_ADSERVICES(2);
+
+  // Only tethering v2. R and S extension are bumped, but T requires adserices.
+  SetApexVersion("com.android.adservices", 0);
+  SetApexVersion("com.android.tethering", 2);
+  EXPECT_R(2);
+  EXPECT_S(2);
+  EXPECT_T(1);
+  EXPECT_ADSERVICES(1);
 }
 
 int main(int argc, char** argv) {
