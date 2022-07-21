@@ -56,7 +56,11 @@ android_app_certificate {
 
 sdk {
     name: "sdkextensions-sdk",
-    bootclasspath_fragments: ["com.android.sdkext-bootclasspath-fragment"],
+    apexes: [
+        // Adds exportable dependencies of the APEX to the sdk,
+        // e.g. *classpath_fragments.
+        "com.android.sdkext",
+    ],
 }
 
 // Encapsulate the contributions made by the com.android.sdkext to the bootclasspath.
