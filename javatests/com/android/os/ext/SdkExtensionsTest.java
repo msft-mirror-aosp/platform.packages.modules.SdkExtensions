@@ -17,7 +17,13 @@
 package com.android.os.ext;
 
 import static android.os.Build.VERSION_CODES;
-import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS;
+import static android.os.Build.VERSION_CODES.R;
+import static android.os.Build.VERSION_CODES.S;
+import static android.os.Build.VERSION_CODES.TIRAMISU;
+import static android.os.ext.SdkExtensions.AD_SERVICES;
+import static android.os.ext.SdkExtensions.getExtensionVersion;
+import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
+import static com.google.common.truth.Truth.assertThat;
 
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
@@ -29,7 +35,7 @@ import java.util.Set;
 public class SdkExtensionsTest extends TestCase {
 
     private static void assertCorrectVersion(int version) throws Exception {
-        assertTrue(ALLOWED_VERSIONS.contains(version));
+        assertThat(ALLOWED_VERSIONS_CTS).contains(version);
     }
 
     private static void assertCorrectVersion(boolean expected, int version) throws Exception {
@@ -62,14 +68,16 @@ public class SdkExtensionsTest extends TestCase {
 
     /** Verifies that getExtensionVersion only return existing versions */
     public void testValidValues() throws Exception {
-        assertCorrectVersion(true, SdkExtensions.getExtensionVersion(VERSION_CODES.R));
-        assertCorrectVersion(
-            SdkLevel.isAtLeastS(), SdkExtensions.getExtensionVersion(VERSION_CODES.S));
-        assertCorrectVersion(
-            SdkLevel.isAtLeastT(), SdkExtensions.getExtensionVersion(VERSION_CODES.TIRAMISU));
+        assertCorrectVersion(true, getExtensionVersion(R));
+        assertCorrectVersion(SdkLevel.isAtLeastS(), getExtensionVersion(S));
+        assertCorrectVersion(SdkLevel.isAtLeastT(), getExtensionVersion(TIRAMISU));
+        assertCorrectVersion(SdkLevel.isAtLeastT(), getExtensionVersion(AD_SERVICES));
 
-        int firstUnassigned = VERSION_CODES.TIRAMISU + 1;
-        for (int sdk = firstUnassigned; sdk <= 1_000_000; sdk++) {
+        Set<Integer> assignedCodes = Set.of(R, S, TIRAMISU, AD_SERVICES);
+        for (int sdk = VERSION_CODES.R; sdk <= 1_000_000; sdk++) {
+            if (assignedCodes.contains(sdk)) {
+                continue;
+            }
             // No extension SDKs yet.
             assertEquals(0, SdkExtensions.getExtensionVersion(sdk));
         }
@@ -95,6 +103,8 @@ public class SdkExtensionsTest extends TestCase {
         }
         if (SdkLevel.isAtLeastT()) {
             assertCorrectVersion(versions.get(VERSION_CODES.TIRAMISU));
+            expectedSize++;
+            assertCorrectVersion(versions.get(SdkExtensions.AD_SERVICES));
             expectedSize++;
         }
         assertEquals(expectedSize, versions.size());

@@ -113,6 +113,20 @@ int GetSdkLevel(const ExtensionDatabase& db,
   return max;
 }
 
+bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db,
+                  const std::unordered_set<SdkModule>& relevant_modules,
+                  const std::unordered_map<SdkModule, int>& module_versions) {
+  int version = GetSdkLevel(db, relevant_modules, module_versions);
+  LOG(INFO) << "extension " << extension_name << " version is " << version;
+
+  const std::string property_name = "build.version.extensions." + extension_name;
+  if (!android::base::SetProperty(property_name, std::to_string(version))) {
+    LOG(ERROR) << "failed to set sdk_info prop " << property_name;
+    return false;
+  }
+  return true;
+}
+
 bool SetSdkLevels(const std::string& mountpath) {
   ExtensionDatabase db;
   if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
@@ -160,32 +174,20 @@ bool SetSdkLevels(const std::string& mountpath) {
 
   std::unordered_set<SdkModule> relevant_modules;
   relevant_modules.insert(kRModules.begin(), kRModules.end());
-
-  int version_R = GetSdkLevel(db, relevant_modules, versions);
-  LOG(INFO) << "R extension version is " << version_R;
-
-  if (!android::base::SetProperty("build.version.extensions.r",
-                                  std::to_string(version_R))) {
-    LOG(ERROR) << "failed to set r sdk_info prop";
+  if (!SetExtension("r", db, relevant_modules, versions)) {
     return false;
   }
+
   relevant_modules.insert(kSModules.begin(), kSModules.end());
   if (android::modules::sdklevel::IsAtLeastS()) {
-    int version_S = GetSdkLevel(db, relevant_modules, versions);
-    LOG(INFO) << "S extension version is " << version_S;
-    if (!android::base::SetProperty("build.version.extensions.s",
-                                    std::to_string(version_S))) {
-      LOG(ERROR) << "failed to set s sdk_info prop";
+    if (!SetExtension("s", db, relevant_modules, versions)) {
       return false;
     }
   }
 
   relevant_modules.insert(kTModules.begin(), kTModules.end());
   if (android::modules::sdklevel::IsAtLeastT()) {
-    int version_T = GetSdkLevel(db, relevant_modules, versions);
-    LOG(INFO) << "T extension version is " << version_T;
-    if (!android::base::SetProperty("build.version.extensions.t", std::to_string(version_T))) {
-      LOG(ERROR) << "failed to set t sdk_info prop";
+    if (!SetExtension("t", db, relevant_modules, versions)) {
       return false;
     }
   }
@@ -198,6 +200,14 @@ bool SetSdkLevels(const std::string& mountpath) {
                    << requirement.module();
         return false;
       }
+    }
+  }
+
+  relevant_modules.clear();
+  relevant_modules.insert(SdkModule::AD_SERVICES);
+  if (android::modules::sdklevel::IsAtLeastT()) {
+    if (!SetExtension("ad_services", db, relevant_modules, versions)) {
+      return false;
     }
   }
 
