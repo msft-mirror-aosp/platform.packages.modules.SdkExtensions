@@ -15,7 +15,6 @@
  */
 package com.android.os.ext.testing;
 
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -37,7 +36,7 @@ public class CurrentVersion {
     public static final int T_BASE_VERSION = 3;
 
     /** The current platform's version */
-    public static final int CURRENT_BASE_VERSION = S_BASE_VERSION;
+    public static final int CURRENT_BASE_VERSION = CURRENT_TRAIN_VERSION;
 
     /**
      * The current SDK Extension versions to expect / allow in CTS.

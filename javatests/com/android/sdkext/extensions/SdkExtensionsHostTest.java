@@ -105,7 +105,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         // Version 45 requires sdkext + media, which isn't fulfilled
         assertRVersionEquals(12);
         assertSVersionEquals(12);
-        assertTrue(broadcastForBoolean("MAKE_CALLS_45", null)); // 45 APIs are available on 12 too.
+        assertTestMethodsPresent(); // 45 APIs are available on 12 too.
     }
 
     @Test
@@ -175,7 +175,8 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertVersionDefault() throws Exception {
-        int expected = isAtLeastS() ? CurrentVersion.S_BASE_VERSION
+        int expected = isAtLeastT() ? CurrentVersion.T_BASE_VERSION
+            : isAtLeastS() ? CurrentVersion.S_BASE_VERSION
             : CurrentVersion.R_BASE_VERSION;
         assertRVersionEquals(expected);
         assertSVersionEquals(expected);
