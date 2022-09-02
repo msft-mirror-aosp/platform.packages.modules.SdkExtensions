@@ -63,8 +63,8 @@ public class SdkExtensions {
         }
         if (SdkLevel.isAtLeastT()) {
             extensions.put(VERSION_CODES.TIRAMISU, T_EXTENSION_INT);
+            extensions.put(AD_SERVICES, AD_SERVICES_EXTENSION_INT);
         }
-        extensions.put(AD_SERVICES, AD_SERVICES_EXTENSION_INT);
         ALL_EXTENSION_INTS = Collections.unmodifiableMap(extensions);
     }
 
