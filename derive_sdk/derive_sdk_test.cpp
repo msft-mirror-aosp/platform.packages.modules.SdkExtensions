@@ -85,18 +85,21 @@ class DeriveSdkTest : public ::testing::Test {
     EXPECT_EQ(S, android::modules::sdklevel::IsAtLeastS() ? n : -1);
   }
 
+  void EXPECT_T(int n) {
+    int T = android::base::GetIntProperty("build.version.extensions.t", -1);
+    // Only expect the T extension level to be set on T+ devices.
+    EXPECT_EQ(T, android::modules::sdklevel::IsAtLeastT() ? n : -1);
+  }
+
   void EXPECT_ALL(int n) {
     EXPECT_R(n);
     EXPECT_S(n);
+    EXPECT_T(n);
   }
 
   ExtensionDatabase db_;
   TemporaryDir dir_;
 };
-
-TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
-  EXPECT_ALL(1);
-}
 
 TEST_F(DeriveSdkTest, OneDessert_OneVersion_OneApex) {
   AddExtensionVersion(3, {{SdkModule::SDK_EXTENSIONS, 2}});
