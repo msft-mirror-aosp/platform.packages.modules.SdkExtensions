@@ -29,6 +29,7 @@ import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
 import com.android.modules.utils.build.SdkLevel;
 import junit.framework.TestCase;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -94,20 +95,21 @@ public class SdkExtensionsTest extends TestCase {
 
     public void testExtensionVersions() throws Exception {
         Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
-        int expectedSize = 1;
+        Set<Integer> expectedKeys = new HashSet<>();
         assertCorrectVersion(versions.get(VERSION_CODES.R));
+        expectedKeys.add(VERSION_CODES.R);
 
         if (SdkLevel.isAtLeastS()) {
             assertCorrectVersion(versions.get(VERSION_CODES.S));
-            expectedSize++;
+            expectedKeys.add(VERSION_CODES.S);
         }
         if (SdkLevel.isAtLeastT()) {
             assertCorrectVersion(versions.get(VERSION_CODES.TIRAMISU));
-            expectedSize++;
-            assertCorrectVersion(versions.get(SdkExtensions.AD_SERVICES));
-            expectedSize++;
+            expectedKeys.add(VERSION_CODES.TIRAMISU);
+            assertCorrectVersion(versions.get(AD_SERVICES));
+            expectedKeys.add(AD_SERVICES);
         }
-        assertEquals(expectedSize, versions.size());
+        assertThat(versions.keySet()).containsExactlyElementsIn(expectedKeys);
     }
 
 }
