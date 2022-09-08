@@ -67,6 +67,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private Boolean mIsAtLeastS = null;
     private Boolean mIsAtLeastT = null;
+    private Boolean mIsAtLeastU = null;
 
     @Rule
     public AbandonSessionsRule mHostTestRule = new AbandonSessionsRule(this);
@@ -175,7 +176,8 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertVersionDefault() throws Exception {
-        int expected = isAtLeastT() ? CurrentVersion.T_BASE_VERSION
+        int expected = isAtLeastU() ? CurrentVersion.CURRENT_TRAIN_VERSION
+            : isAtLeastT() ? CurrentVersion.T_BASE_VERSION
             : isAtLeastS() ? CurrentVersion.S_BASE_VERSION
             : CurrentVersion.R_BASE_VERSION;
         assertRVersionEquals(expected);
@@ -259,6 +261,13 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
             mIsAtLeastT = broadcastForBoolean("IS_AT_LEAST", "t");
         }
         return mIsAtLeastT;
+    }
+
+    private boolean isAtLeastU() throws Exception {
+        if (mIsAtLeastU == null) {
+            mIsAtLeastU = broadcastForBoolean("IS_AT_LEAST", "u");
+        }
+        return mIsAtLeastU;
     }
 
     private boolean uninstallApexes(String... filenames) throws Exception {
