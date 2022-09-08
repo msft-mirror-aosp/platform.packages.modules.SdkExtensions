@@ -1,7 +1,4 @@
 {
   "name": "com.android.sdkext",
-
-  // Placeholder module version to be replaced during build.
-  // Do not change!
-  "version": 330911000
+  "version": 330810000
 }

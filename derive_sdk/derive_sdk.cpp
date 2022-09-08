@@ -203,14 +203,6 @@ bool SetSdkLevels(const std::string& mountpath) {
     }
   }
 
-  relevant_modules.clear();
-  relevant_modules.insert(SdkModule::AD_SERVICES);
-  if (android::modules::sdklevel::IsAtLeastT()) {
-    if (!SetExtension("ad_services", db, relevant_modules, versions)) {
-      return false;
-    }
-  }
-
   return true;
 }
 
