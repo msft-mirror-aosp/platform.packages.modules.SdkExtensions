@@ -42,10 +42,10 @@ protobuf message from [`classpaths.proto`] in a proto binary format. Exact
 merging algorithm that determines the order of the classpath entries is
 described in [`derive_classpath.cpp`] and may change over time.
 
-[`classpaths.proto`]: packages/modules/SdkExtensions/proto/classpaths.proto
-[`derive_classpath.cpp`]: packages/modules/SdkExtensions/derive_classpath/derive_classpath.cpp
-[sdkinfo-proto]: packages/modules/SdkExtensions/proto/sdk.proto
-[sdkextensions-java]: framework/java/android/os/ext/SdkExtensions.java
+[`classpaths.proto`]: https://android.googlesource.com/platform/packages/modules/common/+/refs/heads/master/proto/classpaths.proto
+[`derive_classpath.cpp`]: derive_classpath/derive_classpath.cpp
+[sdkinfo-proto]: https://android.googlesource.com/platform/packages/modules/common/+/refs/heads/master/proto/sdk.proto
+[sdkextensions-java]: java/android/os/ext/SdkExtensions.java
 
 ## Developer information
 
