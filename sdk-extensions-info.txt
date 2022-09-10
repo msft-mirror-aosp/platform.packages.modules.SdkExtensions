@@ -24,7 +24,6 @@ T    33
 # any delimiter.
 #
 # <SDK> is a space-separated list of SDK names as defined above, e.g. "S T".
-#
-# Example
-#
-#  framework-sdkextensions    *    R S T
+
+# SDK_EXTENSIONS
+framework-sdkextensions    *    R S T
