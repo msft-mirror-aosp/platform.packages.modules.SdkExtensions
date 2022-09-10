@@ -92,3 +92,11 @@ bootclasspath_fragment {
         ],
     },
 }
+
+filegroup {
+    name: "sdk-extensions-info",
+    srcs: ["sdk-extensions-info.txt"],
+    visibility: [
+        "//frameworks/base",
+    ],
+}
