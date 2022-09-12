@@ -42,7 +42,6 @@ import java.util.Map;
  */
 public class SdkExtensions {
 
-    // TODO(b/234007262): Decide on the right final value for this.
     public static final int AD_SERVICES = 1_000_000;
 
     private static final int R_EXTENSION_INT;
@@ -63,8 +62,8 @@ public class SdkExtensions {
         }
         if (SdkLevel.isAtLeastT()) {
             extensions.put(VERSION_CODES.TIRAMISU, T_EXTENSION_INT);
+            extensions.put(AD_SERVICES, AD_SERVICES_EXTENSION_INT);
         }
-        extensions.put(AD_SERVICES, AD_SERVICES_EXTENSION_INT);
         ALL_EXTENSION_INTS = Collections.unmodifiableMap(extensions);
     }
 
