@@ -264,7 +264,7 @@ versions {
   requirements {
     module: TETHERING
     version {
-      version: 4
+      version: 3
     }
   }
   requirements {
