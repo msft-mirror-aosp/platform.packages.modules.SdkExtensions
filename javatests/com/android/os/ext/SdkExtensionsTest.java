@@ -30,7 +30,7 @@ import java.util.Set;
 public class SdkExtensionsTest extends TestCase {
 
     private static void assertCorrectVersion(int version) throws Exception {
-        assertThat(ALLOWED_VERSIONS_CTS).contains(version);
+        assertThat(version).isIn(ALLOWED_VERSIONS_CTS);
     }
 
     private static void assertCorrectVersion(boolean expected, int version) throws Exception {
