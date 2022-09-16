@@ -17,6 +17,9 @@
 package com.android.os.ext;
 
 import static android.os.Build.VERSION_CODES;
+import static android.os.Build.VERSION_CODES.R;
+import static android.os.Build.VERSION_CODES.S;
+import static android.os.Build.VERSION_CODES.TIRAMISU;
 import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -36,11 +39,11 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class SdkExtensionsTest {
 
-    private static void assertCorrectVersion(int version) throws Exception {
+    private static void assertCorrectVersion(int version) {
         assertThat(version).isIn(ALLOWED_VERSIONS_CTS);
     }
 
-    private static void assertCorrectVersion(boolean expected, int version) throws Exception {
+    private static void assertCorrectVersion(boolean expected, int version) {
         if (expected) {
             assertCorrectVersion(version);
         } else {
@@ -48,12 +51,21 @@ public class SdkExtensionsTest {
         }
     }
 
-    private static void assertCorrectVersion(boolean expected, String propValue) throws Exception {
+    private static void assertCorrectVersion(boolean expected, String propValue) {
         if (expected) {
             int version = Integer.parseInt(propValue);
             assertCorrectVersion(version);
         } else {
             assertEquals("", propValue);
+        }
+    }
+
+    private static final void assertCorrectVersion(boolean expected, int extension, String propId) {
+        String prop = "build.version.extensions." + propId;
+        assertCorrectVersion(expected, SystemProperties.get(prop));
+        assertCorrectVersion(expected, SdkExtensions.getExtensionVersion(extension));
+        if (expected) {
+            assertCorrectVersion(true, SdkExtensions.getAllExtensionVersions().get(extension));
         }
     }
 
@@ -68,48 +80,46 @@ public class SdkExtensionsTest {
         }
     }
 
-    /** Verifies that getExtensionVersion only return existing versions */
+    /** Verifies that getExtensionVersion returns zero value for non-existing extensions */
     @Test
-    public void testValidValues() throws Exception {
-        assertCorrectVersion(true, SdkExtensions.getExtensionVersion(VERSION_CODES.R));
-        assertCorrectVersion(
-            SdkLevel.isAtLeastS(), SdkExtensions.getExtensionVersion(VERSION_CODES.S));
-        assertCorrectVersion(
-            SdkLevel.isAtLeastT(), SdkExtensions.getExtensionVersion(VERSION_CODES.TIRAMISU));
-
-        int firstUnassigned = VERSION_CODES.TIRAMISU + 1;
-        for (int sdk = firstUnassigned; sdk <= 1_000_000; sdk++) {
+    public void testZeroValues() throws Exception {
+        Set<Integer> assignedCodes = Set.of(R, S, TIRAMISU);
+        for (int sdk = VERSION_CODES.R; sdk <= 1_000_000; sdk++) {
+            if (assignedCodes.contains(sdk)) {
+                continue;
+            }
             // No extension SDKs yet.
             assertEquals(0, SdkExtensions.getExtensionVersion(sdk));
         }
     }
 
-    /** Verifies that the public sysprops are set as expected */
     @Test
-    public void testSystemProperties() throws Exception {
-        assertCorrectVersion(true, SystemProperties.get("build.version.extensions.r"));
-        assertCorrectVersion(
-            SdkLevel.isAtLeastS(), SystemProperties.get("build.version.extensions.s"));
-        assertCorrectVersion(
-            SdkLevel.isAtLeastT(), SystemProperties.get("build.version.extensions.t"));
-    }
-
-    @Test
-    public void testExtensionVersions() throws Exception {
-        Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
+    public void testGetAllExtensionVersionsKeys() throws Exception {
         Set<Integer> expectedKeys = new HashSet<>();
-        assertCorrectVersion(versions.get(VERSION_CODES.R));
         expectedKeys.add(VERSION_CODES.R);
-
         if (SdkLevel.isAtLeastS()) {
-            assertCorrectVersion(versions.get(VERSION_CODES.S));
             expectedKeys.add(VERSION_CODES.S);
         }
         if (SdkLevel.isAtLeastT()) {
-            assertCorrectVersion(versions.get(VERSION_CODES.TIRAMISU));
             expectedKeys.add(VERSION_CODES.TIRAMISU);
         }
-        assertThat(versions.keySet()).containsExactlyElementsIn(expectedKeys);
+        Set<Integer> actualKeys = SdkExtensions.getAllExtensionVersions().keySet();
+        assertThat(actualKeys).containsExactlyElementsIn(expectedKeys);
+    }
+
+    @Test
+    public void testExtensionR() {
+        assertCorrectVersion(true, R, "r");
+    }
+
+    @Test
+    public void testExtensionS() {
+        assertCorrectVersion(SdkLevel.isAtLeastS(), S, "s");
+    }
+
+    @Test
+    public void testExtensionT() {
+        assertCorrectVersion(SdkLevel.isAtLeastT(), TIRAMISU, "t");
     }
 
 }
