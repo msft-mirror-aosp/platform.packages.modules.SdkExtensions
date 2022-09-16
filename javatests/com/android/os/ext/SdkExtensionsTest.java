@@ -24,16 +24,22 @@ import static android.os.ext.SdkExtensions.AD_SERVICES;
 import static android.os.ext.SdkExtensions.getExtensionVersion;
 import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
+import androidx.test.runner.AndroidJUnit4;
 import com.android.modules.utils.build.SdkLevel;
-import junit.framework.TestCase;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SdkExtensionsTest extends TestCase {
+@RunWith(AndroidJUnit4.class)
+public class SdkExtensionsTest {
 
     private static void assertCorrectVersion(int version) throws Exception {
         assertThat(version).isIn(ALLOWED_VERSIONS_CTS);
@@ -57,17 +63,18 @@ public class SdkExtensionsTest extends TestCase {
     }
 
     /** Verify that getExtensionVersion only accepts valid extension SDKs */
+    @Test
     public void testBadArgument() throws Exception {
         // R is the first SDK version with extensions.
         for (int sdk = -1_000_000; sdk < VERSION_CODES.R; sdk++) {
-            try {
-                SdkExtensions.getExtensionVersion(sdk);
-                fail("expected IllegalArgumentException");
-            } catch (IllegalArgumentException expected) { }
+            final int finalSdk = sdk;
+            assertThrows(IllegalArgumentException.class,
+                    () -> SdkExtensions.getExtensionVersion(finalSdk));
         }
     }
 
     /** Verifies that getExtensionVersion only return existing versions */
+    @Test
     public void testValidValues() throws Exception {
         assertCorrectVersion(true, getExtensionVersion(R));
         assertCorrectVersion(SdkLevel.isAtLeastS(), getExtensionVersion(S));
@@ -85,6 +92,7 @@ public class SdkExtensionsTest extends TestCase {
     }
 
     /** Verifies that the public sysprops are set as expected */
+    @Test
     public void testSystemProperties() throws Exception {
         assertCorrectVersion(true, SystemProperties.get("build.version.extensions.r"));
         assertCorrectVersion(
@@ -93,6 +101,7 @@ public class SdkExtensionsTest extends TestCase {
             SdkLevel.isAtLeastT(), SystemProperties.get("build.version.extensions.t"));
     }
 
+    @Test
     public void testExtensionVersions() throws Exception {
         Map<Integer, Integer> versions = SdkExtensions.getAllExtensionVersions();
         Set<Integer> expectedKeys = new HashSet<>();
