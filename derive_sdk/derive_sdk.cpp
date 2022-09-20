@@ -187,10 +187,7 @@ bool SetSdkLevels(const std::string& mountpath) {
 
   relevant_modules.insert(kTModules.begin(), kTModules.end());
   if (android::modules::sdklevel::IsAtLeastT()) {
-    int version_T = GetSdkLevel(db, relevant_modules, versions);
-    LOG(INFO) << "T extension version is " << version_T;
-    if (!android::base::SetProperty("build.version.extensions.t", std::to_string(version_T))) {
-      LOG(ERROR) << "failed to set t sdk_info prop";
+    if (!SetExtension("t", db, relevant_modules, versions)) {
       return false;
     }
   }
