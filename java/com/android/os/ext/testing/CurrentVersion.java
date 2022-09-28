@@ -37,7 +37,7 @@ public class CurrentVersion {
      * new version.
      */
     public static final Set<Integer> ALLOWED_VERSIONS = Collections.unmodifiableSet(Set.of(
-        V
+        V, 4
     ));
 
 }
