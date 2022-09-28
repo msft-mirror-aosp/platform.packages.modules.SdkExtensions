@@ -27,3 +27,9 @@ T    33
 
 # SDK_EXTENSIONS
 framework-sdkextensions    *    R S T
+
+# MEDIA_PROVIDER
+framework-mediaprovider    android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX    R S T
+framework-mediaprovider    android.provider.MediaStore.ACTION_PICK_IMAGES       R S T
+framework-mediaprovider    android.provider.MediaStore.getPickImagesMaxLimit    R S T
+framework-mediaprovider    android.provider.MediaStore.PickerMediaColumns       R S T
