@@ -60,6 +60,18 @@ static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModul
 static const std::unordered_set<SdkModule> kTModules = {
     SdkModule::AD_SERVICES, SdkModule::APPSEARCH, SdkModule::ON_DEVICE_PERSONALIZATION};
 
+static const std::string kSystemPropertiesPrefix = "build.version.extensions.";
+
+void ReadSystemProperties(std::map<std::string, std::string>& properties) {
+  const std::string default_ = "<not set>";
+
+  for (const auto& dessert : {"r", "s", "t"}) {
+    properties[kSystemPropertiesPrefix + dessert] =
+        android::base::GetProperty(kSystemPropertiesPrefix + dessert, default_);
+  }
+  properties["ro.build.version.sdk"] = android::base::GetProperty("ro.build.version.sdk", default_);
+}
+
 bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
   std::string contents;
   if (!android::base::ReadFileToString(db_path, &contents, true)) {
@@ -119,7 +131,7 @@ bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db
   int version = GetSdkLevel(db, relevant_modules, module_versions);
   LOG(INFO) << "extension " << extension_name << " version is " << version;
 
-  const std::string property_name = "build.version.extensions." + extension_name;
+  const std::string property_name = kSystemPropertiesPrefix + extension_name;
   if (!android::base::SetProperty(property_name, std::to_string(version))) {
     LOG(ERROR) << "failed to set sdk_info prop " << property_name;
     return false;
@@ -127,12 +139,8 @@ bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db
   return true;
 }
 
-bool SetSdkLevels(const std::string& mountpath) {
-  ExtensionDatabase db;
-  if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
-    LOG(ERROR) << "Failed to read database";
-    return false;
-  }
+bool ReadSdkInfoFromApexes(const std::string& mountpath,
+                           std::unordered_map<SdkModule, int>& versions) {
   std::unique_ptr<DIR, decltype(&closedir)> apex(opendir(mountpath.c_str()),
                                                  closedir);
   if (!apex) {
@@ -140,7 +148,6 @@ bool SetSdkLevels(const std::string& mountpath) {
     return false;
   }
   struct dirent* de;
-  std::unordered_map<SdkModule, int> versions;
   while ((de = readdir(apex.get()))) {
     std::string name = de->d_name;
     if (name[0] == '.' || name.find('@') != std::string::npos) {
@@ -170,6 +177,21 @@ bool SetSdkLevels(const std::string& mountpath) {
     SdkModule module = module_itr->second;
     LOG(INFO) << "Read version " << sdk_version.version() << " from " << module;
     versions[module] = sdk_version.version();
+  }
+  return true;
+}
+
+bool SetSdkLevels(const std::string& mountpath) {
+  ExtensionDatabase db;
+  if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
+    LOG(ERROR) << "Failed to read database";
+    return false;
+  }
+
+  std::unordered_map<SdkModule, int> versions;
+  if (!ReadSdkInfoFromApexes(mountpath, versions)) {
+    LOG(ERROR) << "Failed to SDK info from apexes";
+    return false;
   }
 
   std::unordered_set<SdkModule> relevant_modules;
@@ -201,6 +223,49 @@ bool SetSdkLevels(const std::string& mountpath) {
         return false;
       }
     }
+  }
+
+  return true;
+}
+
+bool PrintHeader() {
+  std::map<std::string, std::string> properties;
+  ReadSystemProperties(properties);
+
+  bool print_separator = false;
+  std::cout << "[";
+  for (const auto& property : properties) {
+    if (property.first.find(kSystemPropertiesPrefix) == 0) {
+      if (print_separator) {
+        std::cout << ", ";
+      }
+      const auto name = property.first.substr(kSystemPropertiesPrefix.size());
+      std::cout << name << "=" << property.second;
+      print_separator = true;
+    }
+  }
+  std::cout << "]\n";
+  return true;
+}
+
+bool PrintDump(const std::string& mountpath) {
+  std::map<std::string, std::string> properties;
+  ReadSystemProperties(properties);
+
+  std::unordered_map<SdkModule, int> versions;
+  if (!ReadSdkInfoFromApexes(mountpath, versions)) {
+    LOG(ERROR) << "Failed to read SDK info from apexes";
+    return false;
+  }
+
+  std::cout << "system properties:\n";
+  for (const auto& property : properties) {
+    std::cout << "  " << property.first << ":" << property.second << "\n";
+  }
+
+  std::cout << "apex module versions:\n";
+  for (const auto& version : versions) {
+    std::cout << "  " << SdkModule_Name(version.first) << ":" << version.second << "\n";
   }
 
   return true;
