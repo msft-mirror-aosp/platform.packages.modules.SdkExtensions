@@ -3,9 +3,9 @@
 # Format
 #
 #  <name-of-extension-sdk>  <numerical-id-of-extension-sdk>
-R    30
-S    31
-T    33
+R-ext    30
+S-ext    31
+T-ext    33
 
 # Rules
 #
@@ -23,13 +23,13 @@ T    33
 # <pattern> is either '*', or 'com.pkg.Clazz#method', optionally terminated at
 # any delimiter.
 #
-# <SDK> is a space-separated list of SDK names as defined above, e.g. "S T".
+# <SDK> is a space-separated list of SDK names as defined above, e.g. "S-ext T-ext".
 
 # SDK_EXTENSIONS
-framework-sdkextensions    *    R S T
+framework-sdkextensions    *    R-ext S-ext T-ext
 
 # MEDIA_PROVIDER
-framework-mediaprovider    android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX    R S T
-framework-mediaprovider    android.provider.MediaStore.ACTION_PICK_IMAGES       R S T
-framework-mediaprovider    android.provider.MediaStore.getPickImagesMaxLimit    R S T
-framework-mediaprovider    android.provider.MediaStore.PickerMediaColumns       R S T
+framework-mediaprovider    android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX    R-ext S-ext T-ext
+framework-mediaprovider    android.provider.MediaStore.ACTION_PICK_IMAGES       R-ext S-ext T-ext
+framework-mediaprovider    android.provider.MediaStore.getPickImagesMaxLimit    R-ext S-ext T-ext
+framework-mediaprovider    android.provider.MediaStore.PickerMediaColumns       R-ext S-ext T-ext
