@@ -42,7 +42,6 @@ sh_test_host {
     ],
     // libcrypto and libz are required by toybox.
     data_libs: [
-        "libc++",
         "libcrypto",
         "libz",
     ],
