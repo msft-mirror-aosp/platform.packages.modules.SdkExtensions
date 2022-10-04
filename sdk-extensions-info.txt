@@ -3,9 +3,10 @@
 # Format
 #
 #  <name-of-extension-sdk>  <numerical-id-of-extension-sdk>
-R-ext    30
-S-ext    31
-T-ext    33
+R-ext              30
+S-ext              31
+T-ext              33
+AD_SERVICES-ext    1000000
 
 # Rules
 #
@@ -33,3 +34,7 @@ framework-mediaprovider    android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX    
 framework-mediaprovider    android.provider.MediaStore.ACTION_PICK_IMAGES       R-ext S-ext T-ext
 framework-mediaprovider    android.provider.MediaStore.getPickImagesMaxLimit    R-ext S-ext T-ext
 framework-mediaprovider    android.provider.MediaStore.PickerMediaColumns       R-ext S-ext T-ext
+
+# AD_SERVICES
+framework-adservices    *    AD_SERVICES-ext T-ext
+framework-sdksandbox    *    AD_SERVICES-ext T-ext
