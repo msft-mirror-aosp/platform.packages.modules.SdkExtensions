@@ -51,6 +51,7 @@ public class Receiver extends BroadcastReceiver {
             case 'r': return true; // our min sdk version is 30
             case 's': return SdkLevel.isAtLeastS();
             case 't': return SdkLevel.isAtLeastT();
+            case 'u': return SdkLevel.isAtLeastU();
         }
         return false;
     }
