@@ -6,11 +6,17 @@ fi
 
 sdk="$1"
 if [[ -z "$sdk" ]]; then
-  echo "usage: $0 <new-sdk-int> [bug-id]"
+  echo "usage: $0 <new-sdk-int> [modules] [bug-id]"
   exit 1
 fi
+shift
 
-bug_text=$(test -n "$2" && echo "\nBug: $2")
+if [[ -n $1 ]] && ! [[ $1 =~ [0-9]+ ]]; then
+  modules_arg="--modules $1"
+  shift
+fi
+
+bug_text=$(test -n "$1" && echo "\nBug: $1")
 
 SDKEXT="packages/modules/SdkExtensions/"
 
@@ -18,9 +24,8 @@ TARGET_PRODUCT=aosp_arm64 build/soong/soong_ui.bash --make-mode --soong-only gen
 out/soong/host/linux-x86/bin/gen_sdk \
     --database ${SDKEXT}/gen_sdk/extensions_db.textpb \
     --action new_sdk \
-    --sdk "$sdk"
-sed -E -i -e "/CurrentSystemImageValue/{n;s/[0-9]+/${sdk}/}" \
-    ${SDKEXT}/derive_sdk/derive_sdk_test.cpp
+    --sdk "$sdk" \
+    $modules_arg
 sed -E -i -e "/public static final int V = /{s/\S+;/${sdk};/}" \
     ${SDKEXT}/java/com/android/os/ext/testing/CurrentVersion.java
 repo start bump-ext ${SDKEXT}
