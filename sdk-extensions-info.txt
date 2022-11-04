@@ -1,0 +1,54 @@
+# Copyright (C) 2022 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# SDK definitions
+#
+# Format
+#
+#  <name-of-extension-sdk>  <numerical-id-of-extension-sdk>
+R-ext              30
+S-ext              31
+T-ext              33
+AD_SERVICES-ext    1000000
+
+# Rules
+#
+# List of APIs first added in what SDKs; for APIs appearing in multiple
+# platform-ext SDKs, only the first such SDK is listed.
+#
+# Format
+#
+#   <mainline-jar>  <pattern>  <SDK>[ <SDK>[ ...]]
+#
+# <mainline-jar> identifies the jar file of the mainline module, e.g.
+# 'art.module.public.api' corresponds to the file
+# prebuilts/sdk/extensions/1/public/art.module.public.api-stubs.jar.
+#
+# <pattern> is either '*', or 'com.pkg.Clazz#method', optionally terminated at
+# any delimiter.
+#
+# <SDK> is a space-separated list of SDK names as defined above, e.g. "S-ext T-ext".
+
+# SDK_EXTENSIONS
+framework-sdkextensions    *    R-ext S-ext T-ext
+
+# MEDIA_PROVIDER
+framework-mediaprovider    android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX    R-ext S-ext T-ext
+framework-mediaprovider    android.provider.MediaStore.ACTION_PICK_IMAGES       R-ext S-ext T-ext
+framework-mediaprovider    android.provider.MediaStore.getPickImagesMaxLimit    R-ext S-ext T-ext
+framework-mediaprovider    android.provider.MediaStore.PickerMediaColumns       R-ext S-ext T-ext
+
+# AD_SERVICES
+framework-adservices    *    AD_SERVICES-ext T-ext
+framework-sdksandbox    *    AD_SERVICES-ext T-ext
