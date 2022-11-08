@@ -23,16 +23,20 @@
   <!-- SDK definitions -->
   <sdk
     name="R-ext"
-    id="30" />
+    id="30"
+    reference="android/os/Build$VERSION_CODES$R" />
   <sdk
     name="S-ext"
-    id="31" />
+    id="31"
+    reference="android/os/Build$VERSION_CODES$S" />
   <sdk
     name="T-ext"
-    id="33" />
+    id="33"
+    reference="android/os/Build$VERSION_CODES$T" />
   <sdk
     name="AD_SERVICES-ext"
-    id="1000000" />
+    id="1000000"
+    reference="android/os/ext/SdkExtensions$AD_SERVICES" />
 
   <!-- SDK_EXTENSIONS -->
   <symbol
