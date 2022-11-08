@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2022 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<!--
+  The purpose of this file and its XML format is described in the javadoc for
+  ApiToExtensionsMap.fromXml in metalava.
+-->
+<sdk-extensions-info>
+  <!-- SDK definitions -->
+  <sdk
+    name="R-ext"
+    id="30" />
+  <sdk
+    name="S-ext"
+    id="31" />
+  <sdk
+    name="T-ext"
+    id="33" />
+  <sdk
+    name="AD_SERVICES-ext"
+    id="1000000" />
+
+  <!-- SDK_EXTENSIONS -->
+  <symbol
+    jar="framework-sdkextensions"
+    pattern="*"
+    sdks="R-ext,S-ext,T-ext" />
+
+  <!-- MEDIA_PROVIDER -->
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX"
+    sdks="R-ext,S-ext,T-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.ACTION_PICK_IMAGES"
+    sdks="R-ext,S-ext,T-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.getPickImagesMaxLimit"
+    sdks="R-ext,S-ext,T-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.PickerMediaColumns"
+    sdks="R-ext,S-ext,T-ext" />
+
+  <!-- AD_SERVICES -->
+  <symbol
+    jar="framework-adservices"
+    pattern="*"
+    sdks="AD_SERVICES-ext,T-ext" />
+  <symbol
+    jar="framework-sdksandbox"
+    pattern="*"
+    sdks="AD_SERVICES-ext,T-ext" />
+</sdk-extensions-info>
