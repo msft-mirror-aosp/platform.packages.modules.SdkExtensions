@@ -26,7 +26,7 @@ out/soong/host/linux-x86/bin/gen_sdk \
     --action new_sdk \
     --sdk "$sdk" \
     $modules_arg
-sed -E -i -e "/public static final int CURRENT_TRAIN_VERSION = /{s/\S+;/${sdk};/}" \
+sed -E -i -e "/public static final int V = /{s/\S+;/${sdk};/}" \
     ${SDKEXT}/java/com/android/os/ext/testing/CurrentVersion.java
 repo start bump-ext ${SDKEXT}
 
