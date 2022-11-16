@@ -22,16 +22,19 @@
 <sdk-extensions-info>
   <!-- SDK definitions -->
   <sdk
-    name="R-ext"
     id="30"
+    shortname="R-ext"
+    name="R Extensions"
     reference="android/os/Build$VERSION_CODES$R" />
   <sdk
-    name="S-ext"
     id="31"
+    shortname="S-ext"
+    name="S Extensions"
     reference="android/os/Build$VERSION_CODES$S" />
   <sdk
-    name="T-ext"
     id="33"
+    shortname="T-ext"
+    name="T Extensions"
     reference="android/os/Build$VERSION_CODES$T" />
 
   <!-- SDK_EXTENSIONS -->
