@@ -106,6 +106,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         // Version 45 requires sdkext + media, which isn't fulfilled
         assertRVersionEquals(12);
         assertSVersionEquals(12);
+        assertTVersionEquals(12);
         assertTestMethodsPresent(); // 45 APIs are available on 12 too.
     }
 
@@ -182,12 +183,14 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
             : CurrentVersion.R_BASE_VERSION;
         assertRVersionEquals(expected);
         assertSVersionEquals(expected);
+        assertTVersionEquals(expected);
         assertTestMethodsNotPresent();
     }
 
     private void assertVersion45() throws Exception {
         assertRVersionEquals(45);
         assertSVersionEquals(45);
+        assertTVersionEquals(45);
         assertTestMethodsPresent();
     }
 
@@ -218,6 +221,10 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         String[] apps = minVersion >= 45 ? new String[]{"s12", "s45"}
                 : minVersion >= 12 ? new String[]{"s12"} : new String[]{};
         assertExtensionVersionEquals("s", version, apps, isAtLeastS());
+    }
+
+    private void assertTVersionEquals(int version) throws Exception {
+        assertExtensionVersionEquals("t", version, new String[]{}, isAtLeastT());
     }
 
     private void assertExtensionVersionEquals(String extension, int version, String[] apps,
