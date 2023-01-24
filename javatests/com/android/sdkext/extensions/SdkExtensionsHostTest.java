@@ -16,8 +16,6 @@
 
 package com.android.sdkext.extensions;
 
-import static com.android.os.ext.testing.CurrentVersion.V;
-
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertEquals;
@@ -28,6 +26,7 @@ import static org.junit.Assume.assumeTrue;
 
 import android.cts.install.lib.host.InstallUtilsHost;
 
+import com.android.os.ext.testing.CurrentVersion;
 import com.android.tests.rollback.host.AbandonSessionsRule;
 import com.android.tradefed.device.ITestDevice.ApexInfo;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
@@ -67,6 +66,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     private final InstallUtilsHost mInstallUtils = new InstallUtilsHost(this);
 
     private Boolean mIsAtLeastS = null;
+    private Boolean mIsAtLeastT = null;
 
     @Rule
     public AbandonSessionsRule mHostTestRule = new AbandonSessionsRule(this);
@@ -105,7 +105,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         // Version 45 requires sdkext + media, which isn't fulfilled
         assertRVersionEquals(12);
         assertSVersionEquals(12);
-        assertTrue(broadcastForBoolean("MAKE_CALLS_45", null)); // 45 APIs are available on 12 too.
+        assertTestMethodsPresent(); // 45 APIs are available on 12 too.
     }
 
     @Test
@@ -175,15 +175,33 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertVersionDefault() throws Exception {
-        assertRVersionEquals(V);
-        assertSVersionEquals(V);
-        assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
+        int expected = isAtLeastT() ? CurrentVersion.T_BASE_VERSION
+            : isAtLeastS() ? CurrentVersion.S_BASE_VERSION
+            : CurrentVersion.R_BASE_VERSION;
+        assertRVersionEquals(expected);
+        assertSVersionEquals(expected);
+        assertTestMethodsNotPresent();
     }
 
     private void assertVersion45() throws Exception {
         assertRVersionEquals(45);
         assertSVersionEquals(45);
-        assertTrue(broadcastForBoolean("MAKE_CALLS_45", null));
+        assertTestMethodsPresent();
+    }
+
+    private void assertTestMethodsNotPresent() throws Exception {
+        assertTrue(broadcastForBoolean("MAKE_CALLS_DEFAULT", null));
+    }
+
+    private void assertTestMethodsPresent() throws Exception {
+        if (isAtLeastS()) {
+            assertTrue(broadcastForBoolean("MAKE_CALLS_45", null));
+        } else {
+            // The APIs in the test apex are not currently getting installed correctly
+            // on Android R devices because they rely on the dynamic classpath feature.
+            // TODO(b/234361913): fix this
+            assertTestMethodsNotPresent();
+        }
     }
 
     private void assertRVersionEquals(int version) throws Exception {
@@ -229,6 +247,13 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
             mIsAtLeastS = broadcastForBoolean("IS_AT_LEAST", "s");
         }
         return mIsAtLeastS;
+    }
+
+    private boolean isAtLeastT() throws Exception {
+        if (mIsAtLeastT == null) {
+            mIsAtLeastT = broadcastForBoolean("IS_AT_LEAST", "t");
+        }
+        return mIsAtLeastT;
     }
 
     private boolean uninstallApexes(String... filenames) throws Exception {
