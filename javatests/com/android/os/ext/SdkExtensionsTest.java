@@ -21,7 +21,7 @@ import static android.os.Build.VERSION_CODES.R;
 import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 import static android.os.ext.SdkExtensions.AD_SERVICES;
-import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
+import static com.android.os.ext.testing.CurrentVersion.CURRENT_TRAIN_VERSION;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -40,33 +40,43 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class SdkExtensionsTest {
 
-    private static void assertCorrectVersion(int version) {
-        assertThat(version).isIn(ALLOWED_VERSIONS_CTS);
+    private enum Expectation {
+        /** Expect an extension to be the current / latest defined version */
+        CURRENT,
+        /** Expect an extension to be missing / version 0 */
+        MISSING,
     }
 
-    private static void assertCorrectVersion(boolean expected, int version) {
-        if (expected) {
-            assertCorrectVersion(version);
-        } else {
-            assertEquals(0, version);
+    private static final Expectation CURRENT = Expectation.CURRENT;
+    private static final Expectation MISSING = Expectation.MISSING;
+
+    private static void assertVersion(Expectation expectation, int version) {
+        switch (expectation) {
+            case CURRENT:
+                assertEquals(CURRENT_TRAIN_VERSION, version);
+                break;
+            case MISSING:
+                assertEquals(0, version);
+                break;
         }
     }
 
-    private static void assertCorrectVersion(boolean expected, String propValue) {
-        if (expected) {
-            int version = Integer.parseInt(propValue);
-            assertCorrectVersion(version);
-        } else {
+    private static void assertVersion(Expectation expectation, String propValue) {
+        if (expectation == Expectation.MISSING) {
             assertEquals("", propValue);
+        } else {
+            int version = Integer.parseInt(propValue);
+            assertVersion(expectation, version);
         }
     }
 
-    private static final void assertCorrectVersion(boolean expected, int extension, String propId) {
+    public static final void assertVersion(Expectation expectation, int extension, String propId) {
         String prop = "build.version.extensions." + propId;
-        assertCorrectVersion(expected, SystemProperties.get(prop));
-        assertCorrectVersion(expected, SdkExtensions.getExtensionVersion(extension));
-        if (expected) {
-            assertCorrectVersion(true, SdkExtensions.getAllExtensionVersions().get(extension));
+        assertVersion(expectation, SystemProperties.get(prop));
+        assertVersion(expectation, SdkExtensions.getExtensionVersion(extension));
+        if (expectation != Expectation.MISSING) {
+            int v = SdkExtensions.getAllExtensionVersions().get(extension);
+            assertVersion(expectation, v);
         }
     }
 
@@ -90,7 +100,8 @@ public class SdkExtensionsTest {
                 continue;
             }
             // No extension SDKs yet.
-            assertEquals(0, SdkExtensions.getExtensionVersion(sdk));
+            int version = SdkExtensions.getExtensionVersion(sdk);
+            assertEquals("Extension ID " + sdk + " has non-zero version", 0, version);
         }
     }
 
@@ -111,22 +122,25 @@ public class SdkExtensionsTest {
 
     @Test
     public void testExtensionR() {
-        assertCorrectVersion(true, R, "r");
+        assertVersion(Expectation.CURRENT, R, "r");
     }
 
     @Test
     public void testExtensionS() {
-        assertCorrectVersion(SdkLevel.isAtLeastS(), S, "s");
+        Expectation expectation = SdkLevel.isAtLeastS() ? CURRENT : MISSING;
+        assertVersion(expectation, S, "s");
     }
 
     @Test
     public void testExtensionT() {
-        assertCorrectVersion(SdkLevel.isAtLeastT(), TIRAMISU, "t");
+        Expectation expectation = SdkLevel.isAtLeastT() ? CURRENT : MISSING;
+        assertVersion(expectation, TIRAMISU, "t");
     }
 
     @Test
     public void testExtensionAdServices() {
-        assertCorrectVersion(SdkLevel.isAtLeastT(), AD_SERVICES, "ad_services");
+        Expectation expectation = SdkLevel.isAtLeastT() ? CURRENT : MISSING;
+        assertVersion(expectation, AD_SERVICES, "ad_services");
     }
 
 }
