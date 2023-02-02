@@ -100,3 +100,17 @@ filegroup {
         "//frameworks/base",
     ],
 }
+
+java_test_host {
+    name: "sdkextensions_conformance_framework_tests",
+    static_libs: ["ClasspathFetcher"],
+    libs: [
+        "tradefed",
+        "truth-prebuilt",
+    ],
+    test_config: "sdkext-conformance-framework.xml",
+    test_suites: [
+        "mts",
+        "device-tests",
+    ],
+}
