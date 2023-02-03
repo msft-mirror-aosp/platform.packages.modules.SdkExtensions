@@ -65,7 +65,7 @@ static const std::string kSystemPropertiesPrefix = "build.version.extensions.";
 void ReadSystemProperties(std::map<std::string, std::string>& properties) {
   const std::string default_ = "<not set>";
 
-  for (const auto& dessert : {"r", "s", "t"}) {
+  for (const auto& dessert : {"r", "s", "t", "ad_services"}) {
     properties[kSystemPropertiesPrefix + dessert] =
         android::base::GetProperty(kSystemPropertiesPrefix + dessert, default_);
   }
