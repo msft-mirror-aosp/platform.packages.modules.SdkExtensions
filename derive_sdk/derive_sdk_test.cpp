@@ -261,6 +261,24 @@ TEST_F(DeriveSdkTest, AdServices) {
   EXPECT_ADSERVICES(1);
 }
 
+TEST_F(DeriveSdkTest, Tiramisu) {
+  AddExtensionVersion(1, {
+                             {SdkModule::AD_SERVICES, 1},
+                             {SdkModule::APPSEARCH, 2},
+                             {SdkModule::ON_DEVICE_PERSONALIZATION, 3},
+                         });
+  EXPECT_T(0);
+
+  SetApexVersion("com.android.adservices", 1);
+  EXPECT_T(0);
+
+  SetApexVersion("com.android.appsearch", 2);
+  EXPECT_T(0);
+
+  SetApexVersion("com.android.ondevicepersonalization", 3);
+  EXPECT_T(1);
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
