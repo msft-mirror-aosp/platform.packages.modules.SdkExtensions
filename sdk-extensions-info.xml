@@ -67,12 +67,20 @@
     sdks="R-ext,S-ext,T-ext" />
 
   <!-- AD_SERVICES -->
+  <!--
+    Currently derive_sdk's database versions depend on both the dessert
+    extensions and the AD_SERVICES extensions, and technically
+    framework-adservices and framework-sdksandbox are part of the
+    AD_SERVICES-ext and T-ext SDKs, but this is an implementation detail we do
+    not want to expose. For this reason, only include AD_SERVICES-ext in the
+    list of SDKs.
+  -->
   <symbol
     jar="framework-adservices"
     pattern="*"
-    sdks="AD_SERVICES-ext,T-ext" />
+    sdks="AD_SERVICES-ext" />
   <symbol
     jar="framework-sdksandbox"
     pattern="*"
-    sdks="AD_SERVICES-ext,T-ext" />
+    sdks="AD_SERVICES-ext" />
 </sdk-extensions-info>
