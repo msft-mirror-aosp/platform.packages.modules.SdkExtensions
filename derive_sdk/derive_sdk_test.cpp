@@ -35,6 +35,7 @@
     EXPECT_R(n);      \
     EXPECT_S(n);      \
     EXPECT_T(n);      \
+    EXPECT_U(n);      \
   }
 
 #define EXPECT_R(n) EXPECT_EQ(GetR(), (n))
@@ -44,6 +45,9 @@
 
 // Only expect the T extension level to be set on T+ devices.
 #define EXPECT_T(n) EXPECT_EQ(GetT(), android::modules::sdklevel::IsAtLeastT() ? (n) : -1)
+
+// Only expect the U extension level to be set on U+ devices.
+#define EXPECT_U(n) EXPECT_EQ(GetU(), android::modules::sdklevel::IsAtLeastU() ? (n) : -1)
 
 class DeriveSdkTest : public ::testing::Test {
  protected:
@@ -94,6 +98,8 @@ class DeriveSdkTest : public ::testing::Test {
   int GetS() { return android::base::GetIntProperty("build.version.extensions.s", -1); }
 
   int GetT() { return android::base::GetIntProperty("build.version.extensions.t", -1); }
+
+  int GetU() { return android::base::GetIntProperty("build.version.extensions.u", -1); }
 
   void EXPECT_ADSERVICES(int n) {
     int A = android::base::GetIntProperty("build.version.extensions.ad_services", -1);
@@ -277,6 +283,20 @@ TEST_F(DeriveSdkTest, Tiramisu) {
 
   SetApexVersion("com.android.ondevicepersonalization", 3);
   EXPECT_T(1);
+}
+
+TEST_F(DeriveSdkTest, UpsideDownCake) {
+  AddExtensionVersion(1, {
+                             {SdkModule::CONFIG_INFRASTRUCTURE, 1},
+                             {SdkModule::HEALTH_FITNESS, 2},
+                         });
+  EXPECT_U(0);
+
+  SetApexVersion("com.android.configinfrastructure", 1);
+  EXPECT_U(0);
+
+  SetApexVersion("com.android.healthfitness", 2);
+  EXPECT_U(1);
 }
 
 int main(int argc, char** argv) {
