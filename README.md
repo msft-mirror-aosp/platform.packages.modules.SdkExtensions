@@ -128,9 +128,12 @@ extensions and the S extensions.
 
 The steps to define a new extension are:
 
--   Add any new modules to the SdkModule enum in sdk.proto.
+-   Add any new modules to the SdkModule enum in sdk.proto. e.g.
+    [for new required, updatable modules in U](http://ag/21148706)
 
 -   Add the binary "current sdk version" proto to the apexes of the new modules.
+    e.g. [for health fitness](http://ag/21158651) and
+    [config infrastructure](http://ag/21158650).
 
 -   Update `derive_sdk.cpp` by:
 
@@ -146,6 +149,10 @@ The steps to define a new extension are:
 
     *   update the hard-coded list of extensions in `ReadSystemProperties`
 
+    *   e.g. [for U extension](http://ag/21481214)
+
 -   Make the `SdkExtensions.getExtensionVersion` API support the new extensions.
 
--   Extend the CTS test to verify the above two behaviors.
+    *   Extend `CtsSdkExtentensionsTestCase` to verify the above two behaviors.
+
+    *   e.g. [for U extensions](http://ag/21507939)
