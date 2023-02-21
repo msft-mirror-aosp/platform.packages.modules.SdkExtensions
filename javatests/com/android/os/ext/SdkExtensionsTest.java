@@ -20,6 +20,7 @@ import static android.os.Build.VERSION_CODES;
 import static android.os.Build.VERSION_CODES.R;
 import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
+import static android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 import static android.os.ext.SdkExtensions.AD_SERVICES;
 import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
 import static com.google.common.truth.Truth.assertThat;
@@ -84,7 +85,12 @@ public class SdkExtensionsTest {
     /** Verifies that getExtensionVersion returns zero value for non-existing extensions */
     @Test
     public void testZeroValues() throws Exception {
-        Set<Integer> assignedCodes = Set.of(R, S, TIRAMISU, AD_SERVICES);
+        Set<Integer> assignedCodes = Set.of(
+            R,
+            S,
+            TIRAMISU,
+            UPSIDE_DOWN_CAKE,
+            AD_SERVICES);
         for (int sdk = VERSION_CODES.R; sdk <= 1_000_000; sdk++) {
             if (assignedCodes.contains(sdk)) {
                 continue;
@@ -105,6 +111,9 @@ public class SdkExtensionsTest {
             expectedKeys.add(VERSION_CODES.TIRAMISU);
             expectedKeys.add(AD_SERVICES);
         }
+        if (SdkLevel.isAtLeastU()) {
+            expectedKeys.add(UPSIDE_DOWN_CAKE);
+        }
         Set<Integer> actualKeys = SdkExtensions.getAllExtensionVersions().keySet();
         assertThat(actualKeys).containsExactlyElementsIn(expectedKeys);
     }
@@ -122,6 +131,11 @@ public class SdkExtensionsTest {
     @Test
     public void testExtensionT() {
         assertCorrectVersion(SdkLevel.isAtLeastT(), TIRAMISU, "t");
+    }
+
+    @Test
+    public void testExtensionU() {
+        assertCorrectVersion(SdkLevel.isAtLeastU(), UPSIDE_DOWN_CAKE, "u");
     }
 
     @Test
