@@ -105,8 +105,10 @@ public class SdkExtensionsTest {
         }
         if (SdkLevel.isAtLeastT()) {
             expectedKeys.add(VERSION_CODES.TIRAMISU);
-            if (SdkExtensions.getExtensionVersion(TIRAMISU) >= 4) {
-                // The AdServices extension was added in v4.
+            if (SdkExtensions.getExtensionVersion(VERSION_CODES.S) >= 4) {
+                // The AdServices extension was added in v4 (2022-11). Note that we check the
+                // S extension version in the conditional above because the 22-11-Go train did
+                // not include AdServices, so the T extension version remains 3 (S is 4 though).
                 expectedKeys.add(AD_SERVICES);
             }
         }
