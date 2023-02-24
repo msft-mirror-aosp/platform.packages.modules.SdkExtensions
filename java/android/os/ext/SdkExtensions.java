@@ -18,7 +18,6 @@ package android.os.ext;
 
 import android.annotation.IntDef;
 import android.annotation.NonNull;
-import android.annotation.SystemApi;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemProperties;
 

@@ -26,6 +26,7 @@ import static org.junit.Assume.assumeTrue;
 
 import android.cts.install.lib.host.InstallUtilsHost;
 
+import com.android.modules.utils.build.testing.DeviceSdkLevel;
 import com.android.os.ext.testing.CurrentVersion;
 import com.android.tests.rollback.host.AbandonSessionsRule;
 import com.android.tradefed.device.ITestDevice.ApexInfo;
@@ -65,6 +66,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private final InstallUtilsHost mInstallUtils = new InstallUtilsHost(this);
 
+    private DeviceSdkLevel mDeviceSdkLevel;
     private Boolean mIsAtLeastS = null;
     private Boolean mIsAtLeastT = null;
     private Boolean mIsAtLeastU = null;
@@ -75,6 +77,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     @Before
     public void setUp() throws Exception {
         assumeTrue("Updating APEX is not supported", mInstallUtils.isApexUpdateSupported());
+        mDeviceSdkLevel = new DeviceSdkLevel(getDevice());
     }
 
     @Before
@@ -106,6 +109,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         // Version 45 requires sdkext + media, which isn't fulfilled
         assertRVersionEquals(12);
         assertSVersionEquals(12);
+        assertTVersionEquals(12);
         assertTestMethodsPresent(); // 45 APIs are available on 12 too.
     }
 
@@ -182,12 +186,14 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
             : CurrentVersion.R_BASE_VERSION;
         assertRVersionEquals(expected);
         assertSVersionEquals(expected);
+        assertTVersionEquals(expected);
         assertTestMethodsNotPresent();
     }
 
     private void assertVersion45() throws Exception {
         assertRVersionEquals(45);
         assertSVersionEquals(45);
+        assertTVersionEquals(45);
         assertTestMethodsPresent();
     }
 
@@ -218,6 +224,10 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
         String[] apps = minVersion >= 45 ? new String[]{"s12", "s45"}
                 : minVersion >= 12 ? new String[]{"s12"} : new String[]{};
         assertExtensionVersionEquals("s", version, apps, isAtLeastS());
+    }
+
+    private void assertTVersionEquals(int version) throws Exception {
+        assertExtensionVersionEquals("t", version, new String[]{}, isAtLeastT());
     }
 
     private void assertExtensionVersionEquals(String extension, int version, String[] apps,
@@ -251,21 +261,21 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private boolean isAtLeastS() throws Exception {
         if (mIsAtLeastS == null) {
-            mIsAtLeastS = broadcastForBoolean("IS_AT_LEAST", "s");
+            mIsAtLeastS = mDeviceSdkLevel.isDeviceAtLeastS();
         }
         return mIsAtLeastS;
     }
 
     private boolean isAtLeastT() throws Exception {
         if (mIsAtLeastT == null) {
-            mIsAtLeastT = broadcastForBoolean("IS_AT_LEAST", "t");
+            mIsAtLeastT = mDeviceSdkLevel.isDeviceAtLeastT();
         }
         return mIsAtLeastT;
     }
 
     private boolean isAtLeastU() throws Exception {
         if (mIsAtLeastU == null) {
-            mIsAtLeastU = broadcastForBoolean("IS_AT_LEAST", "u");
+            mIsAtLeastU = mDeviceSdkLevel.isDeviceAtLeastU();
         }
         return mIsAtLeastU;
     }
