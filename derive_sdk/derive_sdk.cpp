@@ -40,6 +40,7 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
     {"com.android.art", SdkModule::ART},
     {"com.android.configinfrastructure", SdkModule::CONFIG_INFRASTRUCTURE},
     {"com.android.conscrypt", SdkModule::CONSCRYPT},
+    {"com.android.extservices", SdkModule::EXT_SERVICES},
     {"com.android.healthfitness", SdkModule::HEALTH_FITNESS},
     {"com.android.ipsec", SdkModule::IPSEC},
     {"com.android.media", SdkModule::MEDIA},
@@ -53,8 +54,9 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
 };
 
 static const std::unordered_set<SdkModule> kRModules = {
-    SdkModule::CONSCRYPT,   SdkModule::IPSEC,          SdkModule::MEDIA,  SdkModule::MEDIA_PROVIDER,
-    SdkModule::PERMISSIONS, SdkModule::SDK_EXTENSIONS, SdkModule::STATSD, SdkModule::TETHERING,
+    SdkModule::CONSCRYPT,      SdkModule::EXT_SERVICES,   SdkModule::IPSEC,
+    SdkModule::MEDIA,          SdkModule::MEDIA_PROVIDER, SdkModule::PERMISSIONS,
+    SdkModule::SDK_EXTENSIONS, SdkModule::STATSD,         SdkModule::TETHERING,
 };
 
 static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
