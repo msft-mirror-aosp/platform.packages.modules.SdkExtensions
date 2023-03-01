@@ -23,6 +23,9 @@ import static android.os.Build.VERSION_CODES.TIRAMISU;
 import static android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 import static android.os.ext.SdkExtensions.AD_SERVICES;
 import static com.android.os.ext.testing.CurrentVersion.CURRENT_TRAIN_VERSION;
+import static com.android.os.ext.testing.CurrentVersion.R_BASE_VERSION;
+import static com.android.os.ext.testing.CurrentVersion.S_BASE_VERSION;
+import static com.android.os.ext.testing.CurrentVersion.T_BASE_VERSION;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -46,15 +49,34 @@ public class SdkExtensionsTest {
         CURRENT,
         /** Expect an extension to be missing / version 0 */
         MISSING,
+        /** Expect an extension to be at least the base extension version of the device */
+        AT_LEAST_BASE,
     }
 
     private static final Expectation CURRENT = Expectation.CURRENT;
     private static final Expectation MISSING = Expectation.MISSING;
+    private static final Expectation AT_LEAST_BASE = Expectation.AT_LEAST_BASE;
+
+    private static void assertAtLeastBaseVersion(int version) {
+        int minVersion = R_BASE_VERSION;
+        if (SdkLevel.isAtLeastU()) {
+            minVersion = CURRENT_TRAIN_VERSION;
+        } else if (SdkLevel.isAtLeastT()) {
+            minVersion = T_BASE_VERSION;
+        } else if (SdkLevel.isAtLeastS()) {
+            minVersion = S_BASE_VERSION;
+        }
+        assertThat(version).isAtLeast(minVersion);
+        assertThat(version).isAtMost(CURRENT_TRAIN_VERSION);
+    }
 
     private static void assertVersion(Expectation expectation, int version) {
         switch (expectation) {
             case CURRENT:
                 assertEquals(CURRENT_TRAIN_VERSION, version);
+                break;
+            case AT_LEAST_BASE:
+                assertAtLeastBaseVersion(version);
                 break;
             case MISSING:
                 assertEquals(0, version);
