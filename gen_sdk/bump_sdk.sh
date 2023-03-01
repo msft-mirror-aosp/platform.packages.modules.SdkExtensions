@@ -4,6 +4,8 @@ if ! [ -e build/soong ]; then
   exit 1
 fi
 
+commandline="$*"
+
 sdk="$1"
 if [[ -z "$sdk" ]]; then
   echo "usage: $0 <new-sdk-int> [modules] [bug-id]"
@@ -12,6 +14,7 @@ fi
 shift
 
 if [[ -n $1 ]] && ! [[ $1 =~ [0-9]+ ]]; then
+  IFS=',' read -r -a modules <<< "$1"
   modules_arg="--modules $1"
   shift
 fi
@@ -32,8 +35,21 @@ repo start bump-ext ${SDKEXT}
 
 message="Bump SDK Extension version to ${sdk}
 
-Generated with:
-$ $0 $@
+"
+
+if [[ "$modules_arg" ]]; then
+  message+="Modules with new APIs:
+"
+  for mod in "${modules[@]}"; do
+    message+="  - $mod
+"
+  done
+  message+="
+"
+fi
+
+message+="Generated with:
+$ $0 $commandline
 
 Database update generated with:
 $ gen_sdk --action new_sdk --sdk $sdk
