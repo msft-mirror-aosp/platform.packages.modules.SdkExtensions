@@ -19,7 +19,7 @@ if [[ -n $1 ]] && ! [[ $1 =~ [0-9]+ ]]; then
   shift
 fi
 
-bug_text=$(test -n "$1" && echo "\nBug: $1")
+bug=$(test -n "$1" && echo "$1")
 
 SDKEXT="packages/modules/SdkExtensions/"
 
@@ -33,28 +33,23 @@ sed -E -i -e "/public static final int CURRENT_TRAIN_VERSION = /{s/\S+;/${sdk};/
     ${SDKEXT}/java/com/android/os/ext/testing/CurrentVersion.java
 repo start bump-ext ${SDKEXT}
 
-message="Bump SDK Extension version to ${sdk}
-
-"
+message="Bump SDK Extension version to ${sdk}\n"
 
 if [[ "$modules_arg" ]]; then
-  message+="Modules with new APIs:
-"
+  message+="\nModules with new APIs:\n"
   for mod in "${modules[@]}"; do
-    message+="  - $mod
-"
+    message+="  - $mod\n"
   done
-  message+="
-"
 fi
 
-message+="Generated with:
+message+="\nGenerated with:
 $ $0 $commandline
 
 Database update generated with:
 $ gen_sdk --action new_sdk --sdk $sdk
 "
-message+=$(test -n "$2" && echo -e "\nBug: $2")
-message+=$(echo -e "\nTest: presubmit")
+message+=$(test -n "$bug" && echo "\nBug: $bug")
+message+="\nTest: presubmit"
 
+message=$(echo -e "$message") # expand '\n' chars
 git -C ${SDKEXT} commit -a -m "$message"
