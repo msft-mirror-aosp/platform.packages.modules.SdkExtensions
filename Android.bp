@@ -95,8 +95,22 @@ bootclasspath_fragment {
 
 filegroup {
     name: "sdk-extensions-info",
-    srcs: ["sdk-extensions-info.txt"],
+    srcs: ["sdk-extensions-info.xml"],
     visibility: [
         "//frameworks/base",
+    ],
+}
+
+java_test_host {
+    name: "sdkextensions_conformance_framework_tests",
+    static_libs: ["ClasspathFetcher"],
+    libs: [
+        "tradefed",
+        "truth-prebuilt",
+    ],
+    test_config: "sdkext-conformance-framework.xml",
+    test_suites: [
+        "mts",
+        "device-tests",
     ],
 }
