@@ -98,6 +98,7 @@ filegroup {
     srcs: ["sdk-extensions-info.xml"],
     visibility: [
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
 }
 
