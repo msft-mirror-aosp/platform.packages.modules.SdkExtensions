@@ -26,6 +26,7 @@ import static org.junit.Assume.assumeTrue;
 
 import android.cts.install.lib.host.InstallUtilsHost;
 
+import com.android.modules.utils.build.testing.DeviceSdkLevel;
 import com.android.os.ext.testing.CurrentVersion;
 import com.android.tests.rollback.host.AbandonSessionsRule;
 import com.android.tradefed.device.ITestDevice.ApexInfo;
@@ -65,6 +66,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private final InstallUtilsHost mInstallUtils = new InstallUtilsHost(this);
 
+    private DeviceSdkLevel mDeviceSdkLevel;
     private Boolean mIsAtLeastS = null;
     private Boolean mIsAtLeastT = null;
     private Boolean mIsAtLeastU = null;
@@ -75,6 +77,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     @Before
     public void setUp() throws Exception {
         assumeTrue("Updating APEX is not supported", mInstallUtils.isApexUpdateSupported());
+        mDeviceSdkLevel = new DeviceSdkLevel(getDevice());
     }
 
     @Before
@@ -258,21 +261,21 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
 
     private boolean isAtLeastS() throws Exception {
         if (mIsAtLeastS == null) {
-            mIsAtLeastS = broadcastForBoolean("IS_AT_LEAST", "s");
+            mIsAtLeastS = mDeviceSdkLevel.isDeviceAtLeastS();
         }
         return mIsAtLeastS;
     }
 
     private boolean isAtLeastT() throws Exception {
         if (mIsAtLeastT == null) {
-            mIsAtLeastT = broadcastForBoolean("IS_AT_LEAST", "t");
+            mIsAtLeastT = mDeviceSdkLevel.isDeviceAtLeastT();
         }
         return mIsAtLeastT;
     }
 
     private boolean isAtLeastU() throws Exception {
         if (mIsAtLeastU == null) {
-            mIsAtLeastU = broadcastForBoolean("IS_AT_LEAST", "u");
+            mIsAtLeastU = mDeviceSdkLevel.isDeviceAtLeastU();
         }
         return mIsAtLeastU;
     }
