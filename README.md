@@ -144,6 +144,8 @@ The steps to define a new extension are:
     *   add a unit test to `derive_sdk_test.cpp` verifying the new extensions
         work
 
+    *   update the hard-coded list of extensions in `ReadSystemProperties`
+
 -   Make the `SdkExtensions.getExtensionVersion` API support the new extensions.
 
 -   Extend the CTS test to verify the above two behaviors.
