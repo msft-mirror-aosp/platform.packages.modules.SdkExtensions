@@ -447,10 +447,4 @@ versions {
       version: 3
     }
   }
-  requirements {
-    module: EXT_SERVICES
-    version {
-      version: 6
-    }
-  }
 }
