@@ -28,12 +28,17 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.ModuleInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 import com.android.modules.utils.build.SdkLevel;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import org.junit.Rule;
 import org.junit.Test;
@@ -141,20 +146,60 @@ public class SdkExtensionsTest {
     }
 
     @Test
-    public void testExtensionR() {
-        assertVersion(Expectation.CURRENT, R, "r");
+    public void testExtensionR() throws Exception {
+        Expectation expectation = dessertExpectation(true);
+        assertVersion(expectation, R, "r");
     }
 
     @Test
-    public void testExtensionS() {
-        Expectation expectation = SdkLevel.isAtLeastS() ? CURRENT : MISSING;
+    public void testExtensionS() throws Exception  {
+        Expectation expectation = dessertExpectation(SdkLevel.isAtLeastS());
         assertVersion(expectation, S, "s");
     }
 
     @Test
-    public void testExtensionT() {
-        Expectation expectation = SdkLevel.isAtLeastT() ? CURRENT : MISSING;
+    public void testExtensionT() throws Exception  {
+        Expectation expectation = dessertExpectation(SdkLevel.isAtLeastT());
         assertVersion(expectation, TIRAMISU, "t");
+    }
+
+    private Expectation dessertExpectation(boolean expectedPresent) throws Exception {
+        if (!expectedPresent) {
+            return MISSING;
+        }
+        // Go trains don't include all modules, so even when all trains for a particular release
+        // have been installed correctly on a Go device, we can't generally expect the extension
+        // version to be the current train version.
+        return SdkLevel.isAtLeastT() && isGoWithSideloadedModules() ? AT_LEAST_BASE : CURRENT;
+    }
+
+    private boolean isGoWithSideloadedModules() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        boolean isGoDevice = context.getSystemService(ActivityManager.class).isLowRamDevice();
+        if (!isGoDevice) {
+            return false;
+        }
+
+        PackageManager packageManager = context.getPackageManager();
+        boolean anyApexesSideloaded = false;
+        for (ModuleInfo module : packageManager.getInstalledModules(PackageManager.MATCH_ALL)) {
+            boolean sideloaded = isSideloadedApex(packageManager, module.getPackageName());
+            anyApexesSideloaded |= sideloaded;
+        }
+        return anyApexesSideloaded;
+    }
+
+    private static boolean isSideloadedApex(PackageManager packageManager, String packageName)
+            throws Exception {
+        int flags = PackageManager.MATCH_APEX;
+        PackageInfo currentInfo = packageManager.getPackageInfo(packageName, flags);
+        if (!currentInfo.isApex) {
+            return false;
+        }
+        flags |= PackageManager.MATCH_FACTORY_ONLY;
+        PackageInfo factoryInfo = packageManager.getPackageInfo(packageName, flags);
+        return !factoryInfo.applicationInfo.sourceDir.equals(currentInfo.applicationInfo.sourceDir);
+
     }
 
 }
