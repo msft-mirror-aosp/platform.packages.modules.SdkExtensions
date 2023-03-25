@@ -190,7 +190,7 @@ public class SdkExtensionsTest {
 
         PackageManager packageManager = context.getPackageManager();
         boolean anyApexesSideloaded = false;
-        for (ModuleInfo module : packageManager.getInstalledModules(PackageManager.MATCH_ALL)) {
+        for (ModuleInfo module : packageManager.getInstalledModules(0)) {
             boolean sideloaded = isSideloadedApex(packageManager, module.getPackageName());
             anyApexesSideloaded |= sideloaded;
         }
