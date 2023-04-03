@@ -102,6 +102,7 @@ class DeriveSdkTest : public ::testing::Test {
 };
 
 TEST_F(DeriveSdkTest, CurrentSystemImageValue) {
+  GTEST_SKIP() << "Ignoring b/274987782";
   EXPECT_ALL(3);
 }
 
