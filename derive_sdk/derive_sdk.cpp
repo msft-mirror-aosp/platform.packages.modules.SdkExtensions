@@ -38,7 +38,10 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
     {"com.android.adservices", SdkModule::AD_SERVICES},
     {"com.android.appsearch", SdkModule::APPSEARCH},
     {"com.android.art", SdkModule::ART},
+    {"com.android.configinfrastructure", SdkModule::CONFIG_INFRASTRUCTURE},
     {"com.android.conscrypt", SdkModule::CONSCRYPT},
+    {"com.android.extservices", SdkModule::EXT_SERVICES},
+    {"com.android.healthfitness", SdkModule::HEALTH_FITNESS},
     {"com.android.ipsec", SdkModule::IPSEC},
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
@@ -51,8 +54,9 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
 };
 
 static const std::unordered_set<SdkModule> kRModules = {
-    SdkModule::CONSCRYPT,   SdkModule::IPSEC,          SdkModule::MEDIA,  SdkModule::MEDIA_PROVIDER,
-    SdkModule::PERMISSIONS, SdkModule::SDK_EXTENSIONS, SdkModule::STATSD, SdkModule::TETHERING,
+    SdkModule::CONSCRYPT,      SdkModule::EXT_SERVICES,   SdkModule::IPSEC,
+    SdkModule::MEDIA,          SdkModule::MEDIA_PROVIDER, SdkModule::PERMISSIONS,
+    SdkModule::SDK_EXTENSIONS, SdkModule::STATSD,         SdkModule::TETHERING,
 };
 
 static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModule::SCHEDULING};
@@ -60,12 +64,15 @@ static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModul
 static const std::unordered_set<SdkModule> kTModules = {
     SdkModule::AD_SERVICES, SdkModule::APPSEARCH, SdkModule::ON_DEVICE_PERSONALIZATION};
 
+static const std::unordered_set<SdkModule> kUModules = {SdkModule::CONFIG_INFRASTRUCTURE,
+                                                        SdkModule::HEALTH_FITNESS};
+
 static const std::string kSystemPropertiesPrefix = "build.version.extensions.";
 
 void ReadSystemProperties(std::map<std::string, std::string>& properties) {
   const std::string default_ = "<not set>";
 
-  for (const auto& dessert : {"r", "s", "t"}) {
+  for (const auto& dessert : {"r", "s", "t", "ad_services", "u"}) {
     properties[kSystemPropertiesPrefix + dessert] =
         android::base::GetProperty(kSystemPropertiesPrefix + dessert, default_);
   }
@@ -210,6 +217,13 @@ bool SetSdkLevels(const std::string& mountpath) {
   relevant_modules.insert(kTModules.begin(), kTModules.end());
   if (android::modules::sdklevel::IsAtLeastT()) {
     if (!SetExtension("t", db, relevant_modules, versions)) {
+      return false;
+    }
+  }
+
+  relevant_modules.insert(kUModules.begin(), kUModules.end());
+  if (android::modules::sdklevel::IsAtLeastU()) {
+    if (!SetExtension("u", db, relevant_modules, versions)) {
       return false;
     }
   }
