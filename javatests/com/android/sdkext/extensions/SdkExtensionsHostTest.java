@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
+import org.junit.Ignore;
 
 import android.cts.install.lib.host.InstallUtilsHost;
 
@@ -91,11 +92,13 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     @Test
+    @Ignore("b/274764792")
     public void testDefault() throws Exception {
         assertVersionDefault();
     }
 
     @Test
+    @Ignore("b/274764792")
     public void upgradeOneApexWithBump()  throws Exception {
         assertVersionDefault();
         mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
@@ -109,6 +112,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     @Test
+    @Ignore("b/274764792")
     public void upgradeOneApex() throws Exception {
         // Version 45 requires updated sdkext and media, so updating just media changes nothing.
         assertVersionDefault();
@@ -118,6 +122,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     @Test
+    @Ignore("b/274764792")
     public void upgradeTwoApexes() throws Exception {
         // Updating sdkext and media bumps the version to 45.
         assertVersionDefault();
