@@ -1,4 +1,6 @@
-dariofreni@google.com
+amhk@google.com
+gurpreetgs@google.com
 hansson@google.com
+robertogil@google.com
 
 include platform/packages/modules/common:/MODULES_OWNERS  # see go/mainline-owners-policy
