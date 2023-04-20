@@ -109,8 +109,10 @@ public class SdkExtensionsTest {
     /** Verify that getExtensionVersion only accepts valid extension SDKs */
     @Test
     public void testBadArgument() throws Exception {
-        // R is the first SDK version with extensions.
-        for (int sdk = -1_000_000; sdk < VERSION_CODES.R; sdk++) {
+        // R is the first SDK version with extensions. Ideally, we'd test all <R values,
+        // but it would take too long, so take 10k samples.
+        int step = (int) ((VERSION_CODES.R - (long) Integer.MIN_VALUE) / 10_000);
+        for (int sdk = Integer.MIN_VALUE; sdk < VERSION_CODES.R; sdk += step) {
             final int finalSdk = sdk;
             assertThrows(IllegalArgumentException.class,
                     () -> SdkExtensions.getExtensionVersion(finalSdk));
