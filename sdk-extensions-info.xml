@@ -66,6 +66,12 @@
     pattern="android.provider.MediaStore.PickerMediaColumns"
     sdks="R-ext,S-ext,T-ext" />
 
+  <!-- CONNECTIVITY -->
+  <symbol
+    jar="framework-connectivity"
+    pattern="android.net.http"
+    sdks="S-ext,T-ext" />
+
   <!-- AD_SERVICES -->
   <!--
     Currently derive_sdk's database versions depend on both the dessert
