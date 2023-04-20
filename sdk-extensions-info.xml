@@ -37,6 +37,11 @@
     name="T Extensions"
     reference="android/os/Build$VERSION_CODES$TIRAMISU" />
   <sdk
+    id="34"
+    shortname="U-ext"
+    name="U Extensions"
+    reference="android/os/Build$VERSION_CODES$UPSIDE_DOWN_CAKE" />
+  <sdk
     id="1000000"
     shortname="AD_SERVICES-ext"
     name="Ad Services Extensions"
@@ -46,31 +51,31 @@
   <symbol
     jar="framework-sdkextensions"
     pattern="*"
-    sdks="R-ext,S-ext,T-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext" />
 
   <!-- MEDIA_PROVIDER -->
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX"
-    sdks="R-ext,S-ext,T-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.ACTION_PICK_IMAGES"
-    sdks="R-ext,S-ext,T-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getPickImagesMaxLimit"
-    sdks="R-ext,S-ext,T-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.PickerMediaColumns"
-    sdks="R-ext,S-ext,T-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext" />
 
   <!-- CONNECTIVITY -->
   <symbol
     jar="framework-connectivity"
     pattern="android.net.http"
-    sdks="S-ext,T-ext" />
+    sdks="S-ext,T-ext,U-ext" />
 
   <!-- AD_SERVICES -->
   <!--
