@@ -35,7 +35,7 @@
     id="33"
     shortname="T-ext"
     name="T Extensions"
-    reference="android/os/Build$VERSION_CODES$T" />
+    reference="android/os/Build$VERSION_CODES$TIRAMISU" />
 
   <!-- SDK_EXTENSIONS -->
   <symbol
