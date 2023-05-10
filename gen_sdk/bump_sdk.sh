@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 if ! [ -e build/soong ]; then
   echo "This script must be run from the top of the tree"
   exit 1
@@ -8,7 +8,7 @@ commandline="$*"
 
 sdk="$1"
 if [[ -z "$sdk" ]]; then
-  echo "usage: $0 <new-sdk-int> [modules] [bug-id]"
+  echo "usage: $0 <new-sdk-int> [module1,module2,..] [bug-id]"
   exit 1
 fi
 shift
@@ -19,7 +19,7 @@ if [[ -n $1 ]] && ! [[ $1 =~ [0-9]+ ]]; then
   shift
 fi
 
-bug=$(test -n "$1" && echo "$1")
+bug="$1"
 
 SDKEXT="packages/modules/SdkExtensions/"
 
@@ -29,9 +29,6 @@ out/soong/host/linux-x86/bin/gen_sdk \
     --action new_sdk \
     --sdk "$sdk" \
     $modules_arg
-sed -E -i -e "/public static final int CURRENT_TRAIN_VERSION = /{s/\S+;/${sdk};/}" \
-    ${SDKEXT}/java/com/android/os/ext/testing/CurrentVersion.java
-repo start bump-ext ${SDKEXT}
 
 message="Bump SDK Extension version to ${sdk}\n"
 
@@ -48,7 +45,7 @@ $ $0 $commandline
 Database update generated with:
 $ gen_sdk --action new_sdk --sdk $sdk
 "
-message+=$(test -n "$bug" && echo "\nBug: $bug")
+message+=$(test -z "$bug" || echo "\nBug: $bug")
 message+="\nTest: presubmit"
 message+="\nIgnore-AOSP-first: SDKs are finalized outside of AOSP"
 
