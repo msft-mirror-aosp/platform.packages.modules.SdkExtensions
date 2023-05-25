@@ -132,10 +132,7 @@ int GetSdkLevel(const ExtensionDatabase& db,
   return max;
 }
 
-bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db,
-                  const std::unordered_set<SdkModule>& relevant_modules,
-                  const std::unordered_map<SdkModule, int>& module_versions) {
-  int version = GetSdkLevel(db, relevant_modules, module_versions);
+bool SetExtension(const std::string& extension_name, int version) {
   LOG(INFO) << "extension " << extension_name << " version is " << version;
 
   const std::string property_name = kSystemPropertiesPrefix + extension_name;
@@ -144,6 +141,13 @@ bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db
     return false;
   }
   return true;
+}
+
+bool GetAndSetExtension(const std::string& extension_name, const ExtensionDatabase& db,
+                        const std::unordered_set<SdkModule>& relevant_modules,
+                        const std::unordered_map<SdkModule, int>& module_versions) {
+  int version = GetSdkLevel(db, relevant_modules, module_versions);
+  return SetExtension(extension_name, version);
 }
 
 bool ReadSdkInfoFromApexes(const std::string& mountpath,
@@ -203,27 +207,27 @@ bool SetSdkLevels(const std::string& mountpath) {
 
   std::unordered_set<SdkModule> relevant_modules;
   relevant_modules.insert(kRModules.begin(), kRModules.end());
-  if (!SetExtension("r", db, relevant_modules, versions)) {
+  if (!GetAndSetExtension("r", db, relevant_modules, versions)) {
     return false;
   }
 
   relevant_modules.insert(kSModules.begin(), kSModules.end());
   if (android::modules::sdklevel::IsAtLeastS()) {
-    if (!SetExtension("s", db, relevant_modules, versions)) {
+    if (!GetAndSetExtension("s", db, relevant_modules, versions)) {
       return false;
     }
   }
 
   relevant_modules.insert(kTModules.begin(), kTModules.end());
   if (android::modules::sdklevel::IsAtLeastT()) {
-    if (!SetExtension("t", db, relevant_modules, versions)) {
+    if (!GetAndSetExtension("t", db, relevant_modules, versions)) {
       return false;
     }
   }
 
   relevant_modules.insert(kUModules.begin(), kUModules.end());
   if (android::modules::sdklevel::IsAtLeastU()) {
-    if (!SetExtension("u", db, relevant_modules, versions)) {
+    if (!GetAndSetExtension("u", db, relevant_modules, versions)) {
       return false;
     }
   }
@@ -239,14 +243,19 @@ bool SetSdkLevels(const std::string& mountpath) {
     }
   }
 
-  relevant_modules.clear();
-  relevant_modules.insert(SdkModule::AD_SERVICES);
   if (android::modules::sdklevel::IsAtLeastT()) {
-    if (!SetExtension("ad_services", db, relevant_modules, versions)) {
-      return false;
+    if (versions[AD_SERVICES] >= 7) {
+      if (!SetExtension("ad_services", versions[AD_SERVICES])) {
+        return false;
+      }
+    } else {
+      relevant_modules.clear();
+      relevant_modules.insert(SdkModule::AD_SERVICES);
+      if (!GetAndSetExtension("ad_services", db, relevant_modules, versions)) {
+        return false;
+      }
     }
   }
-
   return true;
 }
 
