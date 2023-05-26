@@ -24,7 +24,7 @@ import java.util.Set;
 public class CurrentVersion {
 
     /** The latest train's version */
-    public static final int CURRENT_TRAIN_VERSION = 6;
+    public static final int CURRENT_TRAIN_VERSION = 7;
 
     /** The version R shipped with (0) */
     public static final int R_BASE_VERSION = 0;
@@ -49,6 +49,6 @@ public class CurrentVersion {
      */
     public static final Set<Integer> ALLOWED_VERSIONS_CTS =
         CURRENT_BASE_VERSION == CURRENT_TRAIN_VERSION ? Set.of(CURRENT_BASE_VERSION)
-            : Set.of(CURRENT_BASE_VERSION, 4, 5, CURRENT_TRAIN_VERSION);
+            : Set.of(CURRENT_BASE_VERSION, 4, 5, 6, CURRENT_TRAIN_VERSION);
 
 }
