@@ -156,3 +156,5 @@ The steps to define a new extension are:
     *   Extend `CtsSdkExtentensionsTestCase` to verify the above two behaviors.
 
     *   e.g. [for U extensions](http://ag/21507939)
+
+-   Add a new sdk tag in sdk-extensions-info.xml
