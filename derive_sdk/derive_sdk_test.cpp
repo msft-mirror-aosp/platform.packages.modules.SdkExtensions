@@ -102,9 +102,9 @@ class DeriveSdkTest : public ::testing::Test {
   int GetU() { return android::base::GetIntProperty("build.version.extensions.u", -1); }
 
   void EXPECT_ADSERVICES(int n) {
-    int A = android::base::GetIntProperty("build.version.extensions.ad_services", -1);
+    int actual = android::base::GetIntProperty("build.version.extensions.ad_services", -1);
     // Only expect the AdServices extension level to be set on T+ devices.
-    EXPECT_EQ(A, android::modules::sdklevel::IsAtLeastT() ? n : -1);
+    EXPECT_EQ(actual, android::modules::sdklevel::IsAtLeastT() ? n : -1);
   }
 
   ExtensionDatabase db_;
@@ -230,7 +230,7 @@ TEST_F(DeriveSdkTest, UnmappedModule) {
   ASSERT_FALSE(android::derivesdk::SetSdkLevels(dir()));
 }
 
-TEST_F(DeriveSdkTest, AdServices) {
+TEST_F(DeriveSdkTest, AdServicesPreV7) {
   AddExtensionVersion(1, {
                              {SdkModule::TETHERING, 1},
                          });
@@ -265,6 +265,28 @@ TEST_F(DeriveSdkTest, AdServices) {
   EXPECT_S(2);
   EXPECT_T(1);
   EXPECT_ADSERVICES(1);
+}
+
+TEST_F(DeriveSdkTest, AdServicesPostV7) {
+  // Need to add a base version with an R module to prevent the
+  // dessert extension versions from getting bumped.
+  AddExtensionVersion(1, {
+                             {SdkModule::TETHERING, 1},
+                         });
+
+  // Only adservices v2
+  SetApexVersion("com.android.adservices", 2);
+  EXPECT_ALL(0);
+  EXPECT_ADSERVICES(1);
+
+  // From v7 and onwards, we only care about the adservices version
+  SetApexVersion("com.android.adservices", 7);
+  EXPECT_ALL(0);
+  EXPECT_ADSERVICES(7);
+
+  SetApexVersion("com.android.adservices", 10);
+  EXPECT_ALL(0);
+  EXPECT_ADSERVICES(10);
 }
 
 TEST_F(DeriveSdkTest, Tiramisu) {
