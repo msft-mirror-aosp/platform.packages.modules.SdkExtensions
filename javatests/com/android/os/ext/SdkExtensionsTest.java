@@ -20,6 +20,7 @@ import static android.os.Build.VERSION_CODES;
 import static android.os.Build.VERSION_CODES.R;
 import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
+import static android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 import static android.os.ext.SdkExtensions.AD_SERVICES;
 import static com.android.os.ext.testing.CurrentVersion.CURRENT_TRAIN_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.R_BASE_VERSION;
@@ -110,8 +111,10 @@ public class SdkExtensionsTest {
     /** Verify that getExtensionVersion only accepts valid extension SDKs */
     @Test
     public void testBadArgument() throws Exception {
-        // R is the first SDK version with extensions.
-        for (int sdk = -1_000_000; sdk < VERSION_CODES.R; sdk++) {
+        // R is the first SDK version with extensions. Ideally, we'd test all <R values,
+        // but it would take too long, so take 10k samples.
+        int step = (int) ((VERSION_CODES.R - (long) Integer.MIN_VALUE) / 10_000);
+        for (int sdk = Integer.MIN_VALUE; sdk < VERSION_CODES.R; sdk += step) {
             final int finalSdk = sdk;
             assertThrows(IllegalArgumentException.class,
                     () -> SdkExtensions.getExtensionVersion(finalSdk));
@@ -121,7 +124,12 @@ public class SdkExtensionsTest {
     /** Verifies that getExtensionVersion returns zero value for non-existing extensions */
     @Test
     public void testZeroValues() throws Exception {
-        Set<Integer> assignedCodes = Set.of(R, S, TIRAMISU, AD_SERVICES);
+        Set<Integer> assignedCodes = Set.of(
+            R,
+            S,
+            TIRAMISU,
+            UPSIDE_DOWN_CAKE,
+            AD_SERVICES);
         for (int sdk = VERSION_CODES.R; sdk <= 1_000_000; sdk++) {
             if (assignedCodes.contains(sdk)) {
                 continue;
@@ -142,6 +150,9 @@ public class SdkExtensionsTest {
         if (SdkLevel.isAtLeastT()) {
             expectedKeys.add(VERSION_CODES.TIRAMISU);
             expectedKeys.add(AD_SERVICES);
+        }
+        if (SdkLevel.isAtLeastU()) {
+            expectedKeys.add(UPSIDE_DOWN_CAKE);
         }
         Set<Integer> actualKeys = SdkExtensions.getAllExtensionVersions().keySet();
         assertThat(actualKeys).containsExactlyElementsIn(expectedKeys);
@@ -166,8 +177,17 @@ public class SdkExtensionsTest {
     }
 
     @Test
-    public void testExtensionAdServices() {
-        Expectation expectation = SdkLevel.isAtLeastT() ? CURRENT : MISSING;
+    public void testExtensionU() throws Exception {
+        Expectation expectation = dessertExpectation(SdkLevel.isAtLeastU());
+        assertVersion(expectation, UPSIDE_DOWN_CAKE, "u");
+    }
+
+    @Test
+    public void testExtensionAdServices() throws Exception {
+        // Go trains do not ship the latest versions of AdServices, though they should. Temporarily
+        // accept AT_LEAST_BASE of AdServices until the Go train situation has been resolved, then
+        // revert back to expecting MISSING (before T) or CURRENT (on T+).
+        Expectation expectation = dessertExpectation(SdkLevel.isAtLeastT());
         assertVersion(expectation, AD_SERVICES, "ad_services");
     }
 
