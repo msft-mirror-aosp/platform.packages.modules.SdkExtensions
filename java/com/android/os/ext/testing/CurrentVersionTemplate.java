@@ -23,8 +23,11 @@ import java.util.Set;
  */
 public class CurrentVersion {
 
-    /** The latest train's version */
-    public static final int CURRENT_TRAIN_VERSION = 4;
+    /**
+     * The latest train's version. Note that the value is inserted by the build
+     * pre-processing the source code.
+     */
+    public static final int CURRENT_TRAIN_VERSION = {INSERTED_BY_BUILD};
 
     /** The version R shipped with (0) */
     public static final int R_BASE_VERSION = 0;
