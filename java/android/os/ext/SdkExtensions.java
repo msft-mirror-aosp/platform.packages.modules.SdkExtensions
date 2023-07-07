@@ -46,12 +46,14 @@ public class SdkExtensions {
     private static final int R_EXTENSION_INT;
     private static final int S_EXTENSION_INT;
     private static final int T_EXTENSION_INT;
+    private static final int U_EXTENSION_INT;
     private static final int AD_SERVICES_EXTENSION_INT;
     private static final Map<Integer, Integer> ALL_EXTENSION_INTS;
     static {
         R_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.r", 0);
         S_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.s", 0);
         T_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.t", 0);
+        U_EXTENSION_INT = SystemProperties.getInt("build.version.extensions.u", 0);
         AD_SERVICES_EXTENSION_INT =
                 SystemProperties.getInt("build.version.extensions.ad_services", 0);
         Map<Integer, Integer> extensions = new HashMap<Integer, Integer>();
@@ -63,6 +65,9 @@ public class SdkExtensions {
             extensions.put(VERSION_CODES.TIRAMISU, T_EXTENSION_INT);
             extensions.put(AD_SERVICES, AD_SERVICES_EXTENSION_INT);
         }
+        if (SdkLevel.isAtLeastU()) {
+            extensions.put(VERSION_CODES.UPSIDE_DOWN_CAKE, U_EXTENSION_INT);
+        }
         ALL_EXTENSION_INTS = Collections.unmodifiableMap(extensions);
     }
 
@@ -70,7 +75,13 @@ public class SdkExtensions {
      * Values suitable as parameters for {@link #getExtensionVersion(int)}.
      * @hide
      */
-    @IntDef(value = { VERSION_CODES.R, VERSION_CODES.S, VERSION_CODES.TIRAMISU, AD_SERVICES })
+    @IntDef(value = {
+          VERSION_CODES.R,
+          VERSION_CODES.S,
+          VERSION_CODES.TIRAMISU,
+          VERSION_CODES.UPSIDE_DOWN_CAKE,
+          AD_SERVICES,
+        })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Extension {}
 
@@ -103,6 +114,9 @@ public class SdkExtensions {
         }
         if (extension == VERSION_CODES.TIRAMISU) {
             return T_EXTENSION_INT;
+        }
+        if (extension == VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return U_EXTENSION_INT;
         }
         if (extension == AD_SERVICES) {
             return AD_SERVICES_EXTENSION_INT;
