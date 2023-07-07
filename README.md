@@ -95,17 +95,9 @@ We have a utility script that automates this. Run:
 running the SdkExtensions tests. They need to be updated to use module builds
 that contain the CLs generated above. See http://shortn/_aKhLxsQLZd
 
-#### Update base SDK of downstream branch
-
-7) **build/make:** In the current main branch, update
-`PLATFORM_BASE_SDK_EXTENSION_VERSION` to the the version that has just been
-finalized (in `core/version_defaults.mk`).
-
-   [Example CL][update-base]
-
 #### Finalize SDK artifacts
 
-8) **prebuilts/sdk & module sdk repos:** Once the train is finalized, the API
+7) **prebuilts/sdk & module sdk repos:** Once the train is finalized, the API
 artifacts need to be recorded for doc generation to work correctly. Do this by
 running the finalize_sdk script:
 
@@ -125,7 +117,6 @@ running the finalize_sdk script:
 [derive_sdk_test]: derive_sdk/derive_sdk_test.cpp
 [current_version]: java/com/android/os/ext/testing/CurrentVersion.java
 [finalize]: https://android.googlesource.com/platform/prebuilts/sdk/+/d77e77b6746acba806c263344711eb0c4df2b108
-[update-base]: https://android.googlesource.com/platform/build/+/341915b0f5149c213b6f2dba80ad7af034b1462f
 
 ### Adding a new extension
 
@@ -137,9 +128,12 @@ extensions and the S extensions.
 
 The steps to define a new extension are:
 
--   Add any new modules to the SdkModule enum in sdk.proto.
+-   Add any new modules to the SdkModule enum in sdk.proto. e.g.
+    [for new required, updatable modules in U](http://ag/21148706)
 
 -   Add the binary "current sdk version" proto to the apexes of the new modules.
+    e.g. [for health fitness](http://ag/21158651) and
+    [config infrastructure](http://ag/21158650).
 
 -   Update `derive_sdk.cpp` by:
 
@@ -153,6 +147,14 @@ The steps to define a new extension are:
     *   add a unit test to `derive_sdk_test.cpp` verifying the new extensions
         work
 
+    *   update the hard-coded list of extensions in `ReadSystemProperties`
+
+    *   e.g. [for U extension](http://ag/21481214)
+
 -   Make the `SdkExtensions.getExtensionVersion` API support the new extensions.
 
--   Extend the CTS test to verify the above two behaviors.
+    *   Extend `CtsSdkExtentensionsTestCase` to verify the above two behaviors.
+
+    *   e.g. [for U extensions](http://ag/21507939)
+
+-   Add a new sdk tag in sdk-extensions-info.xml
