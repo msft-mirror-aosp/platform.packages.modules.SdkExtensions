@@ -447,12 +447,6 @@ versions {
       version: 3
     }
   }
-  requirements {
-    module: EXT_SERVICES
-    version {
-      version: 6
-    }
-  }
 }
 versions {
   version: 7
@@ -530,12 +524,6 @@ versions {
   }
   requirements {
     module: ON_DEVICE_PERSONALIZATION
-    version {
-      version: 7
-    }
-  }
-  requirements {
-    module: EXT_SERVICES
     version {
       version: 7
     }
