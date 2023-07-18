@@ -622,12 +622,6 @@ versions {
     }
   }
   requirements {
-    module: EXT_SERVICES
-    version {
-      version: 8
-    }
-  }
-  requirements {
     module: CONFIG_INFRASTRUCTURE
     version {
       version: 7
@@ -637,6 +631,12 @@ versions {
     module: HEALTH_FITNESS
     version {
       version: 7
+    }
+  }
+  requirements {
+    module: EXT_SERVICES
+    version {
+      version: 8
     }
   }
 }
