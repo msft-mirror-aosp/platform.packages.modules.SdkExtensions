@@ -109,8 +109,8 @@ def ValidateDatabase(database, dbname):
         return 'SDK %d has a requirement on an undefined module value' % version.version
       has_adservices = SdkModule.AD_SERVICES in required_modules
       has_extservices = SdkModule.EXT_SERVICES in required_modules
-      if version.version >= 8 and (has_adservices ^ has_extservices):
-        return 'AD_SERVICES and EXT_SERVICES must be finalized together as of version 6'
+      if version.version >= 9 and (has_adservices ^ has_extservices):
+        return 'AD_SERVICES and EXT_SERVICES must be finalized together as of version 9'
 
     return None
 
