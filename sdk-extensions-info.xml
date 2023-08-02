@@ -56,7 +56,7 @@
   <!-- MEDIA_PROVIDER -->
   <symbol
     jar="framework-mediaprovider"
-    pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX"
+    pattern="android.provider.MediaStore.PickerMediaColumns"
     sdks="R-ext,S-ext,T-ext,U-ext" />
   <symbol
     jar="framework-mediaprovider"
@@ -64,11 +64,47 @@
     sdks="R-ext,S-ext,T-ext,U-ext" />
   <symbol
     jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.ACTION_PICK_IMAGES_SETTINGS"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getPickImagesMaxLimit"
     sdks="R-ext,S-ext,T-ext,U-ext" />
   <symbol
     jar="framework-mediaprovider"
-    pattern="android.provider.MediaStore.PickerMediaColumns"
+    pattern="android.provider.MediaStore.getGeneration"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.getVersion"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.VOLUME_EXTERNAL"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.CloudMediaProvider"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.CloudMediaProviderContract"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.isCurrentCloudMediaProviderAuthority"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.isSupportedCloudMediaProviderAuthority"
+    sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.notifyCloudMediaChangedEvent"
     sdks="R-ext,S-ext,T-ext,U-ext" />
 
   <!-- CONNECTIVITY -->
