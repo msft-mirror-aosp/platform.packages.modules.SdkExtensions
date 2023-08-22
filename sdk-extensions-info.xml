@@ -130,4 +130,96 @@
     jar="framework-sdksandbox"
     pattern="*"
     sdks="AD_SERVICES-ext" />
+
+  <!-- HEALTH_FITNESS -->
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.AggregateRecordsGroupedByDurationResponse.getDataOrigins"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.AggregateRecordsGroupedByPeriodResponse.getDataOrigins"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.BloodPressureRecord.DIASTOLIC_AVG"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.BloodPressureRecord.DIASTOLIC_MAX"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.BloodPressureRecord.DIASTOLIC_MIN"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.BloodPressureRecord.SYSTOLIC_AVG"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.BloodPressureRecord.SYSTOLIC_MIN"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.BloodPressureRecord.SYSTOLIC_MAX"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.CyclingPedalingCadenceRecord.RPM_AVG"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.CyclingPedalingCadenceRecord.RPM_MAX"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.CyclingPedalingCadenceRecord.RPM_MIN"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.NutritionRecord.TRANS_FAT_TOTAL"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.SpeedRecord.SPEED_AVG"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.SpeedRecord.SPEED_MAX"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.SpeedRecord.SPEED_MIN"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.StepsCadenceRecord.STEPS_CADENCE_RATE_AVG"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.StepsCadenceRecord.STEPS_CADENCE_RATE_MAX"
+    sdks="U-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.StepsCadenceRecord.STEPS_CADENCE_RATE_MIN"
+    sdks="U-ext" />
+
 </sdk-extensions-info>
