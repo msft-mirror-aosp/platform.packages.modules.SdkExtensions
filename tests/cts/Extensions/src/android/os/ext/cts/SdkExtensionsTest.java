@@ -27,7 +27,7 @@ import java.util.Set;
 public class SdkExtensionsTest extends TestCase {
 
     // Android S launched with 1. Since then, version 2 was added.
-    private static final Set<Integer> ALLOWED_VERSIONS = Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+    private static final Set<Integer> ALLOWED_VERSIONS = Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
     private static void assertCorrectVersion(int version) throws Exception {
         assertTrue(ALLOWED_VERSIONS.contains(version));
