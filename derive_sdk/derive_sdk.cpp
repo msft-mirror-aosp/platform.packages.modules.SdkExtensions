@@ -143,27 +143,10 @@ bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db
 
 bool ReadSdkInfoFromApexes(const std::string& mountpath,
                            std::unordered_map<SdkModule, int>& versions) {
-  std::unique_ptr<DIR, decltype(&closedir)> apex(opendir(mountpath.c_str()),
-                                                 closedir);
-  if (!apex) {
-    LOG(ERROR) << "Could not read " + mountpath;
-    return false;
-  }
-  struct dirent* de;
-  while ((de = readdir(apex.get()))) {
-    std::string name = de->d_name;
-    if (name[0] == '.' || name.find('@') != std::string::npos) {
-      // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
-      continue;
-    }
-    std::string path = mountpath + "/" + name + "/etc/sdkinfo.pb";
+  for (const auto& module_itr : kApexNameToModule) {
+    std::string path = mountpath + "/" + module_itr.first + "/etc/sdkinfo.pb";
     struct stat statbuf;
     if (stat(path.c_str(), &statbuf) != 0) {
-      continue;
-    }
-    auto module_itr = kApexNameToModule.find(name);
-    if (module_itr == kApexNameToModule.end()) {
-      LOG(WARNING) << "Found sdkinfo in unexpected apex " << name;
       continue;
     }
     std::string contents;
@@ -176,7 +159,7 @@ bool ReadSdkInfoFromApexes(const std::string& mountpath,
       LOG(ERROR) << "failed to parse " << path;
       continue;
     }
-    SdkModule module = module_itr->second;
+    SdkModule module = module_itr.second;
     LOG(INFO) << "Read version " << sdk_version.version() << " from " << module;
     versions[module] = sdk_version.version();
   }
