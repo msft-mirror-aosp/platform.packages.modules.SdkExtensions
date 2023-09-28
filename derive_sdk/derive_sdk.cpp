@@ -233,7 +233,7 @@ bool PrintHeader() {
   return true;
 }
 
-bool PrintDump(const std::string& mountpath) {
+bool PrintDump(const std::string& mountpath, std::ostream& ostream) {
   std::map<std::string, std::string> properties;
   ReadSystemProperties(properties);
 
@@ -243,14 +243,14 @@ bool PrintDump(const std::string& mountpath) {
     return false;
   }
 
-  std::cout << "system properties:\n";
+  ostream << "system properties:\n";
   for (const auto& property : properties) {
-    std::cout << "  " << property.first << ":" << property.second << "\n";
+    ostream << "  " << property.first << ":" << property.second << "\n";
   }
 
-  std::cout << "apex module versions:\n";
+  ostream << "apex module versions:\n";
   for (const auto& version : versions) {
-    std::cout << "  " << SdkModule_Name(version.first) << ":" << version.second << "\n";
+    ostream << "  " << SdkModule_Name(version.first) << ":" << version.second << "\n";
   }
 
   return true;
