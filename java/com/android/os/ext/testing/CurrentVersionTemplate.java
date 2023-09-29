@@ -18,14 +18,14 @@ package com.android.os.ext.testing;
 import java.util.Set;
 
 /**
- * This class is intended to serve as a single place to define the current SDK extension
- * versions to expect / allow in tests.
+ * This class is intended to serve as a single place to define the current SDK extension versions to
+ * expect / allow in tests.
  */
 public class CurrentVersion {
 
     /**
-     * The latest train's version. Note that the value is inserted by the build
-     * pre-processing the source code.
+     * The latest train's version. Note that the value is inserted by the build pre-processing the
+     * source code.
      */
     public static final int CURRENT_TRAIN_VERSION = {INSERTED_BY_BUILD};
 
@@ -44,14 +44,14 @@ public class CurrentVersion {
     /**
      * The current SDK Extension versions to expect / allow in CTS.
      *
-     * Note: This construct exists because CTS is currently versioned together with the dessert
+     * <p>Note: This construct exists because CTS is currently versioned together with the dessert
      * versions, and not with the module itself. For example, Android R shipped with extension
      * version 0, but it is allowed to preload new mainline trains with a higher extension version.
      * When a new extension version is defined, this Set must therefore be extended to include the
      * new version.
      */
     public static final Set<Integer> ALLOWED_VERSIONS_CTS =
-        CURRENT_BASE_VERSION == CURRENT_TRAIN_VERSION ? Set.of(CURRENT_BASE_VERSION)
-            : Set.of(CURRENT_BASE_VERSION, CURRENT_TRAIN_VERSION);
-
+            CURRENT_BASE_VERSION == CURRENT_TRAIN_VERSION
+                    ? Set.of(CURRENT_BASE_VERSION)
+                    : Set.of(CURRENT_BASE_VERSION, CURRENT_TRAIN_VERSION);
 }

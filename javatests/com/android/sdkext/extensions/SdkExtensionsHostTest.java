@@ -41,7 +41,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
-import java.lang.NumberFormatException;
 import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,8 +70,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     private Boolean mIsAtLeastT = null;
     private Boolean mIsAtLeastU = null;
 
-    @Rule
-    public AbandonSessionsRule mHostTestRule = new AbandonSessionsRule(this);
+    @Rule public AbandonSessionsRule mHostTestRule = new AbandonSessionsRule(this);
 
     @Before
     public void setUp() throws Exception {
@@ -100,7 +98,7 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     @Test
-    public void upgradeOneApexWithBump()  throws Exception {
+    public void upgradeOneApexWithBump() throws Exception {
         assertVersionDefault();
         mInstallUtils.installApexes(SDKEXTENSIONS_FILENAME);
         reboot();
@@ -180,10 +178,14 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertVersionDefault() throws Exception {
-        int expected = isAtLeastU() ? CurrentVersion.CURRENT_TRAIN_VERSION
-            : isAtLeastT() ? CurrentVersion.T_BASE_VERSION
-            : isAtLeastS() ? CurrentVersion.S_BASE_VERSION
-            : CurrentVersion.R_BASE_VERSION;
+        int expected =
+                isAtLeastU()
+                        ? CurrentVersion.CURRENT_TRAIN_VERSION
+                        : isAtLeastT()
+                                ? CurrentVersion.T_BASE_VERSION
+                                : isAtLeastS()
+                                        ? CurrentVersion.S_BASE_VERSION
+                                        : CurrentVersion.R_BASE_VERSION;
         assertRVersionEquals(expected);
         assertSVersionEquals(expected);
         assertTVersionEquals(expected);
@@ -213,25 +215,29 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     }
 
     private void assertRVersionEquals(int version) throws Exception {
-        String[] apps = version >= 45 ? new String[]{"r12", "r45"} :
-            version >= 12 ? new String[]{"r12"} : new String[]{};
+        String[] apps =
+                version >= 45
+                        ? new String[] {"r12", "r45"}
+                        : version >= 12 ? new String[] {"r12"} : new String[] {};
         assertExtensionVersionEquals("r", version, apps, true);
     }
 
     private void assertSVersionEquals(int version) throws Exception {
         // These APKs require the same R version as they do S version.
         int minVersion = Math.min(version, broadcastForInt("GET_SDK_VERSION", "r"));
-        String[] apps = minVersion >= 45 ? new String[]{"s12", "s45"}
-                : minVersion >= 12 ? new String[]{"s12"} : new String[]{};
+        String[] apps =
+                minVersion >= 45
+                        ? new String[] {"s12", "s45"}
+                        : minVersion >= 12 ? new String[] {"s12"} : new String[] {};
         assertExtensionVersionEquals("s", version, apps, isAtLeastS());
     }
 
     private void assertTVersionEquals(int version) throws Exception {
-        assertExtensionVersionEquals("t", version, new String[]{}, isAtLeastT());
+        assertExtensionVersionEquals("t", version, new String[] {}, isAtLeastT());
     }
 
-    private void assertExtensionVersionEquals(String extension, int version, String[] apps,
-            boolean expected) throws Exception {
+    private void assertExtensionVersionEquals(
+            String extension, int version, String[] apps, boolean expected) throws Exception {
         int appValue = broadcastForInt("GET_SDK_VERSION", extension);
         String syspropValue = getExtensionVersionFromSysprop(extension);
         if (expected) {
