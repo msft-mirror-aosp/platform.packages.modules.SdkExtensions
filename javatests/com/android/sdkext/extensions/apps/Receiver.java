@@ -24,8 +24,6 @@ import android.os.ext.SdkExtensions;
 import android.os.ext.testing.Test;
 import android.util.Log;
 
-import com.android.modules.utils.build.SdkLevel;
-
 public class Receiver extends BroadcastReceiver {
 
     private static final String ACTION_GET_SDK_VERSION =
@@ -37,9 +35,12 @@ public class Receiver extends BroadcastReceiver {
 
     private static int dessertLetterToInt(char letter) {
         switch (letter) {
-            case 'r': return Build.VERSION_CODES.R;
-            case 's': return Build.VERSION_CODES.S;
-            case 't': return Build.VERSION_CODES.TIRAMISU;
+            case 'r':
+                return Build.VERSION_CODES.R;
+            case 's':
+                return Build.VERSION_CODES.S;
+            case 't':
+                return Build.VERSION_CODES.TIRAMISU;
         }
         throw new IllegalArgumentException(String.valueOf(letter));
     }
@@ -69,13 +70,13 @@ public class Receiver extends BroadcastReceiver {
     }
 
     private static void makeCallsDefault() {
-        expectException(NoClassDefFoundError.class, "test class", () -> new Test() );
-        expectException(NoClassDefFoundError.class, "test class", () -> Test.staticPublicMethod() );
-        expectException(NoClassDefFoundError.class, "test class",
-            () -> Test.staticSystemApiMethod() );
-        expectException(NoClassDefFoundError.class, "test class",
-            () -> Test.staticModuleLibsApiMethod() );
-        expectException(NoClassDefFoundError.class, "test class", () -> Test.staticHiddenMethod() );
+        expectException(NoClassDefFoundError.class, "test class", () -> new Test());
+        expectException(NoClassDefFoundError.class, "test class", () -> Test.staticPublicMethod());
+        expectException(
+                NoClassDefFoundError.class, "test class", () -> Test.staticSystemApiMethod());
+        expectException(
+                NoClassDefFoundError.class, "test class", () -> Test.staticModuleLibsApiMethod());
+        expectException(NoClassDefFoundError.class, "test class", () -> Test.staticHiddenMethod());
     }
 
     private static void makeCallsVersion45() {
@@ -89,12 +90,14 @@ public class Receiver extends BroadcastReceiver {
 
         Test.staticPublicMethod();
         Test.staticSystemApiMethod();
-        expectException(NoSuchMethodError.class, "static module-libs method",
-            () -> Test.staticModuleLibsApiMethod());
-        expectException(NoSuchMethodError.class, "static testapi method",
-            () -> Test.staticTestApiMethod());
-        expectException(NoSuchMethodError.class, "static hidden method",
-            () -> Test.staticHiddenMethod());
+        expectException(
+                NoSuchMethodError.class,
+                "static module-libs method",
+                () -> Test.staticModuleLibsApiMethod());
+        expectException(
+                NoSuchMethodError.class, "static testapi method", () -> Test.staticTestApiMethod());
+        expectException(
+                NoSuchMethodError.class, "static hidden method", () -> Test.staticHiddenMethod());
     }
 
     private static void expectException(Class exceptionClass, String type, Runnable runnable) {
