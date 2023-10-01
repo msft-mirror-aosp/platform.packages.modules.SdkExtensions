@@ -22,7 +22,7 @@ namespace android {
 namespace derivesdk {
 
 bool PrintHeader();
-bool PrintDump(const std::string& mountpath);
+bool PrintDump(const std::string& mountpath, std::ostream&);
 bool SetSdkLevels(const std::string& mountpath);
 
 }  // namespace derivesdk
