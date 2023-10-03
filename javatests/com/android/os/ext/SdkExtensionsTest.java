@@ -40,12 +40,15 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
+import android.util.Log;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.android.modules.utils.build.SdkLevel;
+import com.android.os.ext.testing.DeriveSdk;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -54,6 +57,8 @@ import java.util.Set;
 
 @RunWith(AndroidJUnit4.class)
 public class SdkExtensionsTest {
+
+    private static final String TAG = "SdkExtensionsTest";
 
     private enum Expectation {
         /** Expect an extension to be the current / latest defined version */
@@ -111,6 +116,16 @@ public class SdkExtensionsTest {
         if (expectation != Expectation.MISSING) {
             int v = SdkExtensions.getAllExtensionVersions().get(extension);
             assertVersion(expectation, v);
+        }
+    }
+
+    /* This method runs the copy of the dump code that is bundled inside the test APK. */
+    @BeforeClass
+    public static void runTestDeriveSdkDump() {
+        Log.i(TAG, "derive_sdk dump (bundled with test):");
+
+        for (String line : DeriveSdk.dump()) {
+            Log.i(TAG, "  " + line);
         }
     }
 
