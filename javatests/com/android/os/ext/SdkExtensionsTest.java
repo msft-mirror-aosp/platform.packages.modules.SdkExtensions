@@ -20,32 +20,43 @@ import static android.os.Build.VERSION_CODES;
 import static android.os.Build.VERSION_CODES.R;
 import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
+
 import static com.android.os.ext.testing.CurrentVersion.CURRENT_TRAIN_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.R_BASE_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.S_BASE_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.T_BASE_VERSION;
+
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ModuleInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.SystemProperties;
 import android.os.ext.SdkExtensions;
+import android.util.Log;
+
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
+
 import com.android.modules.utils.build.SdkLevel;
-import java.util.HashSet;
-import java.util.Set;
-import org.junit.Rule;
+import com.android.os.ext.testing.DeriveSdk;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @RunWith(AndroidJUnit4.class)
 public class SdkExtensionsTest {
+
+    private static final String TAG = "SdkExtensionsTest";
 
     private enum Expectation {
         /** Expect an extension to be the current / latest defined version */
@@ -106,6 +117,16 @@ public class SdkExtensionsTest {
         }
     }
 
+    /* This method runs the copy of the dump code that is bundled inside the test APK. */
+    @BeforeClass
+    public static void runTestDeriveSdkDump() {
+        Log.i(TAG, "derive_sdk dump (bundled with test):");
+
+        for (String line : DeriveSdk.dump()) {
+            Log.i(TAG, "  " + line);
+        }
+    }
+
     /** Verify that getExtensionVersion only accepts valid extension SDKs */
     @Test
     public void testBadArgument() throws Exception {
@@ -114,7 +135,8 @@ public class SdkExtensionsTest {
         int step = (int) ((VERSION_CODES.R - (long) Integer.MIN_VALUE) / 10_000);
         for (int sdk = Integer.MIN_VALUE; sdk < VERSION_CODES.R; sdk += step) {
             final int finalSdk = sdk;
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(
+                    IllegalArgumentException.class,
                     () -> SdkExtensions.getExtensionVersion(finalSdk));
         }
     }
@@ -154,13 +176,13 @@ public class SdkExtensionsTest {
     }
 
     @Test
-    public void testExtensionS() throws Exception  {
+    public void testExtensionS() throws Exception {
         Expectation expectation = dessertExpectation(SdkLevel.isAtLeastS());
         assertVersion(expectation, S, "s");
     }
 
     @Test
-    public void testExtensionT() throws Exception  {
+    public void testExtensionT() throws Exception {
         Expectation expectation = dessertExpectation(SdkLevel.isAtLeastT());
         assertVersion(expectation, TIRAMISU, "t");
     }
@@ -201,7 +223,5 @@ public class SdkExtensionsTest {
         flags |= PackageManager.MATCH_FACTORY_ONLY;
         PackageInfo factoryInfo = packageManager.getPackageInfo(packageName, flags);
         return !factoryInfo.applicationInfo.sourceDir.equals(currentInfo.applicationInfo.sourceDir);
-
     }
-
 }

@@ -34,3 +34,10 @@ java_library {
     host_supported: true,
     min_sdk_version: "30",
 }
+
+java_library {
+    name: "test_util_derive_sdk",
+    srcs: ["DeriveSdk.java"],
+    host_supported: true,
+    min_sdk_version: "30",
+}
