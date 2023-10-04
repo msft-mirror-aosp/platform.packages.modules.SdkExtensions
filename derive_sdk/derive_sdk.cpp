@@ -253,6 +253,30 @@ bool PrintDump(const std::string& mountpath, std::ostream& ostream) {
     ostream << "  " << SdkModule_Name(version.first) << ":" << version.second << "\n";
   }
 
+  ExtensionDatabase db;
+  if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
+    LOG(ERROR) << "Failed to read database";
+    return false;
+  }
+  std::map<int, std::unordered_set<SdkModule>> new_requirements;
+  for (const auto& ext_version : db.versions()) {
+    std::unordered_set<SdkModule> new_required;
+    for (const auto& requirement : ext_version.requirements()) {
+      if (requirement.version().version() == ext_version.version())
+        new_required.insert(requirement.module());
+    }
+    new_requirements[ext_version.version()] = new_required;
+  }
+
+  ostream << "last 3 version requirements:\n";
+  int i = 0;
+  for (auto itr = new_requirements.crbegin(); itr != new_requirements.crend() && i < 3;
+       ++itr, ++i) {
+    ostream << "  " << itr->first << ": ";
+    for (auto const& module : itr->second) ostream << SdkModule_Name(module) << " ";
+    ostream << std::endl;
+  }
+
   return true;
 }
 
