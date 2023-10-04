@@ -38,6 +38,7 @@ android_test {
         "libderive_sdk",
         "libderive_sdk_jni",
     ],
+    compile_multilib: "both",
     min_sdk_version: "30",
     jarjar_rules: "jarjar-rules.txt",
 }
