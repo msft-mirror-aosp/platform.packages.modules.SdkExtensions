@@ -107,7 +107,7 @@ java_test_host {
     static_libs: ["ClasspathFetcher"],
     libs: [
         "tradefed",
-        "truth-prebuilt",
+        "truth",
     ],
     test_config: "sdkext-conformance-framework.xml",
     test_suites: [
