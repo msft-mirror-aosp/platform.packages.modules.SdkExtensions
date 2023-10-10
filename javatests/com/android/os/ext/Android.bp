@@ -25,7 +25,7 @@ android_test {
         "modules-utils-build",
         "test_util_current_version",
         "test_util_derive_sdk",
-        "truth-prebuilt",
+        "truth",
     ],
     srcs: ["*.java"],
     test_config: "CtsSdkExtensionsTestCases.xml",
