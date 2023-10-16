@@ -38,8 +38,10 @@ static const std::unordered_map<std::string, SdkModule> kApexNameToModule = {
     {"com.android.adservices", SdkModule::AD_SERVICES},
     {"com.android.appsearch", SdkModule::APPSEARCH},
     {"com.android.art", SdkModule::ART},
+    {"com.android.configinfrastructure", SdkModule::CONFIG_INFRASTRUCTURE},
     {"com.android.conscrypt", SdkModule::CONSCRYPT},
     {"com.android.extservices", SdkModule::EXT_SERVICES},
+    {"com.android.healthfitness", SdkModule::HEALTH_FITNESS},
     {"com.android.ipsec", SdkModule::IPSEC},
     {"com.android.media", SdkModule::MEDIA},
     {"com.android.mediaprovider", SdkModule::MEDIA_PROVIDER},
@@ -62,12 +64,15 @@ static const std::unordered_set<SdkModule> kSModules = {SdkModule::ART, SdkModul
 static const std::unordered_set<SdkModule> kTModules = {
     SdkModule::AD_SERVICES, SdkModule::APPSEARCH, SdkModule::ON_DEVICE_PERSONALIZATION};
 
+static const std::unordered_set<SdkModule> kUModules = {SdkModule::CONFIG_INFRASTRUCTURE,
+                                                        SdkModule::HEALTH_FITNESS};
+
 static const std::string kSystemPropertiesPrefix = "build.version.extensions.";
 
 void ReadSystemProperties(std::map<std::string, std::string>& properties) {
   const std::string default_ = "<not set>";
 
-  for (const auto& dessert : {"r", "s", "t"}) {
+  for (const auto& dessert : {"r", "s", "t", "ad_services", "u"}) {
     properties[kSystemPropertiesPrefix + dessert] =
         android::base::GetProperty(kSystemPropertiesPrefix + dessert, default_);
   }
@@ -127,10 +132,7 @@ int GetSdkLevel(const ExtensionDatabase& db,
   return max;
 }
 
-bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db,
-                  const std::unordered_set<SdkModule>& relevant_modules,
-                  const std::unordered_map<SdkModule, int>& module_versions) {
-  int version = GetSdkLevel(db, relevant_modules, module_versions);
+bool SetExtension(const std::string& extension_name, int version) {
   LOG(INFO) << "extension " << extension_name << " version is " << version;
 
   const std::string property_name = kSystemPropertiesPrefix + extension_name;
@@ -141,29 +143,19 @@ bool SetExtension(const std::string& extension_name, const ExtensionDatabase& db
   return true;
 }
 
+bool GetAndSetExtension(const std::string& extension_name, const ExtensionDatabase& db,
+                        const std::unordered_set<SdkModule>& relevant_modules,
+                        const std::unordered_map<SdkModule, int>& module_versions) {
+  int version = GetSdkLevel(db, relevant_modules, module_versions);
+  return SetExtension(extension_name, version);
+}
+
 bool ReadSdkInfoFromApexes(const std::string& mountpath,
                            std::unordered_map<SdkModule, int>& versions) {
-  std::unique_ptr<DIR, decltype(&closedir)> apex(opendir(mountpath.c_str()),
-                                                 closedir);
-  if (!apex) {
-    LOG(ERROR) << "Could not read " + mountpath;
-    return false;
-  }
-  struct dirent* de;
-  while ((de = readdir(apex.get()))) {
-    std::string name = de->d_name;
-    if (name[0] == '.' || name.find('@') != std::string::npos) {
-      // Skip <name>@<ver> dirs, as they are bind-mounted to <name>
-      continue;
-    }
-    std::string path = mountpath + "/" + name + "/etc/sdkinfo.pb";
+  for (const auto& module_itr : kApexNameToModule) {
+    std::string path = mountpath + "/" + module_itr.first + "/etc/sdkinfo.pb";
     struct stat statbuf;
     if (stat(path.c_str(), &statbuf) != 0) {
-      continue;
-    }
-    auto module_itr = kApexNameToModule.find(name);
-    if (module_itr == kApexNameToModule.end()) {
-      LOG(WARNING) << "Found sdkinfo in unexpected apex " << name;
       continue;
     }
     std::string contents;
@@ -176,7 +168,7 @@ bool ReadSdkInfoFromApexes(const std::string& mountpath,
       LOG(ERROR) << "failed to parse " << path;
       continue;
     }
-    SdkModule module = module_itr->second;
+    SdkModule module = module_itr.second;
     LOG(INFO) << "Read version " << sdk_version.version() << " from " << module;
     versions[module] = sdk_version.version();
   }
@@ -198,20 +190,27 @@ bool SetSdkLevels(const std::string& mountpath) {
 
   std::unordered_set<SdkModule> relevant_modules;
   relevant_modules.insert(kRModules.begin(), kRModules.end());
-  if (!SetExtension("r", db, relevant_modules, versions)) {
+  if (!GetAndSetExtension("r", db, relevant_modules, versions)) {
     return false;
   }
 
   relevant_modules.insert(kSModules.begin(), kSModules.end());
   if (android::modules::sdklevel::IsAtLeastS()) {
-    if (!SetExtension("s", db, relevant_modules, versions)) {
+    if (!GetAndSetExtension("s", db, relevant_modules, versions)) {
       return false;
     }
   }
 
   relevant_modules.insert(kTModules.begin(), kTModules.end());
   if (android::modules::sdklevel::IsAtLeastT()) {
-    if (!SetExtension("t", db, relevant_modules, versions)) {
+    if (!GetAndSetExtension("t", db, relevant_modules, versions)) {
+      return false;
+    }
+  }
+
+  relevant_modules.insert(kUModules.begin(), kUModules.end());
+  if (android::modules::sdklevel::IsAtLeastU()) {
+    if (!GetAndSetExtension("u", db, relevant_modules, versions)) {
       return false;
     }
   }
@@ -227,6 +226,19 @@ bool SetSdkLevels(const std::string& mountpath) {
     }
   }
 
+  if (android::modules::sdklevel::IsAtLeastT()) {
+    if (versions[AD_SERVICES] >= 7) {
+      if (!SetExtension("ad_services", versions[AD_SERVICES])) {
+        return false;
+      }
+    } else {
+      relevant_modules.clear();
+      relevant_modules.insert(SdkModule::AD_SERVICES);
+      if (!GetAndSetExtension("ad_services", db, relevant_modules, versions)) {
+        return false;
+      }
+    }
+  }
   return true;
 }
 
@@ -250,7 +262,7 @@ bool PrintHeader() {
   return true;
 }
 
-bool PrintDump(const std::string& mountpath) {
+bool PrintDump(const std::string& mountpath, std::ostream& ostream) {
   std::map<std::string, std::string> properties;
   ReadSystemProperties(properties);
 
@@ -260,14 +272,38 @@ bool PrintDump(const std::string& mountpath) {
     return false;
   }
 
-  std::cout << "system properties:\n";
+  ostream << "system properties:\n";
   for (const auto& property : properties) {
-    std::cout << "  " << property.first << ":" << property.second << "\n";
+    ostream << "  " << property.first << ":" << property.second << "\n";
   }
 
-  std::cout << "apex module versions:\n";
+  ostream << "apex module versions:\n";
   for (const auto& version : versions) {
-    std::cout << "  " << SdkModule_Name(version.first) << ":" << version.second << "\n";
+    ostream << "  " << SdkModule_Name(version.first) << ":" << version.second << "\n";
+  }
+
+  ExtensionDatabase db;
+  if (!ReadDatabase(mountpath + "/com.android.sdkext/etc/extensions_db.pb", db)) {
+    LOG(ERROR) << "Failed to read database";
+    return false;
+  }
+  std::map<int, std::unordered_set<SdkModule>> new_requirements;
+  for (const auto& ext_version : db.versions()) {
+    std::unordered_set<SdkModule> new_required;
+    for (const auto& requirement : ext_version.requirements()) {
+      if (requirement.version().version() == ext_version.version())
+        new_required.insert(requirement.module());
+    }
+    new_requirements[ext_version.version()] = new_required;
+  }
+
+  ostream << "last 3 version requirements:\n";
+  int i = 0;
+  for (auto itr = new_requirements.crbegin(); itr != new_requirements.crend() && i < 3;
+       ++itr, ++i) {
+    ostream << "  " << itr->first << ": ";
+    for (auto const& module : itr->second) ostream << SdkModule_Name(module) << " ";
+    ostream << std::endl;
   }
 
   return true;
