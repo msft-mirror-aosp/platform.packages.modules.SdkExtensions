@@ -24,7 +24,8 @@ android_test {
         "ctstestrunner-axt",
         "modules-utils-build",
         "test_util_current_version",
-        "truth-prebuilt",
+        "test_util_derive_sdk",
+        "truth",
     ],
     srcs: ["*.java"],
     test_config: "CtsSdkExtensionsTestCases.xml",
@@ -33,7 +34,11 @@ android_test {
         "mts-sdkextensions",
         "general-tests",
     ],
-    sdk_version: "system_current",
+    jni_libs: [
+        "libderive_sdk",
+        "libderive_sdk_jni",
+    ],
+    compile_multilib: "both",
     min_sdk_version: "30",
     jarjar_rules: "jarjar-rules.txt",
 }
