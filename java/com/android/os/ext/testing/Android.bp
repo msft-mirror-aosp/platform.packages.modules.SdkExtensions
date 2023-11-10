@@ -17,20 +17,9 @@ package {
     default_visibility: ["//packages/modules/SdkExtensions/javatests:__subpackages__"],
 }
 
-genrule {
-    name: "current_version_src",
-    srcs: ["CurrentVersionTemplate.java"],
-    out: ["CurrentVersion.java"],
-    product_variables: {
-        platform_sdk_extension_version: {
-            cmd: "sed -E -e '/CURRENT_TRAIN_VERSION =/ s/\\S+;/%d;/' $(in) > $(out)",
-        },
-    },
-}
-
 java_library {
     name: "test_util_current_version",
-    srcs: [":current_version_src"],
+    srcs: ["CurrentVersion.java"],
     host_supported: true,
     min_sdk_version: "30",
 }
