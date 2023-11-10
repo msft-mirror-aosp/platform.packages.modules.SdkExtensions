@@ -22,11 +22,10 @@ import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 import static android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 import static android.os.ext.SdkExtensions.AD_SERVICES;
-import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
+import static com.android.os.ext.testing.CurrentVersion.CURRENT_TRAIN_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.R_BASE_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.S_BASE_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.T_BASE_VERSION;
-import static com.android.os.ext.testing.CurrentVersion.U_BASE_VERSION;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -41,7 +40,6 @@ import android.os.ext.SdkExtensions;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 import com.android.modules.utils.build.SdkLevel;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Rule;
@@ -53,34 +51,34 @@ public class SdkExtensionsTest {
 
     private enum Expectation {
         /** Expect an extension to be the current / latest defined version */
-        CTS,
+        CURRENT,
         /** Expect an extension to be missing / version 0 */
         MISSING,
         /** Expect an extension to be at least the base extension version of the device */
         AT_LEAST_BASE,
     }
 
-    private static final Expectation CTS = Expectation.CTS;
+    private static final Expectation CURRENT = Expectation.CURRENT;
     private static final Expectation MISSING = Expectation.MISSING;
     private static final Expectation AT_LEAST_BASE = Expectation.AT_LEAST_BASE;
 
     private static void assertAtLeastBaseVersion(int version) {
         int minVersion = R_BASE_VERSION;
         if (SdkLevel.isAtLeastU()) {
-            minVersion = U_BASE_VERSION;
+            minVersion = CURRENT_TRAIN_VERSION;
         } else if (SdkLevel.isAtLeastT()) {
             minVersion = T_BASE_VERSION;
         } else if (SdkLevel.isAtLeastS()) {
             minVersion = S_BASE_VERSION;
         }
         assertThat(version).isAtLeast(minVersion);
-        assertThat(version).isAtMost(Collections.max(ALLOWED_VERSIONS_CTS));
+        assertThat(version).isAtMost(CURRENT_TRAIN_VERSION);
     }
 
     private static void assertVersion(Expectation expectation, int version) {
         switch (expectation) {
-            case CTS:
-                assertThat(version).isIn(ALLOWED_VERSIONS_CTS);
+            case CURRENT:
+                assertEquals(CURRENT_TRAIN_VERSION, version);
                 break;
             case AT_LEAST_BASE:
                 assertAtLeastBaseVersion(version);
@@ -200,7 +198,7 @@ public class SdkExtensionsTest {
         // Go trains don't include all modules, so even when all trains for a particular release
         // have been installed correctly on a Go device, we can't generally expect the extension
         // version to be the current train version.
-        return SdkLevel.isAtLeastT() && isGoWithSideloadedModules() ? AT_LEAST_BASE : CTS;
+        return SdkLevel.isAtLeastT() && isGoWithSideloadedModules() ? AT_LEAST_BASE : CURRENT;
     }
 
     private boolean isGoWithSideloadedModules() throws Exception {
