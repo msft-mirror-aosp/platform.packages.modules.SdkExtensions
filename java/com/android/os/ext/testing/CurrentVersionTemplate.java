@@ -18,6 +18,7 @@ package com.android.os.ext.testing;
 import java.util.Set;
 
 /**
+<<<<<<< TARGET BRANCH (a9088d Allow extension versions 7-10 am: 3f01db6c3a am: 062164c340 )
  * This class is intended to serve as a single place to define the current SDK extension versions to
  * expect / allow in tests.
  */
@@ -54,4 +55,42 @@ public class CurrentVersion {
             CURRENT_BASE_VERSION == CURRENT_TRAIN_VERSION
                     ? Set.of(CURRENT_BASE_VERSION)
                     : Set.of(CURRENT_BASE_VERSION, CURRENT_TRAIN_VERSION);
+=======
+ * This class is intended to serve as a single place to define the current SDK extension
+ * versions to expect / allow in tests.
+ */
+public class CurrentVersion {
+
+    /**
+     * The latest train's version. Note that the value is inserted by the build
+     * pre-processing the source code.
+     */
+    public static final int CURRENT_TRAIN_VERSION = {INSERTED_BY_BUILD};
+
+    /** The version R shipped with (0) */
+    public static final int R_BASE_VERSION = 0;
+
+    /** The version S shipped with (1) */
+    public static final int S_BASE_VERSION = 1;
+
+    /** The version T shipped with (3) */
+    public static final int T_BASE_VERSION = 3;
+
+    /** The current platform's version */
+    public static final int CURRENT_BASE_VERSION = CURRENT_TRAIN_VERSION;
+
+    /**
+     * The current SDK Extension versions to expect / allow in CTS.
+     *
+     * Note: This construct exists because CTS is currently versioned together with the dessert
+     * versions, and not with the module itself. For example, Android R shipped with extension
+     * version 0, but it is allowed to preload new mainline trains with a higher extension version.
+     * When a new extension version is defined, this Set must therefore be extended to include the
+     * new version.
+     */
+    public static final Set<Integer> ALLOWED_VERSIONS_CTS =
+        CURRENT_BASE_VERSION == CURRENT_TRAIN_VERSION ? Set.of(CURRENT_BASE_VERSION)
+            : Set.of(CURRENT_BASE_VERSION, CURRENT_TRAIN_VERSION);
+
+>>>>>>> SOURCE BRANCH (8a3093 Revert "Allow extension versions 7-10" am: 522701e5de am: 4c)
 }
