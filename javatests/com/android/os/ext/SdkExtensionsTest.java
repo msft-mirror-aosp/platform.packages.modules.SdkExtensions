@@ -22,18 +22,12 @@ import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 import static android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 import static android.os.ext.SdkExtensions.AD_SERVICES;
-<<<<<<< TARGET BRANCH (a9088d Allow extension versions 7-10 am: 3f01db6c3a am: 062164c340 )
 
-=======
->>>>>>> SOURCE BRANCH (8a3093 Revert "Allow extension versions 7-10" am: 522701e5de am: 4c)
 import static com.android.os.ext.testing.CurrentVersion.CURRENT_TRAIN_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.R_BASE_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.S_BASE_VERSION;
 import static com.android.os.ext.testing.CurrentVersion.T_BASE_VERSION;
-<<<<<<< TARGET BRANCH (a9088d Allow extension versions 7-10 am: 3f01db6c3a am: 062164c340 )
 
-=======
->>>>>>> SOURCE BRANCH (8a3093 Revert "Allow extension versions 7-10" am: 522701e5de am: 4c)
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
@@ -52,15 +46,9 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.android.modules.utils.build.SdkLevel;
-<<<<<<< TARGET BRANCH (a9088d Allow extension versions 7-10 am: 3f01db6c3a am: 062164c340 )
 import com.android.os.ext.testing.DeriveSdk;
 
 import org.junit.BeforeClass;
-=======
-import java.util.HashSet;
-import java.util.Set;
-import org.junit.Rule;
->>>>>>> SOURCE BRANCH (8a3093 Revert "Allow extension versions 7-10" am: 522701e5de am: 4c)
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
