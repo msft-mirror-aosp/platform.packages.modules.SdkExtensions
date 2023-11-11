@@ -31,7 +31,6 @@ genrule {
 java_library {
     name: "test_util_current_version",
     srcs: [":current_version_src"],
-<<<<<<< TARGET BRANCH (a9088d Allow extension versions 7-10 am: 3f01db6c3a am: 062164c340 )
     host_supported: true,
     min_sdk_version: "30",
 }
@@ -39,8 +38,6 @@ java_library {
 java_library {
     name: "test_util_derive_sdk",
     srcs: ["DeriveSdk.java"],
-=======
->>>>>>> SOURCE BRANCH (8a3093 Revert "Allow extension versions 7-10" am: 522701e5de am: 4c)
     host_supported: true,
     min_sdk_version: "30",
 }
