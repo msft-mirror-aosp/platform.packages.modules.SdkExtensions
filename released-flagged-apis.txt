@@ -1,0 +1,7 @@
+# This file contains a list of command line options that are passed to Metalava
+# when generating API signature files and stubs for SDK snapshots for previous
+# dessert releases, e.g. R, S, Tiramisu, etc. and also for the next SDK
+# extension (and eventually Android SDK) release.
+#
+# It allows APIs to be released in an SDK extension but hidden from QPR
+# releases.

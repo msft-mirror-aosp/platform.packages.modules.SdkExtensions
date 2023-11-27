@@ -115,3 +115,10 @@ java_test_host {
         "device-tests",
     ],
 }
+
+// The options passed to Metalava when generating API signature files and stubs
+// for SDK extension releases.
+filegroup {
+    name: "sdkext-released-flagged-apis",
+    srcs: ["released-flagged-apis.txt"],
+}
