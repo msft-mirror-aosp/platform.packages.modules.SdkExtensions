@@ -27,7 +27,18 @@
 # by a comment indicating which SDK extension the section relates to.
 
 # Released in SDK Extension #10 - M-2023-11
+# Tethering
 com.android.net.flags.register_nsd_offload_engine_api
 
-# Next SDK Extension
-# com.android.net.flags.set_data_saver_via_cm
+# Released in SDK Extension #11 - M-2024-02
+# Adservices
+ad_id_cache_enabled
+adservices_enablement_check_enabled
+adservices_outcomereceiver_r_api_enabled
+enable_adext_data_service_apis
+enable_adservices_api_enabled
+topics_encryption_enabled
+
+# Tethering
+com.android.net.flags.basic_background_restrictions_enabled
+com.android.net.flags.support_is_uid_networking_blocked
