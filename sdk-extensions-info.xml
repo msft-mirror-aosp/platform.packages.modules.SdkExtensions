@@ -131,6 +131,10 @@
     jar="framework-connectivity"
     pattern="android.net.thread"
     sdks="U-ext" />
+  <symbol
+    jar="framework-connectivity"
+    pattern="android.net"
+    sdks="U-ext" />
 
   <!-- AD_SERVICES -->
   <!--
