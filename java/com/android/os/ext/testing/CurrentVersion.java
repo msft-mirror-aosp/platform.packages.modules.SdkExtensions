@@ -27,7 +27,7 @@ public class CurrentVersion {
      * The latest train's version. Note that the value is inserted by the build
      * pre-processing the source code.
      */
-    public static final int CURRENT_TRAIN_VERSION = 10;
+    public static final int CURRENT_TRAIN_VERSION = 11;
 
     /** The version R shipped with (0) */
     public static final int R_BASE_VERSION = 0;
@@ -55,6 +55,6 @@ public class CurrentVersion {
      */
     public static final Set<Integer> ALLOWED_VERSIONS_CTS =
         CURRENT_BASE_VERSION == CURRENT_TRAIN_VERSION ? Set.of(CURRENT_BASE_VERSION)
-            : Set.of(CURRENT_BASE_VERSION, 8, 9, CURRENT_TRAIN_VERSION);
+            : Set.of(CURRENT_BASE_VERSION, 8, 9, 10, CURRENT_TRAIN_VERSION);
 
 }
