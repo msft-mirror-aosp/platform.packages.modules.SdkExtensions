@@ -23,11 +23,11 @@ FLAGS="$1"
 FLAGGED="android.annotation.FlaggedApi"
 
 # Convert the list of feature flags in the input file to Metalava options
-# of the form `--hide-annotation !android.annotation.FlaggedApi("<flag>")`
+# of the form `--revert-annotation !android.annotation.FlaggedApi("<flag>")`
 # to prevent the annotated APIs from being hidden, i.e. include the annotated
 # APIs in the SDK snapshots. This also preserves the line comments, they will
 # be ignored by Metalava but might be useful when debugging.
-sed "s|^[^#].*$|--hide-annotation '!$FLAGGED(\"\\0\")'|" $FLAGS
+sed "s|^[^#].*$|--revert-annotation '!$FLAGGED(\"\\0\")'|" $FLAGS
 
-# Hide all flagged APIs, unless listed above.
-echo "--hide-annotation $FLAGGED"
+# Revert all flagged APIs, unless listed above.
+echo "--revert-annotation $FLAGGED"
