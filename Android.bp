@@ -107,11 +107,24 @@ java_test_host {
     static_libs: ["ClasspathFetcher"],
     libs: [
         "tradefed",
-        "truth-prebuilt",
+        "truth",
     ],
     test_config: "sdkext-conformance-framework.xml",
     test_suites: [
         "mts",
         "device-tests",
     ],
+}
+
+// The options passed to Metalava when generating API signature files and stubs
+// for SDK extension releases.
+genrule {
+    name: "sdkext-released-flagged-apis",
+    visibility: [
+        "//visibility:public",
+    ],
+    tool_files: ["keep-flagged-apis.sh"],
+    srcs: ["released-flagged-apis.txt"],
+    out: ["metalava-keep-flagged-apis.txt"],
+    cmd: "$(location keep-flagged-apis.sh) \"$(in)\" > \"$(out)\"",
 }

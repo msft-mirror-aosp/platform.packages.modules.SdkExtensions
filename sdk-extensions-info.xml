@@ -53,6 +53,17 @@
     pattern="*"
     sdks="R-ext,S-ext,T-ext,U-ext" />
 
+  <!-- APPSEARCH -->
+  <symbol
+    jar="framework-appsearch"
+    pattern="android.app.appsearch.AppSearchSchema.Builder.addParentType"
+    sdks="T-ext,U-ext" />
+  <symbol
+    jar="framework-appsearch"
+    pattern="android.app.appsearch.AppSearchSchema.DocumentPropertyConfig.Builder
+            .addIndexableNestedProperties"
+    sdks="T-ext,U-ext" />
+
   <!-- MEDIA_PROVIDER -->
   <symbol
     jar="framework-mediaprovider"
@@ -116,6 +127,14 @@
     jar="framework-connectivity-t"
     pattern="android.net.nsd"
     sdks="T-ext,U-ext" />
+  <symbol
+    jar="framework-connectivity"
+    pattern="android.net.thread"
+    sdks="U-ext" />
+  <symbol
+    jar="framework-connectivity"
+    pattern="android.net"
+    sdks="U-ext" />
 
   <!-- AD_SERVICES -->
   <!--
