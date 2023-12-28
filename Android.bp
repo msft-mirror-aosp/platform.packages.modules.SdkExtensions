@@ -116,6 +116,8 @@ java_test_host {
     ],
 }
 
+// TODO: b/316383039 - Remove this module and the script when udc-mainline-prod
+// branch is removed.
 // The options passed to Metalava when generating API signature files and stubs
 // for SDK extension releases.
 genrule {
