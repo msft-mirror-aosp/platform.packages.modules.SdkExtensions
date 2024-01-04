@@ -115,3 +115,18 @@ java_test_host {
         "device-tests",
     ],
 }
+
+// TODO: b/316383039 - Remove this module and the script when udc-mainline-prod
+// branch is removed.
+// The options passed to Metalava when generating API signature files and stubs
+// for SDK extension releases.
+genrule {
+    name: "sdkext-released-flagged-apis",
+    visibility: [
+        "//visibility:public",
+    ],
+    tool_files: ["keep-flagged-apis.sh"],
+    srcs: ["released-flagged-apis.txt"],
+    out: ["metalava-keep-flagged-apis.txt"],
+    cmd: "$(location keep-flagged-apis.sh) \"$(in)\" > \"$(out)\"",
+}

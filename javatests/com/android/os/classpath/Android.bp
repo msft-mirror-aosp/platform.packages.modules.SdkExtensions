@@ -34,5 +34,6 @@ java_test_host {
         "cts",
         "general-tests",
         "mts-sdkextensions",
+        "mcts-sdkextensions",
     ],
 }
