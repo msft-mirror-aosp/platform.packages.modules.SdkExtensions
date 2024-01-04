@@ -32,6 +32,7 @@ android_test {
     test_suites: [
         "cts",
         "mts-sdkextensions",
+        "mcts-sdkextensions",
         "general-tests",
     ],
     jni_libs: [
