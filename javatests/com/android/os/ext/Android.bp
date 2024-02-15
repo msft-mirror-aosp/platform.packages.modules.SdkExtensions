@@ -13,6 +13,7 @@
 // limitations under the License.
 
 package {
+    default_team: "trendy_team_updatable_sdk_apis",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
@@ -24,16 +25,22 @@ android_test {
         "ctstestrunner-axt",
         "modules-utils-build",
         "test_util_current_version",
-        "truth-prebuilt",
+        "test_util_derive_sdk",
+        "truth",
     ],
     srcs: ["*.java"],
     test_config: "CtsSdkExtensionsTestCases.xml",
     test_suites: [
         "cts",
         "mts-sdkextensions",
+        "mcts-sdkextensions",
         "general-tests",
     ],
-    sdk_version: "system_current",
+    jni_libs: [
+        "libderive_sdk",
+        "libderive_sdk_jni",
+    ],
+    compile_multilib: "both",
     min_sdk_version: "30",
     jarjar_rules: "jarjar-rules.txt",
 }
