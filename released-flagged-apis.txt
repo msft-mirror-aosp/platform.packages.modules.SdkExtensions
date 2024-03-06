@@ -39,7 +39,6 @@ com.android.adservices.flags.fledge_custom_audience_auction_server_request_flags
 com.android.adservices.flags.fledge_server_auction_multi_cloud_enabled
 com.android.adservices.flags.protected_signals_enabled
 com.android.adservices.flags.topics_encryption_enabled
-com.android.adservices.ondevicepersonalization.flags.on_device_personalization_apis_enabled
 protected_signals_enabled
 
 # HealthFitness
@@ -51,6 +50,9 @@ com.android.providers.media.flags.pick_ordered_images
 com.android.providers.media.flags.picker_accent_color
 com.android.providers.media.flags.picker_default_tab
 com.android.providers.media.flags.picker_recent_selection
+
+# OnDevicePersonalization
+com.android.adservices.ondevicepersonalization.flags.on_device_personalization_apis_enabled
 
 # Tethering
 com.android.net.flags.net_capability_local_network
