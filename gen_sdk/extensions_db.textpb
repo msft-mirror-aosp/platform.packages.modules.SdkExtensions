@@ -1008,7 +1008,7 @@ versions {
   requirements {
     module: ON_DEVICE_PERSONALIZATION
     version {
-      version: 7
+      version: 12
     }
   }
   requirements {
