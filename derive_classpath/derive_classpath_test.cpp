@@ -541,5 +541,7 @@ TEST_F(DeriveClasspathTest, SdkVersionsAreRespected) {
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
+  // Required for EXPECT_DEATH to work correctly
+  android::base::SetLogger(android::base::StderrLogger);
   return RUN_ALL_TESTS();
 }
