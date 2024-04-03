@@ -51,6 +51,9 @@
 // Only expect the U extension level to be set on U+ devices.
 #define EXPECT_U(n) EXPECT_EQ(GetU(), android::modules::sdklevel::IsAtLeastU() ? (n) : -1)
 
+// Only expect the V extension level to be set on V+ devices.
+#define EXPECT_V(n) EXPECT_EQ(GetV(), android::modules::sdklevel::IsAtLeastV() ? (n) : -1)
+
 class DeriveSdkTest : public ::testing::Test {
  protected:
   void TearDown() override { android::derivesdk::SetSdkLevels("/apex"); }
@@ -102,6 +105,8 @@ class DeriveSdkTest : public ::testing::Test {
   int GetT() { return android::base::GetIntProperty("build.version.extensions.t", -1); }
 
   int GetU() { return android::base::GetIntProperty("build.version.extensions.u", -1); }
+
+  int GetV() { return android::base::GetIntProperty("build.version.extensions.v", -1); }
 
   void EXPECT_ADSERVICES(int n) {
     int actual = android::base::GetIntProperty("build.version.extensions.ad_services", -1);
@@ -321,6 +326,10 @@ TEST_F(DeriveSdkTest, UpsideDownCake) {
 
   SetApexVersion("com.android.healthfitness", 2);
   EXPECT_U(1);
+}
+
+TEST_F(DeriveSdkTest, VanillaIceCream) {
+  // Nothing to do: no new modules were added in V
 }
 
 int main(int argc, char** argv) {
