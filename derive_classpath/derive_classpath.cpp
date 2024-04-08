@@ -25,6 +25,7 @@
 #include <glob.h>
 #include <regex>
 #include <sstream>
+#include <unordered_map>
 
 #include "packages/modules/common/proto/classpaths.pb.h"
 
