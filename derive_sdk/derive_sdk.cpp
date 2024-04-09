@@ -27,6 +27,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "packages/modules/common/proto/sdk.pb.h"
