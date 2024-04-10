@@ -142,17 +142,32 @@ public class SdkExtensionsHostTest extends BaseHostJUnit4Test {
     private String getExtensionVersionFromSysprop(String v) throws Exception {
         String command = "getprop build.version.extensions." + v;
         CommandResult res = getDevice().executeShellV2Command(command);
-        assertEquals(0, (int) res.getExitCode());
+        checkExitCode(command, res);
         return res.getStdout().replace("\n", "");
     }
 
     private String broadcast(String action, String extra) throws Exception {
         String command = getBroadcastCommand(action, extra);
         CommandResult res = getDevice().executeShellV2Command(command);
-        assertEquals(0, (int) res.getExitCode());
+        checkExitCode(command, res);
         Matcher matcher = Pattern.compile("data=\"([^\"]+)\"").matcher(res.getStdout());
         assertTrue("Unexpected output from am broadcast: " + res.getStdout(), matcher.find());
         return matcher.group(1);
+    }
+
+    private static void checkExitCode(String command, CommandResult res) {
+        int exitCode = (int) res.getExitCode();
+        if (exitCode != 0) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Unexpected result from `%s`\n"
+                                    + "    exitCode=%d\n"
+                                    + "    stderr=\n"
+                                    + "%s\n"
+                                    + "    stdout=\n"
+                                    + "%s\n",
+                            command, exitCode, res.getStderr(), res.getStdout()));
+        }
     }
 
     private boolean broadcastForBoolean(String action, String extra) throws Exception {
