@@ -4,6 +4,11 @@
       "name": "derive_sdk_test[com.google.android.sdkext.apex]"
     }
   ],
+  "sdkextensions-mainline-presubmit": [
+    {
+      "name": "derive_sdk_test"
+    }
+  ],
   "presubmit": [
     {
       "name": "CtsSdkExtensionsTestCases"
