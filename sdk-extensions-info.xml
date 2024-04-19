@@ -153,6 +153,12 @@
     pattern="android.net"
     sdks="U-ext,V-ext" />
 
+  <!-- PDF -->
+  <symbol
+    jar="framework-pdf"
+    pattern="android.graphics.pdf"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+
   <!-- AD_SERVICES -->
   <!--
     Currently derive_sdk's database versions depend on both the dessert
