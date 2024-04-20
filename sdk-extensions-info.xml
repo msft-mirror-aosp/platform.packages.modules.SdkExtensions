@@ -99,6 +99,10 @@
       pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_ACCENT_COLOR"
       sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
+      jar="framework-mediaprovider"
+      pattern="android.provider.MediaStore.QUERY_ARG_LATEST_SELECTION_ONLY"
+      sdks="U-ext,V-ext" />
+  <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getPickImagesMaxLimit"
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
@@ -152,6 +156,12 @@
     jar="framework-connectivity"
     pattern="android.net"
     sdks="U-ext,V-ext" />
+
+  <!-- PDF -->
+  <symbol
+    jar="framework-pdf"
+    pattern="android.graphics.pdf"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
 
   <!-- AD_SERVICES -->
   <!--
