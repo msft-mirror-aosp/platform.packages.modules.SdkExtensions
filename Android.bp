@@ -30,6 +30,7 @@ apex {
         "extensions_db",
     ],
     manifest: "manifest.json",
+    visibility: ["//packages/modules/common/build"],
 }
 
 apex_defaults {
