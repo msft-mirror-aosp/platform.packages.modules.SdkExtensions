@@ -70,12 +70,14 @@ static const std::unordered_set<SdkModule> kTModules = {
 static const std::unordered_set<SdkModule> kUModules = {SdkModule::CONFIG_INFRASTRUCTURE,
                                                         SdkModule::HEALTH_FITNESS};
 
+static const std::unordered_set<SdkModule> kVModules = {};
+
 static const std::string kSystemPropertiesPrefix = "build.version.extensions.";
 
 void ReadSystemProperties(std::map<std::string, std::string>& properties) {
   const std::string default_ = "<not set>";
 
-  for (const auto& dessert : {"r", "s", "t", "ad_services", "u"}) {
+  for (const auto& dessert : {"r", "s", "t", "ad_services", "u", "v"}) {
     properties[kSystemPropertiesPrefix + dessert] =
         android::base::GetProperty(kSystemPropertiesPrefix + dessert, default_);
   }
@@ -214,6 +216,13 @@ bool SetSdkLevels(const std::string& mountpath) {
   relevant_modules.insert(kUModules.begin(), kUModules.end());
   if (android::modules::sdklevel::IsAtLeastU()) {
     if (!GetAndSetExtension("u", db, relevant_modules, versions)) {
+      return false;
+    }
+  }
+
+  relevant_modules.insert(kVModules.begin(), kVModules.end());
+  if (android::modules::sdklevel::IsAtLeastV()) {
+    if (!GetAndSetExtension("v", db, relevant_modules, versions)) {
       return false;
     }
   }
