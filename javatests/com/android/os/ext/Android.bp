@@ -31,7 +31,6 @@ android_test {
     srcs: ["*.java"],
     test_config: "CtsSdkExtensionsTestCases.xml",
     test_suites: [
-        "cts",
         "mts-sdkextensions",
         "mcts-sdkextensions",
         "general-tests",
