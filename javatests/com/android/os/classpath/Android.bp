@@ -32,6 +32,7 @@ java_test_host {
         "modules-utils-build-testing",
     ],
     test_suites: [
+        "cts",
         "general-tests",
         "mts-sdkextensions",
         "mcts-sdkextensions",
