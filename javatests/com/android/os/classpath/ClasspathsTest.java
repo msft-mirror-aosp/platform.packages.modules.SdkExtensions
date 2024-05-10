@@ -20,6 +20,7 @@ import static android.compat.testing.Classpaths.ClasspathType.BOOTCLASSPATH;
 import static android.compat.testing.Classpaths.ClasspathType.DEX2OATBOOTCLASSPATH;
 import static android.compat.testing.Classpaths.ClasspathType.SYSTEMSERVERCLASSPATH;
 import static android.compat.testing.Classpaths.getJarsOnClasspath;
+
 import static com.android.os.classpath.ClasspathsTest.ClasspathSubject.assertThat;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -47,9 +48,7 @@ import org.junit.runner.RunWith;
 
 import java.nio.file.Paths;
 
-/**
- * Tests for the contents of *CLASSPATH environ variables on a device.
- */
+/** Tests for the contents of *CLASSPATH environ variables on a device. */
 @RunWith(DeviceJUnit4ClassRunner.class)
 public class ClasspathsTest extends BaseHostJUnit4Test {
 
@@ -82,18 +81,16 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
         assertThat(jars)
                 .containsAtLeast(LIBART_JAR, FRAMEWORK_JAR, ICU4J_JAR, SDKEXTENSIONS_JAR)
                 .inOrder();
-        assertThat(jars)
-                .doesNotContain(SERVICES_JAR);
+        assertThat(jars).doesNotContain(SERVICES_JAR);
 
-        ImmutableList<String> expectedPrefixes = ImmutableList.of(
-                "/apex/com.android.art/",
-                "/system/",
-                "/system_ext/",
-                "/apex/com.android.i18n/",
-                "/apex/");
-        assertThat(jars)
-                .prefixesMatch(expectedPrefixes)
-                .inOrder();
+        ImmutableList<String> expectedPrefixes =
+                ImmutableList.of(
+                        "/apex/com.android.art/",
+                        "/system/",
+                        "/system_ext/",
+                        "/apex/com.android.i18n/",
+                        "/apex/");
+        assertThat(jars).prefixesMatch(expectedPrefixes).inOrder();
 
         assertThat(getUpdatableApexes(jars)).isInOrder();
     }
@@ -105,21 +102,20 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
         assertThat(jars).containsNoDuplicates();
 
         // DEX2OATBOOTCLASSPATH must only contain ART, core-icu4j, and platform system jars
-        assertThat(jars)
-                .containsAtLeast(LIBART_JAR, FRAMEWORK_JAR, ICU4J_JAR)
-                .inOrder();
-        assertThat(jars)
-                .containsNoneOf(SDKEXTENSIONS_JAR, SERVICES_JAR);
+        assertThat(jars).containsAtLeast(LIBART_JAR, FRAMEWORK_JAR, ICU4J_JAR).inOrder();
+        assertThat(jars).containsNoneOf(SDKEXTENSIONS_JAR, SERVICES_JAR);
 
         // DEX2OATBOOTCLASSPATH must be a subset of BOOTCLASSPATH
         ImmutableList<String> bootJars = getJarsOnClasspath(getDevice(), BOOTCLASSPATH);
         assertThat(bootJars).containsAtLeastElementsIn(jars);
 
-        ImmutableList<String> expectedPrefixes = ImmutableList.of(
-                "/apex/com.android.art/", "/system/", "/system_ext/", "/apex/com.android.i18n/");
-        assertThat(jars)
-                .prefixesMatch(expectedPrefixes)
-                .inOrder();
+        ImmutableList<String> expectedPrefixes =
+                ImmutableList.of(
+                        "/apex/com.android.art/",
+                        "/system/",
+                        "/system_ext/",
+                        "/apex/com.android.i18n/");
+        assertThat(jars).prefixesMatch(expectedPrefixes).inOrder();
 
         // No updatable jars on DEX2OATBOOTCLASSPATH
         assertThat(getUpdatableApexes(jars)).isEmpty();
@@ -134,11 +130,9 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
         assertThat(jars).containsNoneOf(LIBART_JAR, FRAMEWORK_JAR, ICU4J_JAR, SDKEXTENSIONS_JAR);
         assertThat(jars).contains(SERVICES_JAR);
 
-        ImmutableList<String> expectedPrefixes = ImmutableList.of(
-                "/system/", "/system_ext/", "/apex/");
-        assertThat(jars)
-                .prefixesMatch(expectedPrefixes)
-                .inOrder();
+        ImmutableList<String> expectedPrefixes =
+                ImmutableList.of("/system/", "/system_ext/", "/apex/");
+        assertThat(jars).prefixesMatch(expectedPrefixes).inOrder();
 
         assertThat(getUpdatableApexes(jars)).isInOrder();
     }
@@ -153,8 +147,7 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
     }
 
     /**
-     * Returns a derived subject with names of the updatable APEXes preserving the original
-     * order.
+     * Returns a derived subject with names of the updatable APEXes preserving the original order.
      */
     private static ImmutableList<String> getUpdatableApexes(ImmutableList<String> jars) {
         return jars.stream()
@@ -168,10 +161,9 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
                 .collect(ImmutableList.toImmutableList());
     }
 
-    final static class ClasspathSubject extends IterableSubject {
+    static final class ClasspathSubject extends IterableSubject {
 
-        private static final Ordered EMPTY_ORDERED = () -> {
-        };
+        private static final Ordered EMPTY_ORDERED = () -> {};
 
         private final ImmutableList<String> actual;
 
@@ -189,12 +181,12 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
          * or fails.
          *
          * <p>To also test that the prefixes appear in the given order, make a call to {@code
-         * inOrder}
-         * on the object returned by this method. The expected elements must appear in the given
-         * order within the actual elements.
+         * inOrder} on the object returned by this method. The expected elements must appear in the
+         * given order within the actual elements.
          */
         public Ordered prefixesMatch(ImmutableList<String> expected) {
-            checkArgument(expected.stream().distinct().count() == expected.size(),
+            checkArgument(
+                    expected.stream().distinct().count() == expected.size(),
                     "No duplicates are allowed in expected values.");
 
             ImmutableList.Builder<String> unexpectedJars = ImmutableList.builder();
@@ -216,8 +208,8 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
 
             ImmutableList<String> unexpected = unexpectedJars.build();
             if (!unexpected.isEmpty()) {
-                Fact expectedOrder = fact("expected jar filepaths to be prefixes with one of",
-                        expected);
+                Fact expectedOrder =
+                        fact("expected jar filepaths to be prefixes with one of", expected);
                 ImmutableList.Builder<Fact> facts = ImmutableList.builder();
                 for (String e : unexpected) {
                     facts.add(fact("unexpected", e));
@@ -228,22 +220,25 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
                 return EMPTY_ORDERED;
             }
 
-            return ordered ? EMPTY_ORDERED : () -> failWithActual(
-                    simpleFact("all jars have valid partitions, but the order was wrong"),
-                    fact("expected order", expected)
-            );
+            if (ordered) {
+                return EMPTY_ORDERED;
+            }
+
+            return () ->
+                    failWithActual(
+                            simpleFact("all jars have valid partitions, but the order was wrong"),
+                            fact("expected order", expected));
         }
 
-        /**
-         * Checks that the actual iterable starts with expected elements.
-         */
+        /** Checks that the actual iterable starts with expected elements. */
         public void startsWith(ImmutableList<String> expected) {
             if (actual.size() < expected.size()) {
                 failWithActual("expected at least number of elements", expected.size());
                 return;
             }
             assertWithMessage("Unexpected initial elements of the list")
-                    .that(actual.subList(0, expected.size())).isEqualTo(expected);
+                    .that(actual.subList(0, expected.size()))
+                    .isEqualTo(expected);
         }
 
         private static int findFirstMatchingPrefix(String value, ImmutableList<String> prefixes) {
@@ -254,6 +249,5 @@ public class ClasspathsTest extends BaseHostJUnit4Test {
             }
             return -1;
         }
-
     }
 }

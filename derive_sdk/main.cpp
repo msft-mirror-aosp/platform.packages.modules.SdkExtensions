@@ -15,6 +15,7 @@
  */
 
 #include <cstdlib>
+#include <iostream>
 
 #include "derive_sdk.h"
 
@@ -24,7 +25,7 @@ int main(int argc, char** argv) {
   if (argc > 1 && !strcmp("--header", argv[1])) {
     return android::derivesdk::PrintHeader() ? EXIT_SUCCESS : EXIT_FAILURE;
   } else if (argc > 1 && !strcmp("--dump", argv[1])) {
-    return android::derivesdk::PrintDump(MOUNTPOINT) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return android::derivesdk::PrintDump(MOUNTPOINT, std::cout) ? EXIT_SUCCESS : EXIT_FAILURE;
   } else {
     return android::derivesdk::SetSdkLevels(MOUNTPOINT) ? EXIT_SUCCESS : EXIT_FAILURE;
   }

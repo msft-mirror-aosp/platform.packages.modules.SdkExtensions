@@ -57,5 +57,4 @@ public class Test {
 
     /** @hide */
     public static void staticHiddenMethod() {}
-
 }

@@ -30,6 +30,7 @@ apex {
         "extensions_db",
     ],
     manifest: "manifest.json",
+    visibility: ["//packages/modules/common/build"],
 }
 
 apex_defaults {
@@ -98,6 +99,7 @@ filegroup {
     srcs: ["sdk-extensions-info.xml"],
     visibility: [
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
 }
 
@@ -106,11 +108,26 @@ java_test_host {
     static_libs: ["ClasspathFetcher"],
     libs: [
         "tradefed",
-        "truth-prebuilt",
+        "truth",
     ],
     test_config: "sdkext-conformance-framework.xml",
     test_suites: [
         "mts",
         "device-tests",
     ],
+}
+
+// TODO: b/316383039 - Remove this module and the script when udc-mainline-prod
+// branch is removed.
+// The options passed to Metalava when generating API signature files and stubs
+// for SDK extension releases.
+genrule {
+    name: "sdkext-released-flagged-apis",
+    visibility: [
+        "//visibility:public",
+    ],
+    tool_files: ["keep-flagged-apis.sh"],
+    srcs: ["released-flagged-apis.txt"],
+    out: ["metalava-keep-flagged-apis.txt"],
+    cmd: "$(location keep-flagged-apis.sh) \"$(in)\" > \"$(out)\"",
 }
