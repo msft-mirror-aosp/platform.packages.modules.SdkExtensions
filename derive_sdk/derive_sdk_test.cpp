@@ -27,6 +27,8 @@
 #include <sys/stat.h>
 
 #include <cstdlib>
+#include <string>
+#include <unordered_map>
 
 #include "packages/modules/common/proto/sdk.pb.h"
 

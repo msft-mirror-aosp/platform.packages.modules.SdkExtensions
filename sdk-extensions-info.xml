@@ -82,6 +82,18 @@
     pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX"
     sdks="R-ext,S-ext,T-ext,U-ext" />
   <symbol
+      jar="framework-mediaprovider"
+      pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_IN_ORDER"
+      sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+      jar="framework-mediaprovider"
+      pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_LAUNCH_TAB"
+      sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
+      jar="framework-mediaprovider"
+      pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_ACCENT_COLOR"
+      sdks="R-ext,S-ext,T-ext,U-ext" />
+  <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getPickImagesMaxLimit"
     sdks="R-ext,S-ext,T-ext,U-ext" />

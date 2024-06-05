@@ -47,12 +47,3 @@ java_sdk_library {
         "test_com.android.sdkext",
     ],
 }
-
-java_api_contribution {
-    name: "framework-sdkextensions-public-stubs",
-    api_surface: "public",
-    api_file: "api/current.txt",
-    visibility: [
-        "//build/orchestrator/apis",
-    ],
-}
