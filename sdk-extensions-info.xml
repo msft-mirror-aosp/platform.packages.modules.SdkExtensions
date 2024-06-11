@@ -100,6 +100,10 @@
       sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
       jar="framework-mediaprovider"
+      pattern="android.provider.MediaStore.EXTRA_PICKER_PRE_SELECTION_URIS"
+      sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+      jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.QUERY_ARG_LATEST_SELECTION_ONLY"
       sdks="U-ext,V-ext" />
   <symbol
