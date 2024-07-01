@@ -31,6 +31,7 @@ android_test {
     test_suites: [
         "cts",
         "mts-sdkextensions",
+        "mcts-sdkextensions",
         "general-tests",
     ],
     sdk_version: "system_current",
