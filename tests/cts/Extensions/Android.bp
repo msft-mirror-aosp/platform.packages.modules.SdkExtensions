@@ -30,6 +30,7 @@ android_test {
         "cts",
         "mts-sdkextensions",
         "general-tests",
+        "mcts-sdkextensions",
     ],
     sdk_version: "system_current",
     min_sdk_version: "30",
