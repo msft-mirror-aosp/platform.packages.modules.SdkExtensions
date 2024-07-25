@@ -62,15 +62,19 @@ public class SdkExtensionsTest {
     private static final String TAG = "SdkExtensionsTest";
 
     private enum Expectation {
-        /** Expect an extension to be the current / latest defined version */
-        CURRENT,
+        /**
+         * Expect an extension to be the current / latest defined version, or later (which may be
+         * the case if the device under test comes from a more recent build that the tests come
+         * from).
+         */
+        AT_LEAST_CURRENT,
         /** Expect an extension to be missing / version 0 */
         MISSING,
         /** Expect an extension to be at least the base extension version of the device */
         AT_LEAST_BASE,
     }
 
-    private static final Expectation CURRENT = Expectation.CURRENT;
+    private static final Expectation AT_LEAST_CURRENT = Expectation.AT_LEAST_CURRENT;
     private static final Expectation MISSING = Expectation.MISSING;
     private static final Expectation AT_LEAST_BASE = Expectation.AT_LEAST_BASE;
 
@@ -89,8 +93,8 @@ public class SdkExtensionsTest {
 
     private static void assertVersion(Expectation expectation, int version) {
         switch (expectation) {
-            case CURRENT:
-                assertEquals(CURRENT_TRAIN_VERSION, version);
+            case AT_LEAST_CURRENT:
+                assertThat(version).isAtLeast(CURRENT_TRAIN_VERSION);
                 break;
             case AT_LEAST_BASE:
                 assertAtLeastBaseVersion(version);
@@ -226,7 +230,9 @@ public class SdkExtensionsTest {
         // Go trains don't include all modules, so even when all trains for a particular release
         // have been installed correctly on a Go device, we can't generally expect the extension
         // version to be the current train version.
-        return SdkLevel.isAtLeastT() && isGoWithSideloadedModules() ? AT_LEAST_BASE : CURRENT;
+        return SdkLevel.isAtLeastT() && isGoWithSideloadedModules()
+                ? AT_LEAST_BASE
+                : AT_LEAST_CURRENT;
     }
 
     private boolean isGoWithSideloadedModules() throws Exception {
