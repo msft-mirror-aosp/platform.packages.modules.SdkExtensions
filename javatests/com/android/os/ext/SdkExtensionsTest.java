@@ -20,7 +20,9 @@ import static android.os.Build.VERSION_CODES;
 import static android.os.Build.VERSION_CODES.R;
 import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
-import static com.android.os.ext.testing.CurrentVersion.ALLOWED_VERSIONS_CTS;
+import static com.android.os.ext.testing.CurrentVersion.R_BASE_VERSION;
+import static com.android.os.ext.testing.CurrentVersion.S_BASE_VERSION;
+import static com.android.os.ext.testing.CurrentVersion.T_BASE_VERSION;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -43,7 +45,13 @@ public class SdkExtensionsTest {
     private static final int AD_SERVICES = 1000000;
 
     private static void assertCorrectVersion(int version) {
-        assertThat(version).isIn(ALLOWED_VERSIONS_CTS);
+        int minVersion = R_BASE_VERSION;
+        if (SdkLevel.isAtLeastT()) {
+            minVersion = T_BASE_VERSION;
+        } else if (SdkLevel.isAtLeastS()) {
+            minVersion = S_BASE_VERSION;
+        }
+        assertThat(version).isAtLeast(minVersion);
     }
 
     private static void assertCorrectVersion(boolean expected, int version) {
