@@ -120,8 +120,48 @@
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.openFileDescriptor"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.openAssetFileDescriptor"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.openTypedAssetFileDescriptor"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.ACCESS_OEM_METADATA_PERMISSION"
+    sdks="T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.QUERY_ARG_MEDIA_STANDARD_SORT_ORDER"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.VOLUME_EXTERNAL"
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.MediaColumns.INFERRED_DATE"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.MediaColumns.OEM_METADATA"
+    sdks="T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.Audio.AudioColumns.BITS_PER_SAMPLE"
+    sdks="T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.Audio.AudioColumns.SAMPLERATE"
+    sdks="T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.OemMetadataService"
+    sdks="T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.CloudMediaProvider"
@@ -160,6 +200,10 @@
     jar="framework-connectivity"
     pattern="android.net"
     sdks="U-ext,V-ext" />
+  <symbol
+    jar="framework-connectivity-t"
+    pattern="android.net.NetworkStats"
+    sdks="T-ext,U-ext,V-ext" />
 
   <!-- PDF -->
   <symbol
