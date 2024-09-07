@@ -183,12 +183,6 @@
     pattern="android.provider.MediaStore.notifyCloudMediaChangedEvent"
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
 
-   <!-- PHOTOPICKER -->
-   <symbol
-    jar="framework-photopicker"
-    pattern="android.widget.photopicker"
-    sdks="U-ext,V-ext" />
-
   <!-- CONNECTIVITY -->
   <symbol
     jar="framework-connectivity"
