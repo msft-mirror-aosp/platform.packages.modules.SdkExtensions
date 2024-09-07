@@ -42,6 +42,11 @@
     name="U Extensions"
     reference="android/os/Build$VERSION_CODES$UPSIDE_DOWN_CAKE" />
   <sdk
+    id="35"
+    shortname="V-ext"
+    name="V Extensions"
+    reference="android/os/Build$VERSION_CODES$VANILLA_ICE_CREAM" />
+  <sdk
     id="1000000"
     shortname="AD_SERVICES-ext"
     name="Ad Services Extensions"
@@ -51,102 +56,116 @@
   <symbol
     jar="framework-sdkextensions"
     pattern="*"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
 
   <!-- APPSEARCH -->
   <symbol
     jar="framework-appsearch"
     pattern="android.app.appsearch.AppSearchSchema.Builder.addParentType"
-    sdks="T-ext,U-ext" />
+    sdks="T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-appsearch"
     pattern="android.app.appsearch.AppSearchSchema.DocumentPropertyConfig.Builder
             .addIndexableNestedProperties"
-    sdks="T-ext,U-ext" />
+    sdks="T-ext,U-ext,V-ext" />
 
   <!-- MEDIA_PROVIDER -->
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.PickerMediaColumns"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.ACTION_PICK_IMAGES"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.ACTION_PICK_IMAGES_SETTINGS"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_MAX"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_IN_ORDER"
-      sdks="R-ext,S-ext,T-ext,U-ext" />
+      sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_LAUNCH_TAB"
-      sdks="R-ext,S-ext,T-ext,U-ext" />
+      sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_ACCENT_COLOR"
-      sdks="R-ext,S-ext,T-ext,U-ext" />
+      sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+      jar="framework-mediaprovider"
+      pattern="android.provider.MediaStore.EXTRA_PICKER_PRE_SELECTION_URIS"
+      sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+      jar="framework-mediaprovider"
+      pattern="android.provider.MediaStore.QUERY_ARG_LATEST_SELECTION_ONLY"
+      sdks="U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getPickImagesMaxLimit"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getGeneration"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getVersion"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.VOLUME_EXTERNAL"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.CloudMediaProvider"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.CloudMediaProviderContract"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.isCurrentCloudMediaProviderAuthority"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.isSupportedCloudMediaProviderAuthority"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.notifyCloudMediaChangedEvent"
-    sdks="R-ext,S-ext,T-ext,U-ext" />
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
 
   <!-- CONNECTIVITY -->
   <symbol
     jar="framework-connectivity"
     pattern="android.net.http"
-    sdks="S-ext,T-ext,U-ext" />
+    sdks="S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-connectivity-t"
     pattern="android.net.nsd"
-    sdks="T-ext,U-ext" />
+    sdks="T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-connectivity"
     pattern="android.net.thread"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
   <symbol
     jar="framework-connectivity"
     pattern="android.net"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
+
+  <!-- PDF -->
+  <symbol
+    jar="framework-pdf"
+    pattern="android.graphics.pdf"
+    sdks="S-ext,T-ext,U-ext,V-ext" />
 
   <!-- AD_SERVICES -->
   <!--
@@ -170,91 +189,281 @@
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.AggregateRecordsGroupedByDurationResponse.getDataOrigins"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.AggregateRecordsGroupedByPeriodResponse.getDataOrigins"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.BloodPressureRecord.DIASTOLIC_AVG"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.BloodPressureRecord.DIASTOLIC_MAX"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.BloodPressureRecord.DIASTOLIC_MIN"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.BloodPressureRecord.SYSTOLIC_AVG"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.BloodPressureRecord.SYSTOLIC_MIN"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.BloodPressureRecord.SYSTOLIC_MAX"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.CyclingPedalingCadenceRecord.RPM_AVG"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.CyclingPedalingCadenceRecord.RPM_MAX"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.CyclingPedalingCadenceRecord.RPM_MIN"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.NutritionRecord.TRANS_FAT_TOTAL"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.SpeedRecord.SPEED_AVG"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.SpeedRecord.SPEED_MAX"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.SpeedRecord.SPEED_MIN"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.StepsCadenceRecord.STEPS_CADENCE_RATE_AVG"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.StepsCadenceRecord.STEPS_CADENCE_RATE_MAX"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
 
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.datatypes.StepsCadenceRecord.STEPS_CADENCE_RATE_MIN"
-    sdks="U-ext" />
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.SkinTemperatureRecord"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.SkinTemperatureRecord.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.SkinTemperatureRecord.Delta"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.units.TemperatureDelta"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.ActiveCaloriesBurnedGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.DistanceGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.DistanceWithVariableRestGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.DurationGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.RepetitionsGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.StepsGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.TotalCaloriesBurnedGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.UnknownGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseCompletionGoal.UnspecifiedGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal.AmrapGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal.CadenceGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal.HeartRateGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal.PowerGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal.RateOfPerceivedExertionGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal.SpeedGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal.UnknownGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExercisePerformanceGoal.WeightGoal"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.PlannedExerciseBlock"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.PlannedExerciseBlock.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.PlannedExerciseSessionRecord"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.PlannedExerciseSessionRecord.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.PlannedExerciseStep"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.PlannedExerciseStep.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_HEALTH_DATA_HISTORY"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_HEALTH_DATA_IN_BACKGROUND"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_PLANNED_EXERCISE"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_SKIN_TEMPERATURE"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.WRITE_PLANNED_EXERCISE"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.WRITE_SKIN_TEMPERATURE"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_EXERCISE_ROUTES"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSessionRecord.Builder.setPlannedExerciseSessionId"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSessionRecord.getPlannedExerciseSessionId"
+    sdks="U-ext,V-ext" />
 
 </sdk-extensions-info>
