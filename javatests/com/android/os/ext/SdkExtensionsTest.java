@@ -21,6 +21,7 @@ import static android.os.Build.VERSION_CODES.R;
 import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 import static android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+import static android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM;
 import static android.os.ext.SdkExtensions.AD_SERVICES;
 
 import static com.android.os.ext.testing.CurrentVersion.CURRENT_TRAIN_VERSION;
@@ -150,7 +151,8 @@ public class SdkExtensionsTest {
     /** Verifies that getExtensionVersion returns zero value for non-existing extensions */
     @Test
     public void testZeroValues() throws Exception {
-        Set<Integer> assignedCodes = Set.of(R, S, TIRAMISU, UPSIDE_DOWN_CAKE, AD_SERVICES);
+        Set<Integer> assignedCodes =
+                Set.of(R, S, TIRAMISU, UPSIDE_DOWN_CAKE, VANILLA_ICE_CREAM, AD_SERVICES);
         for (int sdk = VERSION_CODES.R; sdk <= 1_000_000; sdk++) {
             if (assignedCodes.contains(sdk)) {
                 continue;
@@ -174,6 +176,9 @@ public class SdkExtensionsTest {
         }
         if (SdkLevel.isAtLeastU()) {
             expectedKeys.add(UPSIDE_DOWN_CAKE);
+        }
+        if (SdkLevel.isAtLeastV()) {
+            expectedKeys.add(VANILLA_ICE_CREAM);
         }
         Set<Integer> actualKeys = SdkExtensions.getAllExtensionVersions().keySet();
         assertThat(actualKeys).containsExactlyElementsIn(expectedKeys);
@@ -201,6 +206,12 @@ public class SdkExtensionsTest {
     public void testExtensionU() throws Exception {
         Expectation expectation = dessertExpectation(SdkLevel.isAtLeastU());
         assertVersion(expectation, UPSIDE_DOWN_CAKE, "u");
+    }
+
+    @Test
+    public void testExtensionV() throws Exception {
+        Expectation expectation = dessertExpectation(SdkLevel.isAtLeastV());
+        assertVersion(expectation, VANILLA_ICE_CREAM, "v");
     }
 
     @Test
