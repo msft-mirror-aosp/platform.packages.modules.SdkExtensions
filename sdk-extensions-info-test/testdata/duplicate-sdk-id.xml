@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sdk-extensions-info>
+    <sdk
+        id="1"
+        shortname="foo"
+        name="The foo extensions"
+        reference="android/os/Build$FOO" />
+    <sdk
+        id="1"
+        shortname="bar"
+        name="The bar extensions"
+        reference="android/os/Build$BAR" />
+    <symbol
+        jar="framework-something"
+        pattern="*"
+        sdks="foo,bar" />
+    <symbol
+        jar="framework-something-else"
+        pattern="pkg.a"
+        sdks="bar" />
+    <symbol
+        jar="framework-something-else"
+        pattern="pkg.b"
+        sdks="bar" />
+</sdk-extensions-info>
