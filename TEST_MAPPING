@@ -18,16 +18,14 @@
     },
     {
       "name": "gen_sdk_test"
+    },
+    {
+      "name": "sdk-extensions-info-test"
     }
   ],
   "presubmit-large": [
     {
       "name": "sdkextensions_e2e_tests"
-    }
-  ],
-  "postsubmit": [
-    {
-      "name": "sdk-extensions-info-test"
     }
   ]
 }
