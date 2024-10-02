@@ -125,6 +125,8 @@ mod tests {
                 symbol.sdks.iter().duplicates().collect::<Vec<_>>().is_empty(),
                 "symbol contains duplicate references to the same sdk"
             );
+            ensure!(!symbol.jar.contains(char::is_whitespace), "jar contains whitespace");
+            ensure!(!symbol.pattern.contains(char::is_whitespace), "pattern contains whitespace");
             for id in symbol.sdks.iter() {
                 ensure!(sdk_shortnames.contains(&id), "symbol refers to non-existent sdk {}", id);
             }
@@ -189,6 +191,8 @@ mod tests {
             "testdata/symbol-refers-to-non-existent-sdk.xml",
             "symbol refers to non-existent sdk does-not-exist"
         );
+        assert_err!("testdata/whitespace-in-jar.xml", "jar contains whitespace");
+        assert_err!("testdata/whitespace-in-pattern.xml", "pattern contains whitespace");
     }
 
     #[test]
