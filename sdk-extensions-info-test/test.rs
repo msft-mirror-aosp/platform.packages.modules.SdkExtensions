@@ -96,26 +96,29 @@ mod tests {
         }
 
         // verify all Sdk fields are unique across all Sdk items
+        let dupes = sdks.iter().duplicates_by(|sdk| &sdk.id).collect::<Vec<_>>();
+        ensure!(dupes.is_empty(), "{:?}: multiple sdk entries with identical id value", dupes);
+
+        let dupes = sdks.iter().duplicates_by(|sdk| &sdk.shortname).collect::<Vec<_>>();
         ensure!(
-            sdks.iter().duplicates_by(|sdk| &sdk.id).collect::<Vec<_>>().is_empty(),
-            "multiple sdk entries with identical id value"
+            dupes.is_empty(),
+            "{:?}: multiple sdk entries with identical shortname value",
+            dupes
         );
+
+        let dupes = sdks.iter().duplicates_by(|sdk| &sdk.name).collect::<Vec<_>>();
+        ensure!(dupes.is_empty(), "{:?}: multiple sdk entries with identical name value", dupes);
+
+        let dupes = sdks.iter().duplicates_by(|sdk| &sdk.reference).collect::<Vec<_>>();
         ensure!(
-            sdks.iter().duplicates_by(|sdk| &sdk.shortname).collect::<Vec<_>>().is_empty(),
-            "multiple sdk entries with identical shortname value"
-        );
-        ensure!(
-            sdks.iter().duplicates_by(|sdk| &sdk.name).collect::<Vec<_>>().is_empty(),
-            "multiple sdk entries with identical name value"
-        );
-        ensure!(
-            sdks.iter().duplicates_by(|sdk| &sdk.reference).collect::<Vec<_>>().is_empty(),
-            "multiple sdk entries with identical reference value"
+            dupes.is_empty(),
+            "{:?}: multiple sdk entries with identical reference value",
+            dupes
         );
 
         // verify Sdk id field has the expected format (positive integer)
-        for id in sdks.iter().map(|sdk| &sdk.id) {
-            ensure!(id.parse::<usize>().is_ok(), "sdk id {} not a positive int", id);
+        for sdk in sdks.iter() {
+            ensure!(sdk.id.parse::<usize>().is_ok(), "{:?}: id not a positive int", sdk);
         }
 
         // verify individual Symbol elements
@@ -123,12 +126,26 @@ mod tests {
         for symbol in symbols.iter() {
             ensure!(
                 symbol.sdks.iter().duplicates().collect::<Vec<_>>().is_empty(),
-                "symbol contains duplicate references to the same sdk"
+                "{:?}: symbol contains duplicate references to the same sdk",
+                symbol
             );
-            ensure!(!symbol.jar.contains(char::is_whitespace), "jar contains whitespace");
-            ensure!(!symbol.pattern.contains(char::is_whitespace), "pattern contains whitespace");
+            ensure!(
+                !symbol.jar.contains(char::is_whitespace),
+                "{:?}: jar contains whitespace",
+                symbol
+            );
+            ensure!(
+                !symbol.pattern.contains(char::is_whitespace),
+                "{:?}: pattern contains whitespace",
+                symbol
+            );
             for id in symbol.sdks.iter() {
-                ensure!(sdk_shortnames.contains(&id), "symbol refers to non-existent sdk {}", id);
+                ensure!(
+                    sdk_shortnames.contains(&id),
+                    "{:?}: symbol refers to non-existent sdk {}",
+                    symbol,
+                    id
+                );
             }
         }
 
@@ -168,31 +185,40 @@ mod tests {
         );
         assert_err!(
             "testdata/duplicate-sdk-id.xml",
-            "multiple sdk entries with identical id value"
+            r#"[Sdk { id: "1", shortname: "bar", name: "The bar extensions", reference: "android/os/Build$BAR" }]: multiple sdk entries with identical id value"#
         );
         assert_err!(
             "testdata/duplicate-sdk-shortname.xml",
-            "multiple sdk entries with identical shortname value"
+            r#"[Sdk { id: "2", shortname: "foo", name: "The bar extensions", reference: "android/os/Build$BAR" }]: multiple sdk entries with identical shortname value"#
         );
         assert_err!(
             "testdata/duplicate-sdk-name.xml",
-            "multiple sdk entries with identical name value"
+            r#"[Sdk { id: "2", shortname: "bar", name: "The foo extensions", reference: "android/os/Build$BAR" }]: multiple sdk entries with identical name value"#
         );
         assert_err!(
             "testdata/duplicate-sdk-reference.xml",
-            "multiple sdk entries with identical reference value"
+            r#"[Sdk { id: "2", shortname: "bar", name: "The bar extensions", reference: "android/os/Build$FOO" }]: multiple sdk entries with identical reference value"#
         );
-        assert_err!("testdata/incorrect-sdk-id-format.xml", "sdk id 1.0 not a positive int");
+        assert_err!(
+            "testdata/incorrect-sdk-id-format.xml",
+            r#"Sdk { id: "1.0", shortname: "foo", name: "The foo extensions", reference: "android/os/Build$FOO" }: id not a positive int"#
+        );
         assert_err!(
             "testdata/duplicate-symbol-sdks.xml",
-            "symbol contains duplicate references to the same sdk"
+            r#"Symbol { jar: "framework-something", pattern: "*", sdks: ["foo", "bar", "bar"] }: symbol contains duplicate references to the same sdk"#
         );
         assert_err!(
             "testdata/symbol-refers-to-non-existent-sdk.xml",
-            "symbol refers to non-existent sdk does-not-exist"
+            r#"Symbol { jar: "framework-something", pattern: "*", sdks: ["foo", "does-not-exist", "bar"] }: symbol refers to non-existent sdk does-not-exist"#
         );
-        assert_err!("testdata/whitespace-in-jar.xml", "jar contains whitespace");
-        assert_err!("testdata/whitespace-in-pattern.xml", "pattern contains whitespace");
+        assert_err!(
+            "testdata/whitespace-in-jar.xml",
+            r#"Symbol { jar: "framework something", pattern: "*", sdks: ["foo", "bar"] }: jar contains whitespace"#
+        );
+        assert_err!(
+            "testdata/whitespace-in-pattern.xml",
+            r#"Symbol { jar: "framework-something-else", pattern: "android.app.appsearch.AppSearchSchema.DocumentPropertyConfig.Builder\n                .addIndexableNestedProperties ", sdks: ["bar"] }: pattern contains whitespace"#
+        );
     }
 
     #[test]
