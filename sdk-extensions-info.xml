@@ -61,12 +61,7 @@
   <!-- APPSEARCH -->
   <symbol
     jar="framework-appsearch"
-    pattern="android.app.appsearch.AppSearchSchema.Builder.addParentType"
-    sdks="T-ext,U-ext,V-ext" />
-  <symbol
-    jar="framework-appsearch"
-    pattern="android.app.appsearch.AppSearchSchema.DocumentPropertyConfig.Builder
-            .addIndexableNestedProperties"
+    pattern="android.app.appsearch"
     sdks="T-ext,U-ext,V-ext" />
 
   <!-- MEDIA_PROVIDER -->
