@@ -27,7 +27,7 @@ java_test_host {
         "modules-utils-build-testing",
         "test_util_current_version",
     ],
-    data: [
+    device_common_data: [
         ":sdkextensions_e2e_test_app",
         ":sdkextensions_e2e_test_app_req_r12",
         ":sdkextensions_e2e_test_app_req_s12",
