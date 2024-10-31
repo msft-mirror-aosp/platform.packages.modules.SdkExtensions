@@ -1,0 +1,19 @@
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+rust_test_host {
+    name: "sdk-extensions-info-test",
+    edition: "2021",
+    clippy_lints: "android",
+    lints: "android",
+    srcs: [
+        "test.rs",
+    ],
+    rustlibs: [
+        "libanyhow",
+        "libitertools",
+        "libxml_rust",
+    ],
+    test_suites: ["general-tests"],
+}
