@@ -1,6 +1,2 @@
 # Bug component: 1133050
-amhk@google.com
-michaelwr@google.com
-paulduffin@google.com
-
-include platform/packages/modules/common:/MODULES_OWNERS  # see go/mainline-owners-policy
+include platform/frameworks/base:/SDK_OWNERS
