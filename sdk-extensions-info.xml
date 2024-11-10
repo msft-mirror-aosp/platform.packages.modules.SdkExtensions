@@ -531,4 +531,209 @@
     pattern="android.health.connect.datatypes.MindfulnessSessionRecord.Builder"
     sdks="U-ext,V-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.createMedicalDataSource"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.deleteMedicalDataSourceWithData"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.deleteMedicalResources"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.getMedicalDataSources"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.readMedicalResources"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.upsertMedicalResources"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.CreateMedicalDataSourceRequest"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.CreateMedicalDataSourceRequest.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.DeleteMedicalResourcesRequest"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.DeleteMedicalResourcesRequest.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.GetMedicalDataSourcesRequest"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.GetMedicalDataSourcesRequest.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.MedicalResourceId"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.ReadMedicalResourcesInitialRequest"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.ReadMedicalResourcesInitialRequest.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.ReadMedicalResourcesPageRequest"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.ReadMedicalResourcesPageRequest.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.ReadMedicalResourcesRequest"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.ReadMedicalResourcesResponse"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.UpsertMedicalResourceRequest"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.UpsertMedicalResourceRequest.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.FhirResource"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.FhirResource.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.FhirVersion"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.MedicalDataSource"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.MedicalDataSource.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.MedicalResource"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.MedicalResource.Builder"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_ALLERGIES_INTOLERANCES"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_CONDITIONS"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_VACCINES"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_LABORATORY_RESULTS"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_MEDICATIONS"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_PERSONAL_DETAILS"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_PRACTITIONER_DETAILS"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_PREGNANCY"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_PROCEDURES"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_SOCIAL_HISTORY"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_VISITS"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_MEDICAL_DATA_VITAL_SIGNS"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.WRITE_MEDICAL_DATA"
+    sdks="U-ext,V-ext" />
+
 </sdk-extensions-info>
