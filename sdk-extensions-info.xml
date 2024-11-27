@@ -135,6 +135,10 @@
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.markIsFavoriteStatus"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.VOLUME_EXTERNAL"
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
