@@ -135,6 +135,10 @@
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
     jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.markIsFavoriteStatus"
+    sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
+  <symbol
+    jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.VOLUME_EXTERNAL"
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext" />
   <symbol
@@ -734,6 +738,26 @@
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.HealthPermissions.WRITE_MEDICAL_DATA"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_ACTIVITY_INTENSITY"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.WRITE_ACTIVITY_INTENSITY"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ActivityIntensityRecord"
+    sdks="U-ext,V-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ActivityIntensityRecord.Builder"
     sdks="U-ext,V-ext" />
 
 </sdk-extensions-info>
