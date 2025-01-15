@@ -535,6 +535,193 @@ TEST_F(DeriveClasspathTest, SdkVersionsAreRespected) {
   EXPECT_EQ(android::base::Join(expected_jars, ":"), exportValue);
 }
 
+// Test jars with different sdk versions against override device values.
+TEST_F(DeriveClasspathTest, SdkVersionsAreCheckedAgainstOverrideDeviceValuesRelease) {
+  if (android_get_device_api_level() < __ANDROID_API_S__) {
+    GTEST_SKIP();
+  }
+
+  Args args = default_args_with_test_dir_;
+  args.override_device_sdk_version = 35;
+  args.override_device_codename = "REL";
+  args.override_device_known_codenames = {"S", "Sv2", "Tiramisu", "UpsideDownCake",
+                                          "VanillaIceCream"};
+
+  // List of jars expected to be in SYSTEMSERVERCLASSPATH.
+  std::vector<std::string> expected_jars;
+
+  // Add an unbounded jar.
+  AddJarToClasspath("/system", "/system/framework/unbounded", SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/system/framework/unbounded");
+
+  // Manually create a config with jars that sets sdk versions...
+  ExportedClasspathsJars exported_jars;
+
+  // Known released versions.
+  Jar* jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk30");
+  jar->set_min_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdk30");
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdk30");
+  jar->set_max_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+  // Provided override device sdk version.
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdklatest");
+  jar->set_min_sdk_version(std::to_string(args.override_device_sdk_version));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdklatest");
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdklatest");
+  jar->set_max_sdk_version(std::to_string(args.override_device_sdk_version));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/maxsdklatest");
+
+  // Unknown SDK_INT+1 version.
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk_plus1");
+  jar->set_min_sdk_version(std::to_string(args.override_device_sdk_version + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdk_plus1");
+  jar->set_max_sdk_version(std::to_string(args.override_device_sdk_version + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/maxsdk_plus1");
+
+  // Known min_sdk_version and future max_sdk_version.
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk30maxsdk10000");
+  jar->set_min_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_max_sdk_version(std::to_string(args.override_device_sdk_version + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdk30maxsdk10000");
+
+  // Codename.
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdkBaklava");
+  jar->set_min_sdk_version("Baklava");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdkBaklava");
+  jar->set_max_sdk_version("Baklava");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/maxsdkBaklava");
+
+  // ...and write this config to systemserverclasspath.pb.
+  WriteConfig(exported_jars, "/apex/com.android.foo/etc/classpaths/systemserverclasspath.pb");
+
+  // Generate and parse SYSTEMSERVERCLASSPATH.
+  GenerateClasspathExports(args);
+  const std::vector<std::string> exportLines = ParseExportsFile();
+  const std::vector<std::string> splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  const std::string exportValue = splitExportLine[2];
+
+  EXPECT_EQ(android::base::Join(expected_jars, ":"), exportValue);
+}
+
+// Test jars with different sdk versions against override device values.
+TEST_F(DeriveClasspathTest, SdkVersionsAreCheckedAgainstOverrideDeviceValuesDev) {
+  if (android_get_device_api_level() < __ANDROID_API_S__) {
+    GTEST_SKIP();
+  }
+
+  Args args = default_args_with_test_dir_;
+  args.override_device_sdk_version = 35;
+  args.override_device_codename = "Baklava";
+  args.override_device_known_codenames = {
+      "S", "Sv2", "Tiramisu", "UpsideDownCake", "VanillaIceCream", "Baklava"};
+
+  // List of jars expected to be in SYSTEMSERVERCLASSPATH.
+  std::vector<std::string> expected_jars;
+
+  // Add an unbounded jar.
+  AddJarToClasspath("/system", "/system/framework/unbounded", SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/system/framework/unbounded");
+
+  // Manually create a config with jars that sets sdk versions...
+  ExportedClasspathsJars exported_jars;
+
+  // Known released versions.
+  Jar* jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk30");
+  jar->set_min_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdk30");
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdk30");
+  jar->set_max_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+  // Provided override device sdk version.
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdklatest");
+  jar->set_min_sdk_version(std::to_string(args.override_device_sdk_version));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdklatest");
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdklatest");
+  jar->set_max_sdk_version(std::to_string(args.override_device_sdk_version));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+  // Unknown SDK_INT+1 version.
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk_plus1");
+  jar->set_min_sdk_version(std::to_string(args.override_device_sdk_version + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdk_plus1");
+  jar->set_max_sdk_version(std::to_string(args.override_device_sdk_version + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/maxsdk_plus1");
+
+  // Known min_sdk_version and future max_sdk_version.
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdk30maxsdk10000");
+  jar->set_min_sdk_version(std::to_string(__ANDROID_API_R__));
+  jar->set_max_sdk_version(std::to_string(args.override_device_sdk_version + 1));
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdk30maxsdk10000");
+
+  // Codename.
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdkBaklava");
+  jar->set_min_sdk_version("Baklava");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdkBaklava");
+
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdkBaklava");
+  jar->set_max_sdk_version("Baklava");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/maxsdkBaklava");
+
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/minsdkTiramisu");
+  jar->set_min_sdk_version("Tiramisu");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+  expected_jars.push_back("/apex/com.android.foo/javalib/minsdkTiramisu");
+
+  jar = exported_jars.add_jars();
+  jar->set_path("/apex/com.android.foo/javalib/maxsdkTiramisu");
+  jar->set_max_sdk_version("Tiramisu");
+  jar->set_classpath(SYSTEMSERVERCLASSPATH);
+
+  // ...and write this config to systemserverclasspath.pb.
+  WriteConfig(exported_jars, "/apex/com.android.foo/etc/classpaths/systemserverclasspath.pb");
+
+  // Generate and parse SYSTEMSERVERCLASSPATH.
+  GenerateClasspathExports(args);
+  const std::vector<std::string> exportLines = ParseExportsFile();
+  const std::vector<std::string> splitExportLine = SplitClasspathExportLine(exportLines[2]);
+  const std::string exportValue = splitExportLine[2];
+
+  EXPECT_EQ(android::base::Join(expected_jars, ":"), exportValue);
+}
+
 }  // namespace
 }  // namespace derive_classpath
 }  // namespace android
