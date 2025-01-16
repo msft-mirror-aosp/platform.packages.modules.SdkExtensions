@@ -17,15 +17,20 @@
 #define LOG_TAG "derive_classpath"
 
 #include "derive_classpath.h"
-#include <android-base/file.h>
-#include <android-base/logging.h>
-#include <android-base/strings.h>
-#include <android-modules-utils/sdk_level.h>
-#include <android-modules-utils/unbounded_sdk_level.h>
+
+#include <ctype.h>
 #include <glob.h>
+
 #include <regex>
 #include <sstream>
 #include <unordered_map>
+
+#include <android-base/file.h>
+#include <android-base/logging.h>
+#include <android-base/strings.h>
+#include <android-base/parseint.h>
+#include <android-modules-utils/sdk_level.h>
+#include <android-modules-utils/unbounded_sdk_level.h>
 
 #include "packages/modules/common/proto/classpaths.pb.h"
 
@@ -45,6 +50,58 @@ static const std::regex kApexPathRegex("(/apex/[^@/]+)(?:@[^@/]+)?/");
 static const std::string kBootclasspathFragmentLocation = "/etc/classpaths/bootclasspath.pb";
 static const std::string kSystemserverclasspathFragmentLocation =
     "/etc/classpaths/systemserverclasspath.pb";
+
+static int GetVersionInt(const std::string& version) {
+  int version_int = 0;
+  if (!android::base::ParseInt(version, &version_int, /*min=*/1, /*max=*/INT_MAX)) {
+    PLOG(FATAL) << "Failed to convert version \"" << version << "\" to int";
+  }
+  return version_int;
+}
+
+static bool IsCodename(const std::string& version) {
+  LOG_IF(FATAL, version.empty()) << "Empty version";
+  return isupper(version[0]);
+}
+
+static bool SdkLevelIsAtLeast(const Args& args, const std::string& version) {
+  if (args.override_device_sdk_version == 0) {
+    // Most common case: no override.
+    return android::modules::sdklevel::unbounded::IsAtLeast(version.c_str());
+  }
+
+  // Mirrors the logic in unbounded_sdk_level.h.
+  if (args.override_device_codename == "REL") {
+    if (IsCodename(version)) {
+      return false;
+    }
+    return args.override_device_sdk_version >= GetVersionInt(version);
+  }
+  if (IsCodename(version)) {
+    return args.override_device_known_codenames.contains(version);
+  }
+  return args.override_device_sdk_version >= GetVersionInt(version);
+}
+
+static bool SdkLevelIsAtMost(const Args& args, const std::string& version) {
+  if (args.override_device_sdk_version == 0) {
+    // Most common case: no override.
+    return android::modules::sdklevel::unbounded::IsAtMost(version.c_str());
+  }
+
+  // Mirrors the logic in unbounded_sdk_level.h.
+  if (args.override_device_codename == "REL") {
+    if (IsCodename(version)) {
+      return true;
+    }
+    return args.override_device_sdk_version <= GetVersionInt(version);
+  }
+  if (IsCodename(version)) {
+    return !args.override_device_known_codenames.contains(version) ||
+        args.override_device_codename == version;
+  }
+  return args.override_device_sdk_version < GetVersionInt(version);
+}
 
 std::vector<std::string> getBootclasspathFragmentGlobPatterns(const Args& args) {
   // Scan only specific directory for fragments if scan_dir is specified
@@ -237,7 +294,7 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
 
       if (!jar.min_sdk_version().empty()) {
         const auto& min_sdk_version = jar.min_sdk_version();
-        if (!android::modules::sdklevel::unbounded::IsAtLeast(min_sdk_version.c_str())) {
+        if (!SdkLevelIsAtLeast(args, min_sdk_version)) {
           LOG(INFO) << "not installing " << jar_path << " with min_sdk_version " << min_sdk_version;
           continue;
         }
@@ -245,7 +302,7 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
 
       if (!jar.max_sdk_version().empty()) {
         const auto& max_sdk_version = jar.max_sdk_version();
-        if (!android::modules::sdklevel::unbounded::IsAtMost(max_sdk_version.c_str())) {
+        if (!SdkLevelIsAtMost(args, max_sdk_version)) {
           LOG(INFO) << "not installing " << jar_path << " with max_sdk_version " << max_sdk_version;
           continue;
         }
