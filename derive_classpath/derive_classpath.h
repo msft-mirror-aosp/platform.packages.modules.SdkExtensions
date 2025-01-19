@@ -18,6 +18,7 @@
 
 #include <string>
 #include <string_view>
+#include <unordered_set>
 #include <vector>
 
 namespace android {
@@ -38,6 +39,13 @@ struct Args {
 
   // Scan specified list of directories instead of using default glob patterns
   std::vector<std::string> scan_dirs;
+
+  // Overrides the value of "ro.build.version.sdk" for SDK version check.
+  int override_device_sdk_version = 0;
+  // Overrides the value of "ro.build.version.codename" for SDK version check.
+  std::string override_device_codename;
+  // Overrides the value of "ro.build.version.known_codenames" for SDK version check.
+  std::unordered_set<std::string> override_device_known_codenames;
 };
 
 bool GenerateClasspathExports(const Args& args);
