@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-#include <android-base/logging.h>
-#include <android-base/strings.h>
 #include <cstdlib>
 #include <string_view>
+
+#include <android-base/logging.h>
+#include <android-base/parseint.h>
+#include <android-base/strings.h>
 
 #include "derive_classpath.h"
 
@@ -57,6 +59,31 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
         return false;
       }
       args.scan_dirs = android::base::Split(std::string(value), ",");
+    } else if (ArgumentMatches(arg, "--override-device-sdk-version=", &value)) {
+      if (args.override_device_sdk_version != 0) {
+        LOG(ERROR) << "Duplicated flag --override-device-sdk-version is specified";
+        return false;
+      }
+      if (!android::base::ParseInt(std::string(value), &args.override_device_sdk_version, /*min=*/1,
+                                   /*max=*/INT_MAX)) {
+        PLOG(ERROR) << "Invalid value for --override-device-sdk-version \"" << value << "\"";
+        return false;
+      }
+    } else if (ArgumentMatches(arg, "--override-device-codename=", &value)) {
+      if (!args.override_device_codename.empty()) {
+        LOG(ERROR) << "Duplicated flag --override-device-codename is specified";
+        return false;
+      }
+      args.override_device_codename = value;
+    } else if (ArgumentMatches(arg, "--override-device-known-codenames=", &value)) {
+      if (!args.override_device_known_codenames.empty()) {
+        LOG(ERROR) << "Duplicated flag --override-device-known-codenames is specified";
+        return false;
+      }
+      std::vector<std::string> known_codenames = android::base::Split(std::string(value), ",");
+      std::move(known_codenames.begin(), known_codenames.end(),
+                std::inserter(args.override_device_known_codenames,
+                              args.override_device_known_codenames.end()));
     } else {
       positional_args.emplace_back(arg);
     }
@@ -65,7 +92,22 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
   // Validate flag combinations
   if (!args.scan_dirs.empty() && (!args.system_bootclasspath_fragment.empty() ||
                                   !args.system_systemserverclasspath_fragment.empty())) {
-    LOG(ERROR) << "--scan-dirs should not be accompanied by other flags";
+    LOG(ERROR) << "--scan-dirs should not be accompanied by --bootclasspath-fragment or "
+                  "--systemserverclasspath-fragment";
+    return false;
+  }
+
+  if (args.override_device_sdk_version != 0 &&
+      (args.override_device_codename.empty() || args.override_device_known_codenames.empty())) {
+    LOG(ERROR) << "--override-device-sdk-version should be accompanied by "
+                  "--override-device-codename and --override-device-known-codenames";
+    return false;
+  }
+
+  if (args.override_device_sdk_version == 0 &&
+      (!args.override_device_codename.empty() || !args.override_device_known_codenames.empty())) {
+    LOG(ERROR) << "--override-device-codename and --override-device-known-codenames should not "
+                  "be specified without --override-device-sdk-version";
     return false;
   }
 

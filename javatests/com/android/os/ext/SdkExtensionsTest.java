@@ -17,6 +17,7 @@
 package com.android.os.ext;
 
 import static android.os.Build.VERSION_CODES;
+import static android.os.Build.VERSION_CODES.BAKLAVA;
 import static android.os.Build.VERSION_CODES.R;
 import static android.os.Build.VERSION_CODES.S;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
@@ -152,7 +153,7 @@ public class SdkExtensionsTest {
     @Test
     public void testZeroValues() throws Exception {
         Set<Integer> assignedCodes =
-                Set.of(R, S, TIRAMISU, UPSIDE_DOWN_CAKE, VANILLA_ICE_CREAM, AD_SERVICES);
+                Set.of(R, S, TIRAMISU, UPSIDE_DOWN_CAKE, VANILLA_ICE_CREAM, BAKLAVA, AD_SERVICES);
         for (int sdk = VERSION_CODES.R; sdk <= 1_000_000; sdk++) {
             if (assignedCodes.contains(sdk)) {
                 continue;
@@ -179,6 +180,9 @@ public class SdkExtensionsTest {
         }
         if (SdkLevel.isAtLeastV()) {
             expectedKeys.add(VANILLA_ICE_CREAM);
+        }
+        if (SdkLevel.isAtLeastB()) {
+            expectedKeys.add(BAKLAVA);
         }
         Set<Integer> actualKeys = SdkExtensions.getAllExtensionVersions().keySet();
         assertThat(actualKeys).containsExactlyElementsIn(expectedKeys);
@@ -212,6 +216,12 @@ public class SdkExtensionsTest {
     public void testExtensionV() throws Exception {
         Expectation expectation = dessertExpectation(SdkLevel.isAtLeastV());
         assertVersion(expectation, VANILLA_ICE_CREAM, "v");
+    }
+
+    @Test
+    public void testExtensionB() throws Exception {
+        Expectation expectation = dessertExpectation(SdkLevel.isAtLeastB());
+        assertVersion(expectation, BAKLAVA, "b");
     }
 
     @Test

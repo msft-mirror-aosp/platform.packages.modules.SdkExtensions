@@ -38,6 +38,8 @@
     EXPECT_S(n);      \
     EXPECT_T(n);      \
     EXPECT_U(n);      \
+    EXPECT_V(n);      \
+    EXPECT_B(n);      \
   }
 
 #define EXPECT_R(n) EXPECT_EQ(GetR(), (n))
@@ -53,6 +55,9 @@
 
 // Only expect the V extension level to be set on V+ devices.
 #define EXPECT_V(n) EXPECT_EQ(GetV(), android::modules::sdklevel::IsAtLeastV() ? (n) : -1)
+
+// Only expect the B extension level to be set on B+ devices.
+#define EXPECT_B(n) EXPECT_EQ(GetB(), android::modules::sdklevel::IsAtLeastB() ? (n) : -1)
 
 class DeriveSdkTest : public ::testing::Test {
  protected:
@@ -107,6 +112,8 @@ class DeriveSdkTest : public ::testing::Test {
   int GetU() { return android::base::GetIntProperty("build.version.extensions.u", -1); }
 
   int GetV() { return android::base::GetIntProperty("build.version.extensions.v", -1); }
+
+  int GetB() { return android::base::GetIntProperty("build.version.extensions.b", -1); }
 
   void EXPECT_ADSERVICES(int n) {
     int actual = android::base::GetIntProperty("build.version.extensions.ad_services", -1);
@@ -330,6 +337,16 @@ TEST_F(DeriveSdkTest, UpsideDownCake) {
 
 TEST_F(DeriveSdkTest, VanillaIceCream) {
   // Nothing to do: no new modules were added in V
+}
+
+TEST_F(DeriveSdkTest, Baklava) {
+  AddExtensionVersion(1, {
+                             {SdkModule::NEURAL_NETWORKS, 1},
+                         });
+  EXPECT_B(0);
+
+  SetApexVersion("com.android.neuralnetworks", 1);
+  EXPECT_B(1);
 }
 
 int main(int argc, char** argv) {
