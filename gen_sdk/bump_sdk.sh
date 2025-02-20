@@ -23,7 +23,7 @@ bug="$1"
 
 SDKEXT="packages/modules/SdkExtensions/"
 
-TARGET_PRODUCT=aosp_arm64 build/soong/soong_ui.bash --make-mode --soong-only gen_sdk
+m gen_sdk
 out/soong/host/linux-x86/bin/gen_sdk \
     --database ${SDKEXT}/gen_sdk/extensions_db.textpb \
     --action new_sdk \
