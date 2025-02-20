@@ -24,7 +24,7 @@ bug="$1"
 SDKEXT="packages/modules/SdkExtensions/"
 
 m gen_sdk
-out/soong/host/linux-x86/bin/gen_sdk \
+gen_sdk \
     --database ${SDKEXT}/gen_sdk/extensions_db.textpb \
     --action new_sdk \
     --sdk "$sdk" \
