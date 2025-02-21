@@ -144,8 +144,6 @@ class DeriveClasspathTest : public ::testing::Test {
       .output_path = output_path_,
       .override_device_sdk_version = 35,
       .override_device_codename = "REL",
-      .override_device_known_codenames = {"S", "Sv2", "Tiramisu", "UpsideDownCake",
-                                          "VanillaIceCream"},
       .glob_pattern_prefix = temp_dir_.path,
   };
 #endif
@@ -567,8 +565,6 @@ TEST_F(DeriveClasspathTest, SdkVersionsAreCheckedAgainstOverrideDeviceValuesRele
   Args args = default_args_with_test_dir_;
   args.override_device_sdk_version = 35;
   args.override_device_codename = "REL";
-  args.override_device_known_codenames = {"S", "Sv2", "Tiramisu", "UpsideDownCake",
-                                          "VanillaIceCream"};
 
   // List of jars expected to be in SYSTEMSERVERCLASSPATH.
   std::vector<std::string> expected_jars;

@@ -111,10 +111,16 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
     return false;
   }
 
-  if (args.override_device_sdk_version != 0 &&
-      (args.override_device_codename.empty() || args.override_device_known_codenames.empty())) {
-    LOG(ERROR) << "--override-device-sdk-version should be accompanied by "
-                  "--override-device-codename and --override-device-known-codenames";
+  if (args.override_device_sdk_version != 0 && args.override_device_codename.empty()) {
+    LOG(ERROR)
+        << "--override-device-sdk-version should be accompanied by --override-device-codename";
+    return false;
+  }
+
+  if (!args.override_device_codename.empty() && args.override_device_codename != "REL" &&
+      args.override_device_known_codenames.empty()) {
+    LOG(ERROR) << "--override-device-codename should be accompanied by "
+                  "--override-device-known-codenames, unless it is set to \"REL\"";
     return false;
   }
 
@@ -132,8 +138,8 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
   }
 
   if (args.override_device_sdk_version == 0) {
-    LOG(ERROR) << "--override-device-sdk-version, --override-device-codename, and "
-                  "--override-device-known-codenames must be specified on host";
+    LOG(ERROR)
+        << "--override-device-sdk-version and --override-device-codename must be specified on host";
     return false;
   }
 #endif
