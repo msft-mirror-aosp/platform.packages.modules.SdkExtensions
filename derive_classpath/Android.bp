@@ -19,16 +19,32 @@ package {
 
 cc_defaults {
     name: "derive_classpath-defaults",
+    host_supported: true,
     min_sdk_version: "30",
-    shared_libs: ["liblog"],
     // static c++/libbase for smaller size
     stl: "c++_static",
+    shared_libs: select(os(), {
+        "android": [
+            "liblog",
+        ],
+        default: [],
+    }),
     static_libs: [
         "libbase",
         "libclasspaths_proto",
-        "libmodules-utils-build",
         "libprotobuf-cpp-lite",
-    ],
+    ] + select(os(), {
+        "android": [
+            "libmodules-utils-build",
+        ],
+        default: [
+            "liblog",
+        ],
+    }),
+    cflags: select(os(), {
+        "android": ["-DSDKEXT_ANDROID"],
+        default: [],
+    }),
 }
 
 cc_library {

@@ -21,8 +21,6 @@
 #include <android-base/properties.h>
 #include <android-base/stringprintf.h>
 #include <android-base/strings.h>
-#include <android-modules-utils/sdk_level.h>
-#include <android/api-level.h>
 #include <gtest/gtest.h>
 #include <stdlib.h>
 #include <sys/mman.h>
@@ -33,6 +31,19 @@
 
 #include "android-base/unique_fd.h"
 #include "packages/modules/common/proto/classpaths.pb.h"
+
+#ifdef SDKEXT_ANDROID
+#include <android-modules-utils/sdk_level.h>
+#include <android/api-level.h>
+#else
+
+#define __ANDROID_API_R__ 30
+#define __NR_memfd_create 319
+
+int memfd_create(const char* name, unsigned int flags) {
+  return syscall(__NR_memfd_create, name, flags);
+}
+#endif
 
 namespace android {
 namespace derive_classpath {
@@ -47,18 +58,18 @@ static const std::string kServicesJarFilepath = "/system/framework/services.jar"
 // The fixture for testing derive_classpath.
 class DeriveClasspathTest : public ::testing::Test {
  protected:
-  ~DeriveClasspathTest() override {
-    // Not really needed, as a test device will re-generate a proper classpath on reboot,
-    // but it's better to leave it in a clean state after a test.
-    GenerateClasspathExports(default_args_);
-  }
-
   const std::string working_dir() { return std::string(temp_dir_.path); }
 
+  const std::string GetOutputPath() { return working_dir() + "/classpath"; }
+
   // Parses the generated classpath exports file and returns each line individually.
-  std::vector<std::string> ParseExportsFile(const char* file = "/data/system/environ/classpath") {
+  std::vector<std::string> ParseExportsFile(const char* file = nullptr) {
+    if (file == nullptr) {
+      file = output_path_.c_str();
+    }
     std::string contents;
-    EXPECT_TRUE(android::base::ReadFileToString(file, &contents, /*follow_symlinks=*/true));
+    EXPECT_TRUE(android::base::ReadFileToString(file, &contents,
+                                                /*follow_symlinks=*/true));
     return android::base::Split(contents, "\n");
   }
 
@@ -121,15 +132,23 @@ class DeriveClasspathTest : public ::testing::Test {
   }
 
   const TemporaryDir temp_dir_;
+  const std::string output_path_ = working_dir() + "/classpath";
 
-  const Args default_args_ = {
-      .output_path = kGeneratedClasspathExportsFilepath,
-  };
-
+#ifdef SDKEXT_ANDROID
   const Args default_args_with_test_dir_ = {
-      .output_path = kGeneratedClasspathExportsFilepath,
+      .output_path = output_path_,
       .glob_pattern_prefix = temp_dir_.path,
   };
+#else
+  const Args default_args_with_test_dir_ = {
+      .output_path = output_path_,
+      .override_device_sdk_version = 35,
+      .override_device_codename = "REL",
+      .override_device_known_codenames = {"S", "Sv2", "Tiramisu", "UpsideDownCake",
+                                          "VanillaIceCream"},
+      .glob_pattern_prefix = temp_dir_.path,
+  };
+#endif
 };
 
 using DeriveClasspathDeathTest = DeriveClasspathTest;
@@ -137,7 +156,7 @@ using DeriveClasspathDeathTest = DeriveClasspathTest;
 // Check only known *CLASSPATH variables are exported.
 TEST_F(DeriveClasspathTest, DefaultNoUnknownClasspaths) {
   // Re-generate default on device classpaths
-  GenerateClasspathExports(default_args_);
+  GenerateClasspathExports(default_args_with_test_dir_);
 
   const std::vector<std::string> exportLines = ParseExportsFile();
   // The first four lines are tested below.
@@ -412,6 +431,9 @@ TEST_F(DeriveClasspathDeathTest, WrongClasspathInFragments) {
 }
 
 TEST_F(DeriveClasspathDeathTest, CurrentSdkVersion) {
+#ifndef SDKEXT_ANDROID
+  GTEST_SKIP();
+#else
   if (android_get_device_api_level() < __ANDROID_API_S__) {
     GTEST_SKIP();
   }
@@ -424,10 +446,14 @@ TEST_F(DeriveClasspathDeathTest, CurrentSdkVersion) {
   WriteConfig(exported_jars, "/apex/com.android.foo/etc/classpaths/systemserverclasspath.pb");
 
   EXPECT_DEATH(GenerateClasspathExports(default_args_with_test_dir_), "no conversion");
+#endif
 }
 
 // Test jars with different sdk versions.
 TEST_F(DeriveClasspathTest, SdkVersionsAreRespected) {
+#ifndef SDKEXT_ANDROID
+  GTEST_SKIP();
+#else
   if (android_get_device_api_level() < __ANDROID_API_S__) {
     GTEST_SKIP();
   }
@@ -533,14 +559,11 @@ TEST_F(DeriveClasspathTest, SdkVersionsAreRespected) {
   const std::string exportValue = splitExportLine[2];
 
   EXPECT_EQ(android::base::Join(expected_jars, ":"), exportValue);
+#endif
 }
 
 // Test jars with different sdk versions against override device values.
 TEST_F(DeriveClasspathTest, SdkVersionsAreCheckedAgainstOverrideDeviceValuesRelease) {
-  if (android_get_device_api_level() < __ANDROID_API_S__) {
-    GTEST_SKIP();
-  }
-
   Args args = default_args_with_test_dir_;
   args.override_device_sdk_version = 35;
   args.override_device_codename = "REL";
@@ -625,10 +648,6 @@ TEST_F(DeriveClasspathTest, SdkVersionsAreCheckedAgainstOverrideDeviceValuesRele
 
 // Test jars with different sdk versions against override device values.
 TEST_F(DeriveClasspathTest, SdkVersionsAreCheckedAgainstOverrideDeviceValuesDev) {
-  if (android_get_device_api_level() < __ANDROID_API_S__) {
-    GTEST_SKIP();
-  }
-
   Args args = default_args_with_test_dir_;
   args.override_device_sdk_version = 35;
   args.override_device_codename = "Baklava";
