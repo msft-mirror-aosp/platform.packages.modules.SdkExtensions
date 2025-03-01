@@ -65,6 +65,28 @@ sdk {
     ],
 }
 
+module_exports {
+    name: "sdkextensions-host-exports",
+    host_supported: true,
+    target: {
+        host: {
+            compile_multilib: "64",
+            native_binaries: [
+                "derive_classpath",
+            ],
+        },
+        linux_bionic: {
+            enabled: false,
+        },
+        darwin: {
+            enabled: false,
+        },
+        windows: {
+            enabled: false,
+        },
+    },
+}
+
 // Encapsulate the contributions made by the com.android.sdkext to the bootclasspath.
 bootclasspath_fragment {
     name: "com.android.sdkext-bootclasspath-fragment",
@@ -116,19 +138,4 @@ java_test_host {
         "mts",
         "device-tests",
     ],
-}
-
-// TODO: b/316383039 - Remove this module and the script when udc-mainline-prod
-// branch is removed.
-// The options passed to Metalava when generating API signature files and stubs
-// for SDK extension releases.
-genrule {
-    name: "sdkext-released-flagged-apis",
-    visibility: [
-        "//visibility:public",
-    ],
-    tool_files: ["keep-flagged-apis.sh"],
-    srcs: ["released-flagged-apis.txt"],
-    out: ["metalava-keep-flagged-apis.txt"],
-    cmd: "$(location keep-flagged-apis.sh) \"$(in)\" > \"$(out)\"",
 }
