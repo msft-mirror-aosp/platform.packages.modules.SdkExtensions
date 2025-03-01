@@ -23,11 +23,6 @@ python_binary_host {
     name: "gen_sdk",
     srcs: ["gen_sdk.py"],
     libs: ["sdk_proto_python"],
-    version: {
-        py3: {
-            embedded_launcher: true,
-        },
-    },
 }
 
 sh_test_host {
