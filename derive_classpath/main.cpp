@@ -59,6 +59,12 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
         return false;
       }
       args.scan_dirs = android::base::Split(std::string(value), ",");
+    } else if (ArgumentMatches(arg, "--glob-pattern-prefix=", &value)) {
+      if (!args.glob_pattern_prefix.empty()) {
+        LOG(ERROR) << "Duplicated flag --glob-pattern-prefix is specified";
+        return false;
+      }
+      args.glob_pattern_prefix = value;
     } else if (ArgumentMatches(arg, "--override-device-sdk-version=", &value)) {
       if (args.override_device_sdk_version != 0) {
         LOG(ERROR) << "Duplicated flag --override-device-sdk-version is specified";
@@ -97,10 +103,24 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
     return false;
   }
 
-  if (args.override_device_sdk_version != 0 &&
-      (args.override_device_codename.empty() || args.override_device_known_codenames.empty())) {
-    LOG(ERROR) << "--override-device-sdk-version should be accompanied by "
-                  "--override-device-codename and --override-device-known-codenames";
+  if (!args.glob_pattern_prefix.empty() &&
+      (!args.scan_dirs.empty() || !args.system_bootclasspath_fragment.empty() ||
+       !args.system_systemserverclasspath_fragment.empty())) {
+    LOG(ERROR) << "--glob-pattern-prefix should not be accompanied by --scan-dirs, "
+                  "--bootclasspath-fragment or --systemserverclasspath-fragment";
+    return false;
+  }
+
+  if (args.override_device_sdk_version != 0 && args.override_device_codename.empty()) {
+    LOG(ERROR)
+        << "--override-device-sdk-version should be accompanied by --override-device-codename";
+    return false;
+  }
+
+  if (!args.override_device_codename.empty() && args.override_device_codename != "REL" &&
+      args.override_device_known_codenames.empty()) {
+    LOG(ERROR) << "--override-device-codename should be accompanied by "
+                  "--override-device-known-codenames, unless it is set to \"REL\"";
     return false;
   }
 
@@ -111,8 +131,25 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
     return false;
   }
 
+#ifndef SDKEXT_ANDROID
+  if (args.glob_pattern_prefix.empty() && args.scan_dirs.empty()) {
+    LOG(ERROR) << "Either --glob-pattern-prefix or --scan-dirs must be specified on host";
+    return false;
+  }
+
+  if (args.override_device_sdk_version == 0) {
+    LOG(ERROR)
+        << "--override-device-sdk-version and --override-device-codename must be specified on host";
+    return false;
+  }
+#endif
+
   // Handle positional args
   if (positional_args.size() == 0) {
+#ifndef SDKEXT_ANDROID
+    LOG(ERROR) << "Output path must be specified on host";
+    return false;
+#endif
     args.output_path = android::derive_classpath::kGeneratedClasspathExportsFilepath;
   } else if (positional_args.size() == 1) {
     args.output_path = positional_args[0];
@@ -121,6 +158,7 @@ bool ParseArgs(android::derive_classpath::Args& args, int argc, char** argv) {
                << android::base::Join(positional_args, ' ');
     return false;
   }
+
   return true;
 }
 

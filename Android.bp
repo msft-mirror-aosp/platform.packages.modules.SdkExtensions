@@ -65,6 +65,28 @@ sdk {
     ],
 }
 
+module_exports {
+    name: "sdkextensions-host-exports",
+    host_supported: true,
+    target: {
+        host: {
+            compile_multilib: "64",
+            native_binaries: [
+                "derive_classpath",
+            ],
+        },
+        linux_bionic: {
+            enabled: false,
+        },
+        darwin: {
+            enabled: false,
+        },
+        windows: {
+            enabled: false,
+        },
+    },
+}
+
 // Encapsulate the contributions made by the com.android.sdkext to the bootclasspath.
 bootclasspath_fragment {
     name: "com.android.sdkext-bootclasspath-fragment",
