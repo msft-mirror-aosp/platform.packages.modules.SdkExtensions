@@ -27,12 +27,15 @@
 
 #include <android-base/file.h>
 #include <android-base/logging.h>
-#include <android-base/strings.h>
 #include <android-base/parseint.h>
-#include <android-modules-utils/sdk_level.h>
-#include <android-modules-utils/unbounded_sdk_level.h>
+#include <android-base/strings.h>
 
 #include "packages/modules/common/proto/classpaths.pb.h"
+
+#ifdef SDKEXT_ANDROID
+#include <android-modules-utils/sdk_level.h>
+#include <android-modules-utils/unbounded_sdk_level.h>
+#endif
 
 namespace android {
 namespace derive_classpath {
@@ -65,10 +68,12 @@ static bool IsCodename(const std::string& version) {
 }
 
 static bool SdkLevelIsAtLeast(const Args& args, const std::string& version) {
+#ifdef SDKEXT_ANDROID
   if (args.override_device_sdk_version == 0) {
     // Most common case: no override.
     return android::modules::sdklevel::unbounded::IsAtLeast(version.c_str());
   }
+#endif
 
   // Mirrors the logic in unbounded_sdk_level.h.
   if (args.override_device_codename == "REL") {
@@ -84,10 +89,12 @@ static bool SdkLevelIsAtLeast(const Args& args, const std::string& version) {
 }
 
 static bool SdkLevelIsAtMost(const Args& args, const std::string& version) {
+#ifdef SDKEXT_ANDROID
   if (args.override_device_sdk_version == 0) {
     // Most common case: no override.
     return android::modules::sdklevel::unbounded::IsAtMost(version.c_str());
   }
+#endif
 
   // Mirrors the logic in unbounded_sdk_level.h.
   if (args.override_device_codename == "REL") {
@@ -318,9 +325,11 @@ bool ParseFragments(const Args& args, Classpaths& classpaths, bool boot_jars) {
 // classpaths.proto config fragments. The exports file is read by init.rc to setenv *CLASSPATH
 // environ variables at runtime.
 bool GenerateClasspathExports(const Args& args) {
+#ifdef SDKEXT_ANDROID
   // Parse all known classpath fragments
   CHECK(android::modules::sdklevel::IsAtLeastS())
       << "derive_classpath must only be run on Android 12 or above";
+#endif
 
   Classpaths classpaths;
   if (!ParseFragments(args, classpaths, /*boot_jars=*/true)) {
