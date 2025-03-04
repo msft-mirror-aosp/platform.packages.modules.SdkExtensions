@@ -47,7 +47,7 @@ $ gen_sdk --action new_sdk --sdk $sdk
 "
 message+=$(test -z "$bug" || echo "\nBug: $bug")
 message+="\nTest: presubmit"
-message+="\nIgnore-AOSP-first: SDKs are finalized outside of AOSP"
+message+="\nIgnore-AOSP-First: SDKs are finalized outside of AOSP"
 
 message=$(echo -e "$message") # expand '\n' chars
 git -C ${SDKEXT} commit -a -m "$message"
