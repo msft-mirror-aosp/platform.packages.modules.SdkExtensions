@@ -233,11 +233,11 @@
   <symbol
     jar="framework-adservices"
     pattern="*"
-    sdks="AD_SERVICES-ext,B-ext" />
+    sdks="AD_SERVICES-ext" />
   <symbol
     jar="framework-sdksandbox"
     pattern="*"
-    sdks="AD_SERVICES-ext,B-ext" />
+    sdks="AD_SERVICES-ext" />
 
   <!-- HEALTH_FITNESS -->
   <symbol
