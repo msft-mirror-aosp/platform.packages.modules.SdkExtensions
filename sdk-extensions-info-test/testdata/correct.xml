@@ -10,6 +10,11 @@
         shortname="bar"
         name="The bar extensions"
         reference="android/os/Build$BAR" />
+    <sdk
+        id="1000000"
+        shortname="AD_SERVICES-ext"
+        name="Ad Services Extensions"
+        reference="android/os/ext/SdkExtensions$AD_SERVICES" />
     <symbol
         jar="framework-something"
         pattern="*"
@@ -22,4 +27,8 @@
         jar="framework-something-else"
         pattern="pkg.b"
         sdks="bar" />
+    <symbol
+        jar="framework-something-else"
+        pattern="pkg.c"
+        sdks="AD_SERVICES-ext" />
 </sdk-extensions-info>

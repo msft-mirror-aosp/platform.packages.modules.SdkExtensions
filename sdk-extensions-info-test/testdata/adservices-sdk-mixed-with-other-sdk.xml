@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sdk-extensions-info>
+    <sdk
+        id="1"
+        shortname="foo"
+        name="The foo extensions"
+        reference="android/os/Build$FOO" />
+    <sdk
+        id="1000000"
+        shortname="AD_SERVICES-ext"
+        name="Ad Services Extensions"
+        reference="android/os/ext/SdkExtensions$AD_SERVICES" />
+    <symbol
+        jar="framework-something"
+        pattern="*"
+        sdks="AD_SERVICES-ext,foo" />
+</sdk-extensions-info>
