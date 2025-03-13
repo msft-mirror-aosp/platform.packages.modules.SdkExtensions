@@ -139,6 +139,13 @@ mod tests {
                 "{:?}: pattern contains whitespace",
                 symbol
             );
+            if symbol.sdks.contains(&String::from("AD_SERVICES-ext")) {
+                ensure!(
+                    symbol.sdks.len() == 1,
+                    "{:?}: AD_SERVICES-ext is mutually exclusive to all other sdks",
+                    symbol
+                );
+            }
             for id in symbol.sdks.iter() {
                 ensure!(
                     sdk_shortnames.contains(&id),
@@ -218,6 +225,10 @@ mod tests {
         assert_err!(
             "testdata/whitespace-in-pattern.xml",
             r#"Symbol { jar: "framework-something-else", pattern: "android.app.appsearch.AppSearchSchema.DocumentPropertyConfig.Builder\n                .addIndexableNestedProperties ", sdks: ["bar"] }: pattern contains whitespace"#
+        );
+        assert_err!(
+            "testdata/adservices-sdk-mixed-with-other-sdk.xml",
+            r#"Symbol { jar: "framework-something", pattern: "*", sdks: ["AD_SERVICES-ext", "foo"] }: AD_SERVICES-ext is mutually exclusive to all other sdks"#
         );
     }
 
