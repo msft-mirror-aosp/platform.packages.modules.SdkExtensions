@@ -50,11 +50,14 @@ import com.android.os.ext.testing.DeriveSdk;
 
 import com.google.common.truth.StandardSubjectBuilder;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RunWith(AndroidJUnit4.class)
 public class SdkExtensionsTest {
@@ -134,6 +137,40 @@ public class SdkExtensionsTest {
             int v = SdkExtensions.getAllExtensionVersions().get(extension);
             assertVersion(expectation, v);
         }
+    }
+
+    private static int readSdkExtensionsVersion() throws Exception {
+        Pattern regex = Pattern.compile("SDK_EXTENSIONS:(\\d+)");
+        Matcher matcher = regex.matcher(DERIVE_SDK_DUMP);
+        if (!matcher.find()) {
+            throw new IllegalStateException("failed to read SdkExtensions version");
+        }
+        return Integer.parseInt(matcher.group(1));
+    }
+
+    @BeforeClass
+    public static void setupBeforeTest() throws Exception {
+        int sdkExtensionsVersion = readSdkExtensionsVersion();
+        assertWithMessage(
+                        "\n"
+                                + "\n"
+                                + "* * * * * * * * * * * * * * * * * * * * * * * * * *\n"
+                                + "\n"
+                                + "INVALID TEST CONFIGURATION, THE TESTS WILL NOT RUN\n"
+                                + "\n"
+                                + "The version of the SdkExtensions module installed on\n"
+                                + "device is older than the SdkExtensionsTest. This is\n"
+                                + "not a supported configuration, and the tests will not\n"
+                                + "run.\n"
+                                + "\n"
+                                + "Verify that the tests do not come from a more recent\n"
+                                + "train than what is installed on the device. If you are\n"
+                                + "manually installing a new train on the device, remember\n"
+                                + "to reboot your device as part of the installation.\n"
+                                + "\n"
+                                + "* * * * * * * * * * * * * * * * * * * * * * * * * *\n")
+                .that(/* version of the SdkExtensions module on device */ sdkExtensionsVersion)
+                .isAtLeast(/* version of the test */ CURRENT_TRAIN_VERSION);
     }
 
     /** Verify that getExtensionVersion only accepts valid extension SDKs */
