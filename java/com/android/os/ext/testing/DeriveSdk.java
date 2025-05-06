@@ -23,8 +23,8 @@ public class DeriveSdk {
 
     private DeriveSdk() {}
 
-    public static String[] dump() {
-        return native_dump().split("\n");
+    public static String dump() {
+        return native_dump();
     }
 
     private static native String native_dump();

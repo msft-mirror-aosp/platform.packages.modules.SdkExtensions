@@ -85,6 +85,8 @@ void ReadSystemProperties(std::map<std::string, std::string>& properties) {
         android::base::GetProperty(kSystemPropertiesPrefix + dessert, default_);
   }
   properties["ro.build.version.sdk"] = android::base::GetProperty("ro.build.version.sdk", default_);
+  properties["ro.build.version.sdk_full"] =
+      android::base::GetProperty("ro.build.version.sdk_full", default_);
 }
 
 bool ReadDatabase(const std::string& db_path, ExtensionDatabase& db) {
