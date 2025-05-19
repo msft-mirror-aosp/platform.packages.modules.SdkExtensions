@@ -818,4 +818,29 @@
     pattern="android.health.connect.changelog.ChangeLogsResponse.DeletedMedicalResource"
     sdks="U-ext,V-ext,B-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.backuprestore.GetLatestMetadataForBackupResponse"
+    sdks="B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.backuprestore.BackupMetadata"
+    sdks="B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.backuprestore.GetChangesForBackupResponse"
+    sdks="B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.backuprestore.BackupChange"
+    sdks="B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.backuprestore.RestoreChange"
+    sdks="B-ext" />
+
 </sdk-extensions-info>
