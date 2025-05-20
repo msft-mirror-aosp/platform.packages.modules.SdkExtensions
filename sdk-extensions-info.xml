@@ -109,43 +109,43 @@
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.EXTRA_PICK_IMAGES_HIGHLIGHT_MEDIA"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.KEY_PICK_IMAGES_HIGHLIGHT_MEDIA_TEXT_QUERY"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.KEY_PICK_IMAGES_HIGHLIGHT_TYPE"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.PICK_IMAGES_HIGHLIGHT_TYPE_COLLAPSED"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.PICK_IMAGES_HIGHLIGHT_TYPE_EXPANDED"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.PICK_IMAGES_HIGHLIGHT_ALBUM_FAVORITES"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.PICK_IMAGES_HIGHLIGHT_ALBUM_CAMERA"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.PICK_IMAGES_HIGHLIGHT_ALBUM_SCREENSHOTS"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.PICK_IMAGES_HIGHLIGHT_ALBUM_VIDEOS"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
       jar="framework-mediaprovider"
       pattern="android.provider.MediaStore.PICK_IMAGES_HIGHLIGHT_ALBUM_DOWNLOADS"
-      sdks="U-ext,V-ext,B-ext" />
+      sdks="T-ext,U-ext,V-ext,B-ext" />
   <symbol
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getPickImagesMaxLimit"
