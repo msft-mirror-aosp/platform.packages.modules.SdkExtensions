@@ -843,4 +843,14 @@
     pattern="android.health.connect.backuprestore.RestoreChange"
     sdks="B-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.permission.health.START_ONBOARDING"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.action.SHOW_ONBOARDING"
+    sdks="U-ext,V-ext,B-ext" />
+
 </sdk-extensions-info>
