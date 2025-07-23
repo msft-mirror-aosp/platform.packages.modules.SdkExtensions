@@ -1741,3 +1741,108 @@ versions {
     }
   }
 }
+versions {
+  version: 20
+  requirements {
+    module: ART
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: CONSCRYPT
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: IPSEC
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: MEDIA
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: MEDIA_PROVIDER
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: PERMISSIONS
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: SCHEDULING
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: SDK_EXTENSIONS
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: STATSD
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: TETHERING
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: AD_SERVICES
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: APPSEARCH
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: ON_DEVICE_PERSONALIZATION
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: CONFIG_INFRASTRUCTURE
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: HEALTH_FITNESS
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: EXT_SERVICES
+    version {
+      version: 20
+    }
+  }
+  requirements {
+    module: NEURAL_NETWORKS
+    version {
+      version: 20
+    }
+  }
+}
