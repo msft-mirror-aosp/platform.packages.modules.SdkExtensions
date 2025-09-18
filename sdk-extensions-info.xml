@@ -845,12 +845,12 @@
 
   <symbol
     jar="framework-healthfitness"
-    pattern="android.permission.health.START_ONBOARDING"
+    pattern="android.health.connect.HealthPermissions.START_ONBOARDING"
     sdks="U-ext,V-ext,B-ext" />
 
   <symbol
     jar="framework-healthfitness"
-    pattern="android.health.connect.action.SHOW_ONBOARDING"
+    pattern="android.health.connect.HealthConnectManager.ACTION_SHOW_ONBOARDING"
     sdks="U-ext,V-ext,B-ext" />
 
 </sdk-extensions-info>
