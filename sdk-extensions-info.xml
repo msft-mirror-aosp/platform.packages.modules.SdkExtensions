@@ -853,4 +853,29 @@
     pattern="android.health.connect.HealthConnectManager.ACTION_SHOW_ONBOARDING"
     sdks="U-ext,V-ext,B-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.changelog.ChangeLogTokenRequest.getMedicalResourceTypes"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.changelog.ChangeLogTokenRequest.Builder.addMedicalResourceType"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.changelog.ChangeLogsResponse.getDeletedMedicalResources"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.changelog.ChangeLogsResponse.getUpsertedMedicalResources"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.changelog.ChangeLogsResponse.DeletedLog"
+    sdks="U-ext,V-ext,B-ext" />
+
 </sdk-extensions-info>
