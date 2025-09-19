@@ -913,4 +913,79 @@
     pattern="android.health.connect.datatypes.Device.DEVICE_TYPE_PORTABLE_COMPUTER"
     sdks="U-ext,V-ext,B-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.getRateOfPerceivedExertion"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.getSetIndex"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.getWeight"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.hasRateOfPerceivedExertion"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.hasSetIndex"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.Builder.clearRateOfPerceivedExertion"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.Builder.clearSetIndex"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.Builder.clearWeight"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.Builder.setRateOfPerceivedExertion"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.Builder.setSetIndex"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSegment.Builder.setWeight"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSessionRecord.getRateOfPerceivedExertion"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSessionRecord.hasRateOfPerceivedExertion"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSessionRecord.Builder.clearRateOfPerceivedExertion"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.ExerciseSessionRecord.Builder.setRateOfPerceivedExertion"
+    sdks="U-ext,V-ext,B-ext" />
+
 </sdk-extensions-info>
