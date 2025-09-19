@@ -878,4 +878,39 @@
     pattern="android.health.connect.changelog.ChangeLogsResponse.DeletedLog"
     sdks="U-ext,V-ext,B-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.DEVICE_TYPE_CONSUMER_MEDICAL_DEVICE"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.DEVICE_TYPE_FITNESS_EQUIPMENT"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.DEVICE_TYPE_FITNESS_MACHINE"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.DEVICE_TYPE_GLASSES"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.DEVICE_TYPE_HEARABLE"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.DEVICE_TYPE_METER"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.DEVICE_TYPE_PORTABLE_COMPUTER"
+    sdks="U-ext,V-ext,B-ext" />
+
 </sdk-extensions-info>
