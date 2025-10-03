@@ -988,4 +988,69 @@
     pattern="android.health.connect.datatypes.ExerciseSessionRecord.Builder.setRateOfPerceivedExertion"
     sdks="U-ext,V-ext,B-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.canConnectMatchingApps"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.createConnectMatchingAppsIntent"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_ALCOHOL_CONSUMPTION"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.READ_NICOTINE_INTAKE"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.START_BACKUP_RESTORE_SETTINGS_PERMISSION"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.WRITE_ALCOHOL_CONSUMPTION"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthPermissions.WRITE_NICOTINE_INTAKE"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.AlcoholConsumptionRecord"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.AlcoholConsumptionRecord.Builder"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.getDisplayName"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.Device.Builder.setDisplayName"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.NicotineIntakeRecord"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.NicotineIntakeRecord.Builder"
+    sdks="U-ext,V-ext,B-ext" />
+
 </sdk-extensions-info>
