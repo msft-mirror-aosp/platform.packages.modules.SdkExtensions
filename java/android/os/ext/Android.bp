@@ -42,6 +42,7 @@ java_sdk_library {
     },
     impl_library_visibility: [
         "//packages/modules/SdkExtensions/tests/e2e:__subpackages__",
+        "//frameworks/base/ravenwood",
     ],
     apex_available: [
         "com.android.sdkext",
