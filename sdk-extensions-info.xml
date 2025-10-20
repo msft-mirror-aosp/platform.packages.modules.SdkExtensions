@@ -1053,4 +1053,19 @@
     pattern="android.health.connect.datatypes.NicotineIntakeRecord.Builder"
     sdks="U-ext,V-ext,B-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.SymptomRecord"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.SymptomRecord.Builder"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.RecordTypeInfoResponse.getPermissionCategories"
+    sdks="U-ext,V-ext,B-ext" />
+
 </sdk-extensions-info>
