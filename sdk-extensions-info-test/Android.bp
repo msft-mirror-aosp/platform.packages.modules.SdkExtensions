@@ -7,9 +7,8 @@ rust_test_host {
     edition: "2021",
     clippy_lints: "android",
     lints: "android",
-    srcs: [
-        "test.rs",
-    ],
+    crate_root: "test.rs",
+    srcs: [":sdk-extensions-info"],
     rustlibs: [
         "libanyhow",
         "libitertools",
