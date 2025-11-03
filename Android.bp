@@ -127,6 +127,7 @@ filegroup {
     visibility: [
         "//frameworks/base",
         "//frameworks/base/api",
+        "//packages/modules/SdkExtensions/sdk-extensions-info-test",
     ],
 }
 
