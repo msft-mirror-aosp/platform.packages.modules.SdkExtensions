@@ -990,16 +990,6 @@
 
   <symbol
     jar="framework-healthfitness"
-    pattern="android.health.connect.HealthConnectManager.canConnectMatchingApps"
-    sdks="U-ext,V-ext,B-ext" />
-
-  <symbol
-    jar="framework-healthfitness"
-    pattern="android.health.connect.HealthConnectManager.createConnectMatchingAppsIntent"
-    sdks="U-ext,V-ext,B-ext" />
-
-  <symbol
-    jar="framework-healthfitness"
     pattern="android.health.connect.HealthPermissions.READ_ALCOHOL_CONSUMPTION"
     sdks="U-ext,V-ext,B-ext" />
 
@@ -1066,6 +1056,36 @@
   <symbol
     jar="framework-healthfitness"
     pattern="android.health.connect.RecordTypeInfoResponse.getPermissionCategories"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.createMatchmakingIntent"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.HealthConnectManager.isMatchmakingPossible"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.MatchmakingRequest"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.MatchmakingRequest.Builder"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.MatchmakingResponse"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.MatchmakingResponse.Builder"
     sdks="U-ext,V-ext,B-ext" />
 
 </sdk-extensions-info>
