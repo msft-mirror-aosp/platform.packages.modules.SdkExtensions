@@ -234,6 +234,26 @@
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.notifyCloudMediaChangedEvent"
     sdks="R-ext,S-ext,T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.Files.FileColumns.SPECIAL_FORMAT"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext"/>
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.Files.FileColumns.SPECIAL_FORMAT_NONE"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext"/>
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.Files.FileColumns.SPECIAL_FORMAT_GIF"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext"/>
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.Files.FileColumns.SPECIAL_FORMAT_MOTION_PHOTO"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext"/>
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.Files.FileColumns.SPECIAL_FORMAT_ANIMATED_WEBP"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext"/>
 
    <!-- PHOTOPICKER -->
    <symbol
