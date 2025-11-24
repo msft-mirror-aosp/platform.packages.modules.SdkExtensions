@@ -1108,4 +1108,15 @@
     pattern="android.health.connect.MatchmakingResponse.Builder"
     sdks="U-ext,V-ext,B-ext" />
 
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.MenstrualCyclePhaseRecord"
+    sdks="U-ext,V-ext,B-ext" />
+
+  <symbol
+    jar="framework-healthfitness"
+    pattern="android.health.connect.datatypes.MenstrualCyclePhaseRecord.Builder"
+    sdks="U-ext,V-ext,B-ext" />
+
+
 </sdk-extensions-info>
