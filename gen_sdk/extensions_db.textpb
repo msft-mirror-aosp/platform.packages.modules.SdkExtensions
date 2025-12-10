@@ -1917,7 +1917,7 @@ versions {
   requirements {
     module: APPSEARCH
     version {
-      version: 20
+      version: 21
     }
   }
   requirements {
