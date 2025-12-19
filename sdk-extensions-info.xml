@@ -254,6 +254,54 @@
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.Files.FileColumns.SPECIAL_FORMAT_ANIMATED_WEBP"
     sdks="S-ext,T-ext,U-ext,V-ext,B-ext"/>
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.mediaprocessingservice.EmbeddingVector"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.mediaprocessingservice.EmbeddingVectorSerializer"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.mediaprocessingservice.ErrorMessage"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.mediaprocessingservice.MediaProcessingRequest"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.mediaprocessingservice.MediaProcessingResponse"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.mediaprocessingservice.QueryProcessingResponse"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.mediaprocessingservice.MediaProcessingService"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.SearchMediaException"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.SearchMediaResult"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.SearchMediaResultPage"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.SearchMediaService"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.getPackageForSearchMediaService"
+    sdks="T-ext,U-ext,V-ext,B-ext" />
 
    <!-- PHOTOPICKER -->
    <symbol
