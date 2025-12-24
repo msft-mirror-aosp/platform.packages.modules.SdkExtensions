@@ -302,6 +302,14 @@
     jar="framework-mediaprovider"
     pattern="android.provider.MediaStore.getPackageForSearchMediaService"
     sdks="T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.trashFile"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-mediaprovider"
+    pattern="android.provider.MediaStore.restoreFileFromTrash"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext" />
 
    <!-- PHOTOPICKER -->
    <symbol
