@@ -339,6 +339,28 @@
     pattern="android.net.NetworkStats"
     sdks="T-ext,U-ext,V-ext,B-ext" />
 
+  <!-- CONSCRYPT -->
+  <!--
+    TODO(b/397646538): replace B-ext with C-ext once it is available.
+    Reminder: do the same in the TODO at external/conscrypt/Android.bp
+   -->
+  <symbol
+    jar="framework-conscrypt-nsc"
+    pattern="android.security"
+    sdks="B-ext" />
+  <symbol
+    jar="conscrypt"
+    pattern="com.android.org.conscrypt"
+    sdks="B-ext" />
+  <symbol
+    jar="conscrypt"
+    pattern="android.net.ssl"
+    sdks="B-ext" />
+  <symbol
+    jar="conscrypt"
+    pattern="android.net.ssl.EchConfigList"
+    sdks="U-ext,V-ext,B-ext" />
+
   <!-- PDF -->
   <symbol
     jar="framework-pdf"
