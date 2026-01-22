@@ -266,6 +266,11 @@ public class SdkExtensionsTest {
 
     @Test
     public void testExtensionAdServices() throws Exception {
+        int adServicesVersion = SdkExtensions.getExtensionVersion(AD_SERVICES);
+        if (adServicesVersion >= 20) {
+            // AD_SERVICES was discontinued after version 20
+            return;
+        }
         // Go trains do not ship the latest versions of AdServices, though they should. Temporarily
         // accept AT_LEAST_BASE of AdServices until the Go train situation has been resolved, then
         // revert back to expecting MISSING (before T) or CURRENT (on T+).
