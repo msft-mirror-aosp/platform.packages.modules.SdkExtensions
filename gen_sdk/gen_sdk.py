@@ -129,8 +129,12 @@ def NewSdk(database, args):
   if args.modules:
     module_names = args.modules.split(',')
   else:
-    # Default: require all modules
-    module_names = [m for m in SdkModule.keys() if not m == 'UNKNOWN']
+    # Default: require all modules except those explicitly skipped:
+    #   - UNKNOWN: not a valid module
+    #   - AD_SERVICES: discontinued after version 20
+    #   - EXT_SERVICES: used to backport AD_SERVICES, not needed after version 20
+    skipped_modules = {'UNKNOWN', 'AD_SERVICES', 'EXT_SERVICES'}
+    module_names = [m for m in SdkModule.keys() if not m in skipped_modules]
 
   module_values = [SdkModule.Value(m) for m in module_names]
   new_requirements = {}
