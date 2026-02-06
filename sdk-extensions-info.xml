@@ -349,33 +349,17 @@
     pattern="android.security"
     sdks="B-ext" />
   <symbol
-    jar="conscrypt.module.platform.api"
+    jar="conscrypt.module.public.api"
     pattern="com.android.org.conscrypt"
     sdks="B-ext" />
   <symbol
-    jar="conscrypt.module.platform.api"
+    jar="conscrypt.module.public.api"
     pattern="android.net.ssl"
     sdks="B-ext" />
   <symbol
-    jar="conscrypt.module.platform.api"
+    jar="conscrypt.module.public.api"
     pattern="android.net.ssl.EchConfigList"
-    sdks="U-ext,V-ext,B-ext" />
-  <symbol
-    jar="conscrypt.module.public.api"
-    pattern="com.android.org.conscrypt"
-    sdks="B-ext" />
-  <symbol
-    jar="conscrypt.module.public.api"
-    pattern="android.net.ssl"
-    sdks="B-ext" />
-  <symbol
-    jar="conscrypt.module.intra.core.api"
-    pattern="com.android.org.conscrypt"
-    sdks="B-ext" />
-  <symbol
-    jar="conscrypt.module.intra.core.api"
-    pattern="android.net.ssl"
-    sdks="B-ext" />
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext" />
 
   <!-- PDF -->
   <symbol
