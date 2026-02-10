@@ -332,6 +332,14 @@
     sdks="U-ext,V-ext,B-ext" />
   <symbol
     jar="framework-connectivity"
+    pattern="android.net.DnsResolver"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-connectivity"
+    pattern="android.net.dns"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext" />
+  <symbol
+    jar="framework-connectivity"
     pattern="android.net"
     sdks="U-ext,V-ext,B-ext" />
   <symbol
