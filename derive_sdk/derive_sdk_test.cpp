@@ -59,6 +59,9 @@
 // Only expect the B extension level to be set on B+ devices.
 #define EXPECT_B(n) EXPECT_EQ(GetB(), android::modules::sdklevel::IsAtLeastB() ? (n) : -1)
 
+// Only expect the C extension level to be set on C+ devices.
+#define EXPECT_C(n) EXPECT_EQ(GetC(), android::modules::sdklevel::IsAtLeastC() ? (n) : -1)
+
 class DeriveSdkTest : public ::testing::Test {
  protected:
   void TearDown() override { android::derivesdk::SetSdkLevels("/apex"); }
@@ -114,6 +117,8 @@ class DeriveSdkTest : public ::testing::Test {
   int GetV() { return android::base::GetIntProperty("build.version.extensions.v", -1); }
 
   int GetB() { return android::base::GetIntProperty("build.version.extensions.b", -1); }
+
+  int GetC() { return android::base::GetIntProperty("build.version.extensions.c", -1); }
 
   void EXPECT_ADSERVICES(int n) {
     int actual = android::base::GetIntProperty("build.version.extensions.ad_services", -1);
@@ -347,6 +352,10 @@ TEST_F(DeriveSdkTest, Baklava) {
 
   SetApexVersion("com.android.neuralnetworks", 1);
   EXPECT_B(1);
+}
+
+TEST_F(DeriveSdkTest, CinnamonBun) {
+  // Nothing to do: no new modules were added in C
 }
 
 int main(int argc, char** argv) {
