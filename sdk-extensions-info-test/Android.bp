@@ -8,11 +8,16 @@ rust_test_host {
     clippy_lints: "android",
     lints: "android",
     crate_root: "test.rs",
-    srcs: [":sdk-extensions-info"],
+    srcs: [
+        "test.rs",
+        "testdata/*.xml",
+        ":sdk-extensions-info",
+    ],
     rustlibs: [
         "libanyhow",
         "libitertools",
         "libxml_rust",
     ],
     test_suites: ["general-tests"],
+    use_expansive_default_srcs: false,
 }
