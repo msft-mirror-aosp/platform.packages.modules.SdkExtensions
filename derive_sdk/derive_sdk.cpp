@@ -75,12 +75,14 @@ static const std::unordered_set<SdkModule> kVModules = {};
 
 static const std::unordered_set<SdkModule> kBModules = {SdkModule::NEURAL_NETWORKS};
 
+static const std::unordered_set<SdkModule> kCModules = {};
+
 static const std::string kSystemPropertiesPrefix = "build.version.extensions.";
 
 void ReadSystemProperties(std::map<std::string, std::string>& properties) {
   const std::string default_ = "<not set>";
 
-  for (const auto& dessert : {"r", "s", "t", "ad_services", "u", "v", "b"}) {
+  for (const auto& dessert : {"r", "s", "t", "ad_services", "u", "v", "b", "c"}) {
     properties[kSystemPropertiesPrefix + dessert] =
         android::base::GetProperty(kSystemPropertiesPrefix + dessert, default_);
   }
@@ -235,6 +237,13 @@ bool SetSdkLevels(const std::string& mountpath) {
   relevant_modules.insert(kBModules.begin(), kBModules.end());
   if (android::modules::sdklevel::IsAtLeastB()) {
     if (!GetAndSetExtension("b", db, relevant_modules, versions)) {
+      return false;
+    }
+  }
+
+  relevant_modules.insert(kCModules.begin(), kCModules.end());
+  if (android::modules::sdklevel::IsAtLeastC()) {
+    if (!GetAndSetExtension("c", db, relevant_modules, versions)) {
       return false;
     }
   }
