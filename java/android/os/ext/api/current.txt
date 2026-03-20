@@ -1,11 +1,10 @@
 // Signature format: 6.0
 // - style=java
-// - strip-java-lang-prefix=legacy
 // - type-argument-spacing=legacy
 package android.os.ext {
 
   public class SdkExtensions {
-    method @NonNull public static java.util.Map<java.lang.Integer,java.lang.Integer> getAllExtensionVersions();
+    method @NonNull public static java.util.Map<Integer,Integer> getAllExtensionVersions();
     method public static int getExtensionVersion(int);
     field public static final int AD_SERVICES = 1000000; // 0xf4240
   }
