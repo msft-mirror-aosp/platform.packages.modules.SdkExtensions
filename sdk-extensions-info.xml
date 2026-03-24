@@ -369,6 +369,10 @@
     jar="conscrypt"
     pattern="android.net.ssl.EchConfigList"
     sdks="S-ext,T-ext,U-ext,V-ext,B-ext,C-ext" />
+  <symbol
+    jar="conscrypt"
+    pattern="android.net.ssl.InvalidEchDataException"
+    sdks="S-ext,T-ext,U-ext,V-ext,B-ext,C-ext" />
 
   <!-- PDF -->
   <symbol
